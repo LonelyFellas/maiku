@@ -51,5 +51,6 @@
     }
   },
   "include": ["src", "electron", "global.d.ts"],
+  "exclude": ["node_modules"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

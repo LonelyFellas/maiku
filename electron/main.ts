@@ -75,7 +75,7 @@ function createWindow() {
     }
   });
 
-  process.on('unhandledRejection', (reason:any, promise) => {
+  process.on('unhandledRejection', (reason: any, promise) => {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
     if (mainWindow) {
       mainWindow.webContents.send('error', reason.toString());
