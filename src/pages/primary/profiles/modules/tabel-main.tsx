@@ -1,7 +1,7 @@
 import {
   Button,
   Dropdown,
-  message,
+  // message,
   Pagination,
   Space,
   Table,
@@ -31,11 +31,11 @@ export interface DataType {
 }
 
 const TableMain = () => {
-  const [openModal, setOpenModal] = useState(false);
-  const [id, setId] = useState('-1');
-  const handleTriggerModal = () => {
-    setOpenModal(true);
-  };
+  // const [] = useState(false);
+  const [id, ] = useState('-1');
+  // const handleTriggerModal = () => {
+  //   setOpenModal(true);
+  // };
   const handleStartScrcpy = () => {
     window.ipcRenderer.send('startScrcpy');
   };
@@ -53,7 +53,7 @@ const TableMain = () => {
     //     message.error(error.toString());
     //   });
   }, []);
-  const [columns, setColumns] = useState(() => {
+  const [columns, ] = useState(() => {
     const defaultColumns = [
       {
         title: '#',

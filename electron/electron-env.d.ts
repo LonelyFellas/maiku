@@ -18,6 +18,12 @@ declare namespace NodeJS {
     APP_ROOT: string
     /** /dist/ or /public/ */
     VITE_PUBLIC: string
+    DIST: string;
+  }
+
+  // 增加electron全局变量的参数
+  interface EventEmitter {
+    isQuitting: boolean;
   }
 }
 

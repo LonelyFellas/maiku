@@ -5,7 +5,7 @@ import phone from '@img/phone-test.png';
 import '../index.css';
 
 const Slider = () => {
-  const [list, setList] = useState([
+  const [list, ] = useState([
     {
       order: 0,
       name: '环境1',

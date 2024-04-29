@@ -32,7 +32,7 @@ const DetailCollapse: ReactFCWithChildren<CollapseProps> = (props) => {
       bordered={false}
       ghost
       expandIconPosition="end"
-      defaultActiveKey={keys}
+      defaultActiveKey={keys as string[]}
       {...props}
     >
       {props.children}
