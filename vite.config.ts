@@ -1,12 +1,14 @@
 import { defineConfig } from 'vite'
 import path from 'node:path'
 import electron from 'vite-plugin-electron/simple'
+import svgr from "vite-plugin-svgr"
 import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
+    svgr(),
     electron({
       main: {
         // Shortcut of `build.lib.entry`.
@@ -26,4 +28,15 @@ export default defineConfig({
         : {},
     }),
   ],
+  resolve: {
+    preserveSymlinks: true,
+    alias: {
+      '@': '/src',
+      '@common': '/src/common',
+      '@img': '/src/assets/images',
+      '@sty': '/src/assets/styles',
+      '@assets': '/src/assets',
+      '@api': '/src/api',
+    },
+  },
 })
