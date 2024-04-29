@@ -90,7 +90,7 @@ const Slider = () => {
   const ToogleIcon = collapsed ? MenuUnfoldOutlined : MenuFoldOutlined;
 
   const handleGoToNewProfiles = () => {
-    navigate({ to: '/layout/newprofiles' });
+    navigate({ to: '/layout/new_profiles' });
   };
   const handleMenuClick = (props: unknown) => {
     console.log('click', props);
