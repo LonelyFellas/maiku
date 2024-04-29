@@ -1,0 +1,156 @@
+{
+  "basic": {
+    "project_name": "maiku-net"
+  },
+  "login": {
+    "login": {
+      "btn_title": "Login",
+      "main_title1": "Don't have an MaiKu account? ",
+      "main_title2": "Sign up",
+      "filed_email_phone": "Email/Phone number",
+      "placeholder_email_phone": "Please enter the correct email address/phone number.",
+      "required_email_phone": "Please enter the correct email address or phone number",
+      "filed_email_phone_info": "When filling in your phone number, please do not include the country code.",
+      "filed_psw": "Password",
+      "placeholder_psw": "Please enter your password.",
+      "required_psw": "Please enter your password",
+      "filed_password_info": "Must contain numbers and uppercase and lowercase letters, 8-20 characters",
+      "option_remember_me": "Save password",
+      "option_forgot_psw": "Forgot password?"
+    },
+    "register": {
+      "btn_title": "Register",
+      "main_title1": "Already have an account? ",
+      "main_title2": "Log in",
+      "phone_title": "By phone number",
+      "email_title": "By email",
+      "filed_phone": "Phone number (It's recommended to use a commonly used phone number to receive verification codes)",
+      "filed_email": "E-Mail",
+      "placeholder_phone": "Please enter a phone number.",
+      "placeholder_email": "Please enter your email address.",
+      "filed_phone_info": "One the country code +86 is supported",
+      "filed_email_info": "Please do not register using a temporary email address, We will not assist you if you experence login issues.",
+      "filed_verify_code": "Verification code",
+      "placeholder_verify_code": "Please enter the verification code sent to your phone number or email address.",
+      "get_verify_code": "Get verification code",
+      "filed_psw": "Password",
+      "placeholder_psw": "Please enter your password.",
+      "filed_psw_info": "Must contain numbers and uppercase and lowercase letters, 8-20 characters",
+      "filed_referral_code": "Referral code",
+      "placeholder_referral_code": "Please enter your referral code.(Optional)"
+    },
+    "verify": {
+      "btn_title": "Verify",
+      "main_title1": "Found your password? ",
+      "main_title2": "Log in",
+      "phone_title": "Verify phone number",
+      "email_title": "Verify email",
+      "filed_phone": "Phone number",
+      "filed_email": "E-Mail",
+      "placeholder_phone": "Please enter a phone number.",
+      "placeholder_email": "Please enter your email address.",
+      "filed_phone_info": "One the country code +86 is supported",
+      "filed_email_info": "Please do not register using a temporary email address, We will not assist you if you experence login issues.",
+      "filed_verify_code": "Verification code",
+      "placeholder_verify_code": "Please enter the verification code sent to your phone number or email address.",
+      "get_verify_code": "Get verification code",
+      "filed_psw": "Password",
+      "placeholder_psw": "Please enter your password.",
+      "filed_psw_info": "Must contain numbers and uppercase and lowercase letters, 8-20 characters",
+      "filed_confirm_psw": "Confirm password",
+      "placeholder_filed_confirm_psw": "Please enter your password again.",
+      "filed_confirm_psw_info": "Must contain numbers and uppercase and lowercase letters, 8-20 characters"
+    }
+  },
+  "layout": {
+    "header": {
+      "update": {
+        "title": "Update center",
+        "empty_title": "No updates available"
+      },
+      "notification": {
+        "title": "Notification",
+        "empty_title": "No new notifications"
+      },
+      "profile": {
+        "role": "Super administrator",
+        "exit_system": "Log out"
+      }
+    },
+    "slider": {
+      "new_project": "New Profile",
+      "first_subs": "First-Subs",
+      "project_quantity": "profiles",
+      "user_quantity": "users",
+      "menu_list": {
+        "primary": {
+          "name": "Primary",
+          "children": [
+            {
+              "name": "profiles",
+              "children": []
+            },
+            {
+              "name": "groups",
+              "children": []
+            }
+          ]
+        },
+        "discover": {
+          "name": "Discover",
+          "children": [
+            {
+              "name": "Proxies",
+              "children": []
+            },
+            {
+              "name": "Devices",
+              "children": []
+            },
+            {
+              "name": "Extensions",
+              "children": [
+                {
+                  "name": "Cloud Mobile Applications",
+                  "children": []
+                },
+                {}
+              ]
+            }
+          ]
+        },
+        "automation": {
+          "name": "Automation",
+          "children": [
+            {
+              "name": "TK Automation",
+              "children": []
+            }
+          ]
+        },
+        "team": {
+          "name": "Team",
+          "children": [
+            {
+              "name": "Billing",
+              "children": []
+            },
+            {
+              "name": "Settings",
+              "children": [
+                {
+                  "name": "Members",
+                  "children": []
+                },
+                {
+                  "name": "Action Logs",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}
