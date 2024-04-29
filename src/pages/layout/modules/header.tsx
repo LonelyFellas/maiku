@@ -14,8 +14,8 @@ const Header = () => {
   let isBack = false;
   try {
     if (matches && isArray(matches)) {
-      // @ts-ignore
-      title = matches?.at(-1)?.meta[0].title ?? '';
+      // @ts-expect-error
+      title = matches?.at(-1)?.meta[0].title ?? '环境管理';
       // @ts-ignore
       isBack = matches?.at(-1).meta[0].isBack ?? false
     }
