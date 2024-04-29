@@ -7,27 +7,23 @@ import {
   LockOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { useI18nConfig, Constants } from '@common';
+import { useI18nConfig, Constants, useTagTitle } from '@common';
 import { loginService } from '@api/user/login';
 import type { LoginParams } from '@api/type';
 import { isObject } from '@darwish/utils-is';
 import { LoginProps } from '@/pages/login';
 
 type FormValues = LoginParams & { remember: boolean };
-const DEFAULT_FORM = {
-  username: '',
-  password: '',
-  remember: false
-}
-const login = (props: LoginProps) => {
+
+const Login = (props: LoginProps) => {
   const [lang] = useI18nConfig('config.login.login');
   const [form] = Form.useForm<FormValues>();
   const [, setToken] = useLocalStorage<string>(Constants.LOCAL_TOKEN, '');
-  const [userInfo, setUserInfo] = useLocalStorage<FormValues>(
+  const [userInfo, setUserInfo] = useLocalStorage<FormValues | null>(
     Constants.LOCAL_LOGIN_INFO,
-    DEFAULT_FORM,
+    null
   );
-  // const setTagTitle = useTagTitle((state) => state.setTagTitle);
+  const setTagTitle = useTagTitle((state) => state.setTagTitle);
 
   const navigate = useNavigate({ from: '/login' });
 
@@ -36,16 +32,15 @@ const login = (props: LoginProps) => {
     onSuccess: (data) => {
       if (isObject(data)) {
         setUserInfo(
-          // @ts-ignore
           form.getFieldValue('remember') ? form.getFieldsValue() : null,
         );
         setToken(data.token);
         window.userInfo = data.userInfo;
         message.success('登录成功');
-        // setTagTitle({
-        //   title: '环境管理',
-        //   url: '/layout/profiles',
-        // });
+        setTagTitle({
+          title: '环境管理',
+          url: '/layout/profiles',
+        });
         navigate({ to: '/layout/profiles' });
       }
     },
@@ -64,7 +59,7 @@ const login = (props: LoginProps) => {
         className="mt-6"
         onFinish={onFinish}
         form={form}
-        initialValues={userInfo}
+        initialValues={userInfo || {}}
       >
         <Form.Item
           label={lang?.filed_email_phone}
@@ -109,7 +104,7 @@ const login = (props: LoginProps) => {
         </Form.Item>
         <Form.Item name="remember" valuePropName="checked">
           <Flex justify="space-between">
-            <Checkbox defaultChecked={userInfo && userInfo.remember}>
+            <Checkbox defaultChecked={userInfo && userInfo.remember ? true : false}>
               {lang?.option_remember_me}
             </Checkbox>
             <span
@@ -134,4 +129,4 @@ const login = (props: LoginProps) => {
     </div>
   );
 };
-export default login;
+export default Login;

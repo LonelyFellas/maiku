@@ -40,7 +40,7 @@ const pswRules = [
   { required: true, message: '请输入密码' },
   { min: 6, message: '密码长度至少为6位' },
 ];
-const register = (props: LoginProps) => {
+const Register = (props: LoginProps) => {
   const [lang] = useI18nConfig('config.login.register');
   const [form] = Form.useForm<RegisterParams>();
   const [isPhoneRegister, setIsPhoneRegister] = useState(true);
@@ -223,4 +223,4 @@ const register = (props: LoginProps) => {
     </div>
   );
 };
-export default register;
+export default Register;
