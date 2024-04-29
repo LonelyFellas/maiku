@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Modal, Space } from 'antd';
 import ProfileCenter from './profile-center';
 import UpdateCenter from './update-center';
@@ -5,7 +6,6 @@ import NotificationCenter from './notification-center';
 import { useMatches, useRouter } from '@tanstack/react-router';
 import { isArray } from '@darwish/utils-is';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-// import { useTagTitle } from '@common';
 
 const Header = () => {
   const { history } = useRouter();
@@ -14,7 +14,7 @@ const Header = () => {
   let isBack = false;
   try {
     if (matches && isArray(matches)) {
-      // @ts-expect-error
+      // @ts-ignore
       title = matches?.at(-1)?.meta[0].title ?? '环境管理';
       // @ts-ignore
       isBack = matches?.at(-1).meta[0].isBack ?? false
