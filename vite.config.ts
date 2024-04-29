@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import path from 'node:path'
 import electron from 'vite-plugin-electron/simple'
 import svgr from "vite-plugin-svgr"
-import { TanStackRouterVite } from "@tanstack/router-vite-plugin"
+// import { TanStackRouterVite } from "@tanstack/router-vite-plugin"
 import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
@@ -10,7 +10,7 @@ export default defineConfig({
   plugins: [
     react(),
     svgr(),
-    TanStackRouterVite(),
+    // TanStackRouterVite(),
     electron({
       main: {
         // Shortcut of `build.lib.entry`.

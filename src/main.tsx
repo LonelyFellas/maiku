@@ -1,18 +1,12 @@
 import ReactDOM from 'react-dom/client';
 import { ConfigProvider } from 'antd';
 import { I18nConfigContextProvider } from '@common';
+import { router } from '@/routes';
 import "./index.css"
 import {
   RouterProvider,
-  createRouter,
-  createHashHistory,
 } from '@tanstack/react-router';
-// Import the generated route tree
-import { routeTree } from './routeTree.gen';
 
-// Create a new router instance
-const hashHistory = createHashHistory();
-const router = createRouter({ routeTree, history: hashHistory });
 
 
 window.env = import.meta.env;
