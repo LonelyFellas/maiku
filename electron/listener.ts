@@ -27,8 +27,6 @@ export default function createListener(options: CreateListenerOptions) {
       window?.isMaximized() ? window?.unmaximize() : window?.maximize();
     }
     if (channel === 'close') {
-      // window.close();
-
       const windowCloseVal = store.get('window_close');
 
       // 当窗口关闭时，弹出提示框询问用户是否最小化到托盘或关闭窗口
@@ -41,7 +39,6 @@ export default function createListener(options: CreateListenerOptions) {
           checkboxChecked: false,
           cancelId: -1, // 取消按钮的索引
         });
-        console.log(dialogRes);
         // 没有点击‘记住我的选择’时，根据用户的选择执行相应的操作
         // 当用户点击了‘记住我的选择’时，将选择保存到本地存储
         // 当前是最小化到托盘

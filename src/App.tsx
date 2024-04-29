@@ -1,35 +1,58 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/electron-vite.animate.svg'
-import './App.css'
+import React, { useEffect, Fragment, type PropsWithChildren } from 'react';
+import { isMacFunc, useI18nConfig, Wrapper } from '@common';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import 'mac-scrollbar/dist/mac-scrollbar.css';
+import { FloatButton, message } from 'antd';
+import { GlobalOutlined as GlobalIcon } from '@ant-design/icons/lib/icons';
+import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 
-function App() {
-  const [count, setCount] = useState(0)
+const queryClient = new QueryClient();
+const ReactQueryDevtoolsProduction = React.lazy(() =>
+  import('@tanstack/react-query-devtools/build/modern/production.js').then(
+    (d) => ({
+      default: d.ReactQueryDevtools,
+    }),
+  ),
+);
 
+const App = (props: PropsWithChildren<object>) => {
+  const [showDevtools, setShowDevtools] = React.useState(false);
+  const [, setLang] = useI18nConfig();
+  const isMac = isMacFunc();
+
+  useEffect(() => {
+    window.toggleDevtools = () => setShowDevtools((old) => !old);
+    window.ipcRenderer.on('error', (_, error) => {
+      message.error(error).then(() => {
+        console.error(error);
+      });
+    });
+  }, []);
+
+  const handleLanguageChange = () => {
+    setLang((prev: string) => (prev === 'zh' ? 'en' : 'zh'));
+  };
+
+  const Component = isMac ? Fragment : Wrapper;
   return (
-    <>
-      <div>
-        <a href="https://electron-vite.github.io" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
-
-export default App
+    <QueryClientProvider client={queryClient}>
+      <ReactQueryDevtools initialIsOpen />
+      {window.env.DEV && <TanStackRouterDevtools />}
+      {window.env.DEV && (
+        <FloatButton
+          icon={<GlobalIcon />}
+          onClick={handleLanguageChange}
+          style={{ top: 24 }}
+        />
+      )}
+      {showDevtools && (
+        <React.Suspense fallback={null}>
+          <ReactQueryDevtoolsProduction />
+        </React.Suspense>
+      )}
+      <Component>{props.children}</Component>
+    </QueryClientProvider>
+  );
+};
+export default App;

@@ -52,11 +52,12 @@ function createWindow() {
     mainWindow?.webContents.send('main-process-message', (new Date).toLocaleString())
   })
 
+  console.log(path.join(RENDERER_DIST))
   if (VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(VITE_DEV_SERVER_URL)
   } else {
     // win.loadFile('dist/index.html')
-    mainWindow.loadFile(path.join(RENDERER_DIST, 'index.html'))
+    mainWindow.loadFile('./dist/index.html')
   }
 
   // 创建托盘图标
@@ -106,17 +107,11 @@ app.on('window-all-closed', () => {
 })
 app.on('ready', createWindow);
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
     createWindow();
   } else {
-    console.log('mainWindow', mainWindow);
     mainWindow?.show();
   }
 });

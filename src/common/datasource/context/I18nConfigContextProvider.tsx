@@ -25,7 +25,6 @@ export function I18nConfigContextProvider(
 ) {
   const [config, setConfig] = useState<I18nConfig>(DEFAULT_CONFIG);
   const [language, setLanguage] = useLocalStorage('i18n', 'zh');
-
   useEffect(() => {
     import(
       language === 'zh'
