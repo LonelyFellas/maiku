@@ -46,12 +46,22 @@ const profiles = createRoute({
   getParentRoute: () => layoutRoute,
   path: '/profiles',
   component: Profiles,
+  meta: () => [{title: '环境管理'}]
+
 });
 /** 新建环境 */
 const newProfiles = createRoute({
   getParentRoute: () => layoutRoute,
   path: '/new_profiles',
   component: NewProfiles,
+  meta: () => [{
+    title: '新建环境',
+    isBack: true
+  }]
+  // meta: {
+  //   title: "新建环境",
+  //   isBack: false
+  // }
 });
 
 const routeTree = rootRoute.addChildren([indexRoute, loginRoute, layoutRoute.addChildren([profiles, newProfiles])]);
