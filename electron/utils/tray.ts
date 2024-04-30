@@ -14,7 +14,7 @@ import {
  */
 export function createTray(mainWindow: BrowserWindow, app: App) {
   // 创建系统托盘图标
-  const icon = nativeImage.createFromPath('build/icons/favicon.ico');
+  const icon = nativeImage.createFromPath('public/favicon.ico');
   const tray = new Tray(icon);
   const contextMenu = Menu.buildFromTemplate([
     {
