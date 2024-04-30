@@ -9,17 +9,19 @@ import { useI18nConfig } from '@common';
 
 const prefixSelector = (
   <Form.Item name="prefix" noStyle>
-    <MobileOutlined />
-    <Select
-      value={'CN +86'}
-      disabled
-      style={{
-        width: 100,
-      }}
-    >
-      {/* <Select.Option value="86">+86</Select.Option> */}
-      {/* <Select.Option value="87">+87</Select.Option> */}
-    </Select>
+    <div>
+      <MobileOutlined />
+      <Select
+        value={'CN +86'}
+        disabled
+        style={{
+          width: 100,
+        }}
+      >
+        {/* <Select.Option value="86">+86</Select.Option> */}
+        {/* <Select.Option value="87">+87</Select.Option> */}
+      </Select>
+    </div>
   </Form.Item>
 );
 const Verify = () => {

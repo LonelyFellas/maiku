@@ -3,7 +3,7 @@ import { isMacFunc, useI18nConfig, Wrapper } from '@common';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import 'mac-scrollbar/dist/mac-scrollbar.css';
-import { FloatButton, message } from 'antd';
+import { FloatButton, message, App as AntdApp } from 'antd';
 import { GlobalOutlined as GlobalIcon } from '@ant-design/icons/lib/icons';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 
@@ -51,7 +51,13 @@ const App = (props: PropsWithChildren<object>) => {
           <ReactQueryDevtoolsProduction />
         </React.Suspense>
       )}
-      <Component>{props.children}</Component>
+
+      <Component>
+        {/* 主要是为了去除antd的错误message提示， */}
+        <AntdApp>
+          {props.children}
+        </AntdApp>
+        </Component>
     </QueryClientProvider>
   );
 };
