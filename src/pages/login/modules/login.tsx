@@ -48,7 +48,6 @@ const Login = (props: LoginProps) => {
 
 
   const onFinish = (values: FormValues) => {
-    message.success('登录成功', 200000);
     mutate({ username: values.username, password: values.password });
   };
 
