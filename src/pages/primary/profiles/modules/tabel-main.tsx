@@ -11,7 +11,7 @@ import React, { createContext, useRef, useState } from 'react';
 import {
   operationItems,
 } from '@/pages/primary/profiles/config';
-import { MacScrollbar } from "mac-scrollbar"
+import { MacScrollbar } from 'mac-scrollbar';
 
 // import { DataType, TableContext } from '@/pages/primary/profiles copy';
 export const TableContext = createContext<{ deviceId: string }>({
@@ -142,7 +142,7 @@ const TableMain = (props: TableMainProps) => {
   console.log(scrollY);
   return (
     <div ref={scrollRef} className="h-full">
-      <MacScrollbar className="flex-1 bg-white rounded-md">
+      <div className="flex-1 bg-white rounded-md">
         <TableContext.Provider value={{ deviceId }}>
           <Table
             className="antd_close_overflow_auto"
@@ -179,7 +179,7 @@ const TableMain = (props: TableMainProps) => {
           defaultPageSize={20}
           defaultCurrent={1}
         />
-      </MacScrollbar>
+      </div>
     </div>
   );
 };
