@@ -2,7 +2,6 @@ import { defineConfig } from 'vite'
 import path from 'node:path'
 import electron from 'vite-plugin-electron/simple'
 import svgr from "vite-plugin-svgr"
-// import { TanStackRouterVite } from "@tanstack/router-vite-plugin"
 import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
@@ -10,7 +9,6 @@ export default defineConfig({
   plugins: [
     react(),
     svgr(),
-    // TanStackRouterVite(),
     electron({
       main: {
         // Shortcut of `build.lib.entry`.
@@ -54,13 +52,13 @@ export default defineConfig({
     }
   },
   server: {
-    proxy: {
-      '/api': {
-        target: 'http://maiku.npaas.cn/s/api',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
-      },
-    },
+    // proxy: {
+    //   '/api': {
+    //     target: 'http://maiku.npaas.cn/s/api',
+    //     changeOrigin: true,
+    //     rewrite: (path) => path.replace(/^\/api/, ''),
+    //   },
+    // },
   },
 
 })

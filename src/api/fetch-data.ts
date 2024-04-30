@@ -18,11 +18,11 @@ export const fetchData = async <TData, TParams = null>(
   };
 
   // 拼接地址
-  url = `/api/${url}`;
+  url = `http://maiku.npaas.cn/s/api/${url}`;
   // GET请求参数放地址上
   // 其他请求参数放body上
   if (init.method === 'GET') {
-    url = getSerialUrl(url as string, init.data);
+    url = getSerialUrl(url as string, init.data ?? {});
   } else if (init.data !== null) {
     defaultInit.body = JSON.stringify(init.data);
   }

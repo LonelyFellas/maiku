@@ -3,7 +3,7 @@ declare namespace Api {
 
   interface Init<TParam> extends RequestInit {
     method: 'GET' | 'POST' | 'DELETE' | 'PUT';
-    data?: T;
+    data?: TParam;
     body?: string;
   }
 
