@@ -51,14 +51,4 @@ export default defineConfig({
       }
     }
   },
-  server: {
-    // proxy: {
-    //   '/api': {
-    //     target: 'http://maiku.npaas.cn/s/api',
-    //     changeOrigin: true,
-    //     rewrite: (path) => path.replace(/^\/api/, ''),
-    //   },
-    // },
-  },
-
 })

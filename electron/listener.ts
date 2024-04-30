@@ -33,10 +33,10 @@ export default function createListener(options: CreateListenerOptions) {
         const minimizeToTray = () => {
           const mainWindow = BrowserWindow.fromWebContents(event.sender);
           mainWindow?.hide();
-        }
+        };
         const closeWindow = () => {
           app.quit();
-        }
+        };
         // 判断窗口是否记住了选择了，如果记住选择了，则不弹出提示框 直接执行记住的操作
         if (windowClose === '') {
           const dialogRes = await dialog.showMessageBox({
@@ -83,8 +83,8 @@ export default function createListener(options: CreateListenerOptions) {
     });
   });
   /** 启动scrcpy **/
-  ipcMain.on('startScrcpy', (event) => {
-    const scrcpyProcess = exec('scrcpy', (error, stdout, stderr) => {
+  ipcMain.on('startScrcpy', (event, id: string) => {
+    const scrcpyProcess = exec(`scrcpy -s ${id}`, (error, stdout, stderr) => {
       if (error) {
         console.error(`exec error: ${error}`);
         event.reply('error', `exec error: ${error}`);

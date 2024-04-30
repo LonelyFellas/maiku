@@ -1,29 +1,19 @@
-import { useState } from 'react';
 import { MacScrollbar } from 'mac-scrollbar';
 import { Button, Collapse, Flex } from 'antd';
 import phone from '@img/phone-test.png';
 import '../index.css';
 
-const Slider = () => {
-  const [list, ] = useState([
-    {
-      order: 0,
-      name: '环境1',
-    },
-    {
-      order: 1,
-      name: '环境2',
-    },
-    {
-      order: 2,
-      name: '环境3',
-    },
-    {
-      order: 3,
-      name: '环境4',
-    },
-  ]);
+interface SliderProps {
+  list: { order: number, name: string, path: string }[];
+  currenIndex: number;
+  setCurrentIndex: ReactFCWithChildren<number>;
+}
 
+const Slider = (props: SliderProps) => {
+  const {list} = props;
+  const handleChange = (indexStr: string | string[]) => {
+
+  };
   return (
     <MacScrollbar
       className="w-[230px] h-full bg-bg_primary/50 rounded-md"
@@ -36,6 +26,7 @@ const Slider = () => {
         className="profiles-slider-collapse flex flex-col items-center"
         accordion
         bordered={false}
+        onChange={handleChange}
       >
         {list.map((item) => (
           <Collapse.Panel

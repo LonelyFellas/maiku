@@ -8,9 +8,9 @@ import {
 } from '@tanstack/react-router';
 
 
-
 const isMac = isMacFunc();
 window.env = import.meta.env;
+/** windows因为是自定义的头部所以要适配 */
 message.config({
   top: !isMac ? 28 : 8
 })
