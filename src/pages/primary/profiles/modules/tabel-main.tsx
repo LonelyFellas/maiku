@@ -7,12 +7,12 @@ import {
   Table,
   TableColumnsType,
 } from 'antd';
-import { createContext, useRef, useState } from 'react';
+import React, { createContext, useRef, useState } from 'react';
 import {
   operationItems,
 } from '@/pages/primary/profiles/config';
-import { HorizontalScrollbar } from '@common';
-import { useScroll } from '@darwish/hooks-core';
+import { MacScrollbar } from "mac-scrollbar"
+
 // import { DataType, TableContext } from '@/pages/primary/profiles copy';
 export const TableContext = createContext<{ deviceId: string }>({
   deviceId: '-1',
@@ -142,7 +142,7 @@ const TableMain = (props: TableMainProps) => {
   console.log(scrollY);
   return (
     <div ref={scrollRef} className="h-full">
-      <HorizontalScrollbar className="w-full h-full flex-1 bg-white rounded-md overflow-x-auto overflow-y-hidden">
+      <MacScrollbar className="flex-1 bg-white rounded-md">
         <TableContext.Provider value={{ deviceId }}>
           <Table
             className="antd_close_overflow_auto"
@@ -179,7 +179,7 @@ const TableMain = (props: TableMainProps) => {
           defaultPageSize={20}
           defaultCurrent={1}
         />
-      </HorizontalScrollbar>
+      </MacScrollbar>
     </div>
   );
 };

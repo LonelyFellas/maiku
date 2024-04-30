@@ -17,21 +17,21 @@ const HorizontalScrollbar = (
   const scrollRef = useRef<HTMLDivElement>(null);
   const isMac = isMacFunc();
   useEffect(() => {
-    if (isMac) return;
-    const handleMoveSize = (e: WheelEvent) => {
-      e.preventDefault();
-      if (scrollRef.current) {
-        scrollRef.current.scrollLeft += e.deltaY;
-      }
-    };
-    if (scrollRef.current) {
-      scrollRef.current.addEventListener('wheel', handleMoveSize);
-    }
-    return () => {
-      if (scrollRef.current) {
-        scrollRef.current.removeEventListener('wheel', handleMoveSize);
-      }
-    };
+    // if (isMac) return;
+    // const handleMoveSize = (e: WheelEvent) => {
+    //   e.preventDefault();
+    //   if (scrollRef.current) {
+    //     scrollRef.current.scrollLeft += e.deltaY;
+    //   }
+    // };
+    // if (scrollRef.current) {
+    //   scrollRef.current.addEventListener('wheel', handleMoveSize);
+    // }
+    // return () => {
+    //   if (scrollRef.current) {
+    //     scrollRef.current.removeEventListener('wheel', handleMoveSize);
+    //   }
+    // };
   }, []);
   return (
     <MacScrollbar

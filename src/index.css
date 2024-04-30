@@ -41,4 +41,7 @@
   .ant-table-content {
     overflow: unset !important;
   }
+  .ant-table-body {
+    overflow: unset !important;
+  }
 }
