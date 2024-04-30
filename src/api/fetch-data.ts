@@ -18,7 +18,7 @@ export const fetchData = async <TData, TParams = null>(
   };
 
   // 拼接地址
-  url = `http://maiku.npaas.cn/s/api/${url}`;
+  url = `${import.meta.env.VITE_API_URL}/${url}`;
   // GET请求参数放地址上
   // 其他请求参数放body上
   if (init.method === 'GET') {
