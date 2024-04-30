@@ -147,6 +147,7 @@ const TableMain = (props: TableMainProps) => {
           <Table
             className="antd_close_overflow_auto"
             size="small"
+            virtual
             columns={
               columns
                 .filter((col) => col.isVisible)
