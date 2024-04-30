@@ -5,9 +5,11 @@ import IconMin from '@img/minimize.svg?react';
 import IconRestore from '@img/restore.svg?react';
 import pkg from '/package.json';
 import Space from '../space';
-import { useI18nConfig, isMacFunc } from '@common';
+import { useI18nConfig, isMacFunc, Constants } from '@common';
+import { useLocalStorage } from '@darwish/hooks-core';
 
 export default function Wrapper(props: React.PropsWithChildren<object>) {
+  const [windowClose, setWindowClose] = useLocalStorage<string>(Constants.LOCAL_WINDOW_CLOSE, '');
   const [isWinMax, setWinMax] = useState(false);
   const [title] = useI18nConfig('config.basic.project_name');
   const isMac = isMacFunc();
@@ -29,7 +31,7 @@ export default function Wrapper(props: React.PropsWithChildren<object>) {
   };
 
   const handleClose = () => {
-    window.ipcRenderer.invoke('window:state', 'close');
+    const res = window.ipcRenderer.invoke('window:state', 'close', windowClose);
   };
 
   const MaxIconComponent = isWinMax ? IconRestore : IconMax;

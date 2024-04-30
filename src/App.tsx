@@ -18,6 +18,7 @@ const ReactQueryDevtoolsProduction = React.lazy(() =>
 
 const App = (props: PropsWithChildren<object>) => {
   const [showDevtools, setShowDevtools] = React.useState(false);
+  // const
   const [, setLang] = useI18nConfig();
   const isMac = isMacFunc();
 

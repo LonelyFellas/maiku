@@ -12,13 +12,12 @@ interface CreateListenerOptions {
 }
 
 export default function createListener(options: CreateListenerOptions) {
-
   const { store } = options;
   ipcMain.handle('window:platform', async () => {
     return process.platform;
   });
   /** 处理windows的窗口的状态按钮 */
-  ipcMain.handle('window:state', async (event, channel) => {
+  ipcMain.handle('window:state', async (event, channel, windowClose) => {
     const window = BrowserWindow.getFocusedWindow();
     if (channel === 'minimize') {
       window?.minimize();
@@ -31,6 +30,7 @@ export default function createListener(options: CreateListenerOptions) {
 
       // 当窗口关闭时，弹出提示框询问用户是否最小化到托盘或关闭窗口
       if (windowCloseVal === '') {
+        console.log("windowClose: ", windowClose)
         const dialogRes = await dialog.showMessageBox({
           type: 'question',
           message: '你点击关闭按钮，你确定：',
