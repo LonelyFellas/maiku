@@ -30,33 +30,41 @@ export default function createListener(options: CreateListenerOptions) {
 
       // 当窗口关闭时，弹出提示框询问用户是否最小化到托盘或关闭窗口
       if (windowCloseVal === '') {
-        console.log("windowClose: ", windowClose)
-        const dialogRes = await dialog.showMessageBox({
-          type: 'question',
-          message: '你点击关闭按钮，你确定：',
-          buttons: ['最小化到托盘', '关闭窗口', '取消'],
-          checkboxLabel: '记住我的选择',
-          checkboxChecked: false,
-          cancelId: -1, // 取消按钮的索引
-        });
-        // 没有点击‘记住我的选择’时，根据用户的选择执行相应的操作
-        // 当用户点击了‘记住我的选择’时，将选择保存到本地存储
-        // 当前是最小化到托盘
-        if (dialogRes.response === 0) {
-          if (dialogRes.checkboxChecked) {
-            store.set('window_close', 'minimize');
-          }
+        const minimizeToTray = () => {
           const mainWindow = BrowserWindow.fromWebContents(event.sender);
-          console.log('mainWindow hide');
           mainWindow?.hide();
         }
-        // 当前是关闭窗口
-        if (dialogRes.response === 1) {
-          if (dialogRes.checkboxChecked) {
-            store.set('window_close', 'close');
-          }
+        const closeWindow = () => {
           app.quit();
         }
+        // 判断窗口是否记住了选择了，如果记住选择了，则不弹出提示框 直接执行记住的操作
+        if (windowClose === '') {
+          const dialogRes = await dialog.showMessageBox({
+            type: 'question',
+            message: '你点击关闭按钮，你确定：',
+            buttons: ['最小化到托盘', '关闭窗口', '取消'],
+            checkboxLabel: '记住我的选择',
+            checkboxChecked: false,
+            cancelId: -1, // 取消按钮的索引
+          });
+          // 没有点击‘记住我的选择’时，根据用户的选择执行相应的操作
+          // 当用户点击了‘记住我的选择’时，将选择保存到本地存储
+          // 当前是最小化到托盘
+          if (dialogRes.response === 0) {
+            minimizeToTray();
+          }
+          // 当前是关闭窗口
+          if (dialogRes.response === 1) {
+            closeWindow();
+          }
+          return dialogRes;
+        } else if (windowClose === 'minimizeToTray') {
+          minimizeToTray();
+        } else {
+          closeWindow();
+        }
+
+
       }
     }
     return window?.isMaximized();

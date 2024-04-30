@@ -30,8 +30,15 @@ export default function Wrapper(props: React.PropsWithChildren<object>) {
     setWinMax(isWinMaximized);
   };
 
-  const handleClose = () => {
-    const res = window.ipcRenderer.invoke('window:state', 'close', windowClose);
+  const handleClose = async () => {
+    const res = await window.ipcRenderer.invoke('window:state', 'close', windowClose);
+    /**
+     * repsonse: 1 最小化托盘
+     * response: 2 关闭窗口
+     */
+    if (res.checkboxChecked === true && res.response !== 2) {
+      setWindowClose(res.response === 0 ? 'minimizeToTray': 'close');
+    }
   };
 
   const MaxIconComponent = isWinMax ? IconRestore : IconMax;
