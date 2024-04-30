@@ -1,5 +1,6 @@
+import { MacScrollbar } from 'mac-scrollbar';
 import { useEffect, useRef } from 'react';
-import { isMacFunc, ScrollBar } from '@common';
+import { isMacFunc } from '@common';
 
 interface HorizontalScrollbarProps {
   className: string;
@@ -33,13 +34,13 @@ const HorizontalScrollbar = (
     };
   }, []);
   return (
-    <ScrollBar
+    <MacScrollbar
       suppressAutoHide={false}
-      {...isMac ? {} : { ref: scrollRef }}
+      ref={scrollRef}
       className={props.className}
     >
       {props.children}
-    </ScrollBar>
+    </MacScrollbar>
   );
 };
 export default HorizontalScrollbar;
