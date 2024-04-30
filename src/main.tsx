@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom/client';
-import { ConfigProvider } from 'antd';
-import { I18nConfigContextProvider } from '@common';
+import { ConfigProvider, message } from 'antd';
+import { I18nConfigContextProvider, isMacFunc } from '@common';
 import { router } from '@/routes';
 import "./index.css"
 import {
@@ -9,7 +9,11 @@ import {
 
 
 
+const isMac = isMacFunc();
 window.env = import.meta.env;
+message.config({
+  top: !isMac ? 28 : 8
+})
 const rootElement = document.getElementById('app')!;
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);

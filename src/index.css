@@ -3,6 +3,11 @@
 @tailwind utilities;
 
 @layer {
+  .windows_msg {
+    .ant-message-top {
+      top: 18px !important;
+    }
+  }
   .drag {
     -webkit-app-region: drag;
   }
