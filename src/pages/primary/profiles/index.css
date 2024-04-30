@@ -4,6 +4,15 @@
         padding: 0 !important;
     }
 
+    .ant-collapse-extra {
+        height: 2.5rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-right: 0.8rem;
+        background: rgba(211, 227, 253);
+    }
+
     .ant-collapse-expand-icon {
         height: 2.5rem !important;
         width: 2.5rem;

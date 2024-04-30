@@ -83,8 +83,10 @@ export default function createListener(options: CreateListenerOptions) {
     });
   });
   /** 启动scrcpy **/
-  ipcMain.on('startScrcpy', (event, id: string) => {
-    const scrcpyProcess = exec(`scrcpy -s ${id}`, (error, stdout, stderr) => {
+  ipcMain.on('startScrcpy', (event, deviceId: string) => {
+    const command = deviceId ? `scrcpy -s ${deviceId}` : 'scrcpy';
+    
+    const scrcpyProcess = exec(command, (error, stdout, stderr) => {
       if (error) {
         console.error(`exec error: ${error}`);
         event.reply('error', `exec error: ${error}`);

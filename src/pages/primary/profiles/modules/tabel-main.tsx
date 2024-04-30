@@ -7,15 +7,17 @@ import {
   Table,
   TableColumnsType,
 } from 'antd';
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useRef, useState } from 'react';
 import {
   operationItems,
 } from '@/pages/primary/profiles/config';
 import { HorizontalScrollbar } from '@common';
+import { useScroll } from '@darwish/hooks-core';
 // import { DataType, TableContext } from '@/pages/primary/profiles copy';
 export const TableContext = createContext<{ deviceId: string }>({
   deviceId: '-1',
 });
+
 export interface DataType {
   key: 1;
   num: React.Key;
@@ -28,85 +30,77 @@ export interface DataType {
   lastOpenTime: string;
   createTime: string;
   isVisble?: boolean;
+  operation: string;
 }
 
-const TableMain = () => {
-  // const [] = useState(false);
-  const [id, ] = useState('-1');
-  // const handleTriggerModal = () => {
-  //   setOpenModal(true);
-  // };
-  const handleStartScrcpy = () => {
-    window.ipcRenderer.send('startScrcpy');
+interface TableMainProps {
+  deviceId: string;
+}
+
+const TableMain = (props: TableMainProps) => {
+  const scrollRef = useRef<React.ElementRef<'div'>>(null);
+  const { deviceId } = props;
+  console.log(deviceId, '222');
+
+  const handleStartScrcpy = (id: string) => {
+    window.ipcRenderer.send('startScrcpy', id);
   };
 
-  useEffect(() => {
-    // window.adbApi
-    //   .connect('192.168.1.2')
-    //   .then((id: string) => {
-    //     if (window.env.DEV) {
-    //       message.success(`adb: ${id}连接成功`);
-    //     }
-    //     setId(id);
-    //   })
-    //   .catch((error: Error) => {
-    //     message.error(error.toString());
-    //   });
-  }, []);
-  const [columns, ] = useState(() => {
+
+  const [columns] = useState(() => {
     const defaultColumns = [
       {
         title: '#',
-        width: 200,
+        width: 80,
         dataIndex: 'num',
         key: 'num',
       },
       {
         title: '类别',
-        width: 200,
+        width: 120,
         dataIndex: 'category',
         key: 'category',
       },
       {
         title: '序号',
-        width: 200,
+        width: 80,
         dataIndex: 'index',
         key: 'index',
       },
       {
         title: '名称',
-        width: 200,
+        width: 80,
         dataIndex: 'name',
         key: 'name',
       },
       {
         title: '设备信息',
-        width: 200,
+        width: 80,
         dataIndex: 'deviceInfo',
         key: 'deviceInfo',
       },
       {
         title: '备注',
-        width: 200,
+        width: 80,
         dataIndex: 'remark',
         key: 'remark',
       },
       {
         title: '标签',
-        width: 200,
+        width: 80,
         dataIndex: 'tags',
         key: 'tags',
       },
       {
         title: '最近打开',
-        width: 200,
+        width: 80,
         dataIndex: 'lastOpenTime',
         key: 'lastOpenTime',
       },
       {
         title: '创建时间',
         dataIndex: 'createTime',
-        width: 200,
+        width: 80,
         key: 'createTime',
       },
       {
@@ -117,11 +111,11 @@ const TableMain = () => {
         ),
         dataIndex: 'operation',
         fixed: 'right',
-        width: 250,
+        width: 230,
         key: 'operation',
-        render: () => (
+        render: (id: string) => (
           <Space>
-            <Button type="primary" onClick={handleStartScrcpy}>
+            <Button size="small" type="primary" onClick={() => handleStartScrcpy(id)}>
               启动
             </Button>
             <Button type="text" size="small">
@@ -140,29 +134,31 @@ const TableMain = () => {
     ];
     return defaultColumns.map((col) => ({ ...col, isVisible: true }));
   });
+  if (scrollRef.current) {
+
+    console.log('1111: ', scrollRef.current.clientHeight);
+  }
+  const scrollY = scrollRef.current && scrollRef.current.clientHeight ? scrollRef.current.clientHeight - 71 : 300;
+  console.log(scrollY);
   return (
-    <HorizontalScrollbar className="w-full h-full flex-1 bg-white rounded-md overflow-y-auto">
-      <TableContext.Provider value={{ deviceId: id }}>
-        <Table
-          className="antd_close_overflow_auto"
-          columns={
-            columns
-              .filter((col) => col.isVisible)
-              .map((col) => ({
-                ...col,
-                ellipsis: true,
-              })) as TableColumnsType<DataType>
-          }
-          pagination={false}
-          // expandable={{
-          //   expandedRowRender: () => <ExpandedRowRender />,
-          //   rowExpandable: (record) => record.name !== 'Not Expandable',
-          //   defaultExpandAllRows: true,
-          // }}
-          dataSource={[
-            {
-              key: 1,
-              num: '1',
+    <div ref={scrollRef} className="h-full">
+      <HorizontalScrollbar className="w-full h-full flex-1 bg-white rounded-md overflow-x-auto overflow-y-hidden">
+        <TableContext.Provider value={{ deviceId }}>
+          <Table
+            className="antd_close_overflow_auto"
+            size="small"
+            columns={
+              columns
+                .filter((col) => col.isVisible)
+                .map((col) => ({
+                  ...col,
+                  ellipsis: true,
+                })) as TableColumnsType<DataType>
+            }
+            pagination={false}
+            dataSource={[...new Array(40).keys()].map((item, index) => ({
+              key: index,
+              num: item,
               category: '云手机环境',
               index: 1,
               name: '云手机1',
@@ -171,19 +167,20 @@ const TableMain = () => {
               tags: '标签',
               lastOpenTime: '最近打开',
               createTime: '创建时间',
-            },
-          ]}
-          scroll={{ x: columns.length * 150 }}
+              operation: deviceId,
+            }))}
+            scroll={{ y: scrollY, x: columns.reduce((acc, even) => acc + even.width, 0) }}
+          />
+        </TableContext.Provider>
+        <Pagination
+          className="absolute bottom-[20px] right-8"
+          total={85}
+          showTotal={(total) => `共 ${total} 条数据`}
+          defaultPageSize={20}
+          defaultCurrent={1}
         />
-      </TableContext.Provider>
-      <Pagination
-        className="absolute bottom-[30px] right-8 "
-        total={85}
-        showTotal={(total) => `共 ${total} 条数据`}
-        defaultPageSize={20}
-        defaultCurrent={1}
-      />
-    </HorizontalScrollbar>
+      </HorizontalScrollbar>
+    </div>
   );
 };
 export default TableMain;

@@ -1,7 +1,6 @@
-import { DetailCollapse } from '@common';
+import { DetailCollapse, ScrollBar } from '@common';
 import { Button, Form, Input, Space, Modal, Divider } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { MacScrollbar } from 'mac-scrollbar';
 import { useRouter } from '@tanstack/react-router';
 
 export default function NewProfiles() {
@@ -24,7 +23,7 @@ export default function NewProfiles() {
   return (
     <div className="pt-4 h-full">
       <div className="flex flex-col h-full bg-white rounded-md p-4">
-        <MacScrollbar className="flex-1">
+        <ScrollBar className="flex-1 overflow-y-auto">
           <Form labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
             <h1 className="font-bold border-b-[1px] pl-3 py-1 rounded-sm mb-6">
               基础信息:
@@ -32,10 +31,8 @@ export default function NewProfiles() {
             <Form.Item label="环境名称">
               <Input placeholder="请输入环境名称" style={inputStyle} />
             </Form.Item>
-            {/*<h1 className={titleStyle}>云手机信息:</h1>*/}
-
             <DetailCollapse>
-              <DetailCollapse.Panel header="云手机代理" key="1">
+              <DetailCollapse.Panel header="云手机代理:" key="1">
                 <Form.Item label="安卓镜像版本">
                   <Input placeholder="请输入安卓镜像版本" style={inputStyle} />
                 </Form.Item>
@@ -51,7 +48,7 @@ export default function NewProfiles() {
               </DetailCollapse.Panel>
             </DetailCollapse>
             <DetailCollapse>
-              <DetailCollapse.Panel header="VPC代理" key="1">
+              <DetailCollapse.Panel header="VPC代理:" key="1">
                 <Form.Item label="服务器地址">
                   <Input placeholder="请输入服务器地址" style={inputStyle} />
                 </Form.Item>
@@ -67,7 +64,7 @@ export default function NewProfiles() {
               </DetailCollapse.Panel>
             </DetailCollapse>
           </Form>
-        </MacScrollbar>
+        </ScrollBar>
         <Divider className="mt-0 my-4" />
         <Space>
           <Button onClick={handleCancel}>取消</Button>

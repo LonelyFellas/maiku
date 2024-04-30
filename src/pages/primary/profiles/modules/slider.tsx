@@ -2,17 +2,27 @@ import { MacScrollbar } from 'mac-scrollbar';
 import { Button, Collapse, Flex } from 'antd';
 import phone from '@img/phone-test.png';
 import '../index.css';
+import { cn, toNumber } from '@common';
+import { isArray } from '@darwish/utils-is';
+import { LeftOutlined } from '@ant-design/icons';
+import { useState } from 'react';
 
 interface SliderProps {
   list: { order: number, name: string, path: string }[];
-  currenIndex: number;
-  setCurrentIndex: ReactFCWithChildren<number>;
+  currentIndex: number;
+  setCurrentIndex: ReactAction<number>;
 }
 
 const Slider = (props: SliderProps) => {
-  const {list} = props;
+  const [collapse, setCollapse] = useState([`${props.currentIndex}`]);
+  const { list, currentIndex, setCurrentIndex } = props;
   const handleChange = (indexStr: string | string[]) => {
-
+    if (isArray(indexStr)) {
+      if (indexStr.length) {
+        setCurrentIndex(toNumber(indexStr[0]));
+      }
+      setCollapse(indexStr);
+    }
   };
   return (
     <MacScrollbar
@@ -25,15 +35,19 @@ const Slider = (props: SliderProps) => {
       <Collapse
         className="profiles-slider-collapse flex flex-col items-center"
         accordion
+        expandIcon={() => <></>}
         bordered={false}
+        defaultActiveKey={[`${currentIndex}`]}
         onChange={handleChange}
       >
-        {list.map((item) => (
+        {list.map((item, index) => (
           <Collapse.Panel
-            // showArrow={false}
+            extra={<LeftOutlined className={cn('transition-all', {
+              '-rotate-90': collapse[0] === index.toString(),
+            })} />}
             header={
-              <div className="flex items-center w-full pl-4 text-md h-10 bg-bg_primary select-none">
-                <span>{item.name}</span>
+              <div className="flex items-center w-full text-md h-10 bg-bg_primary select-none">
+                <span className="relative -left-4">{item.name}</span>
               </div>
             }
             key={item.order}
@@ -41,11 +55,10 @@ const Slider = (props: SliderProps) => {
           >
             <div className="flex flex-col items-center">
               <img src={phone} className="rounded-[32px] h-[400px]" />
-              <Flex className="my-2">
-                <Button size="small">功能1</Button>
-                <Button size="small">功能2</Button>
-                <Button size="small">功能3</Button>
-                <Button size="small">功能4</Button>
+              <Flex className="my-2" gap={10}>
+                <Button size="small">修改</Button>
+                <Button size="small">切换代理</Button>
+                <Button size="small">更多</Button>
               </Flex>
             </div>
           </Collapse.Panel>

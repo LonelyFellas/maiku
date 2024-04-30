@@ -10,21 +10,20 @@ const list = [
 ];
 export default function Profiles() {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const result = useQueries({
+  useQueries({
     queries: list.map((li) => ({
       queryKey: ['connect adb', li.order],
       queryFn: () => window.adbApi.connect(li.path),
       staleTime: Infinity,
     })),
   });
-  console.log(result);
 
   return (
     <div className="mt-4 h-full pb-4 overflow-hidden">
       <div className="flex gap-2 bg-white h-full rounded-md p-2 overflow-hidden">
         <Slider {...{ list, currentIndex, setCurrentIndex }} />
         <div className="flex-1 overflow-hidden">
-          <TableMain list={list} />
+          <TableMain deviceId={list[currentIndex].path} />
         </div>
       </div>
     </div>
