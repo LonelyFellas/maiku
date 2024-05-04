@@ -21,7 +21,7 @@ const Login = (props: LoginProps) => {
   const [, setToken] = useLocalStorage<string>(Constants.LOCAL_TOKEN, '');
   const [userInfo, setUserInfo] = useLocalStorage<FormValues | null>(
     Constants.LOCAL_LOGIN_INFO,
-    null
+    null,
   );
   const setTagTitle = useTagTitle((state) => state.setTagTitle);
 
@@ -41,7 +41,6 @@ const Login = (props: LoginProps) => {
           title: '环境管理',
           url: '/layout/profiles',
         });
-        navigate({ to: '/layout/profiles' });
       }
     },
   });
@@ -49,6 +48,7 @@ const Login = (props: LoginProps) => {
 
   const onFinish = (values: FormValues) => {
     mutate({ username: values.username, password: values.password });
+    navigate({ to: '/layout/profiles' });
   };
 
   return (
@@ -104,7 +104,7 @@ const Login = (props: LoginProps) => {
         </Form.Item>
         <Form.Item name="remember" valuePropName="checked">
           <Flex justify="space-between">
-            <Checkbox defaultChecked={userInfo && userInfo.remember ? true : false}>
+            <Checkbox defaultChecked={!!userInfo && userInfo.remember}>
               {lang?.option_remember_me}
             </Checkbox>
             <span

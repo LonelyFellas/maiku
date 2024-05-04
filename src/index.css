@@ -36,14 +36,3 @@
 .form .ant-form-item {
     margin-bottom: 0px;
 }
-
-/* 主要是位置控制antd-table组件的滚动条样式 */
-.antd_close_overflow_auto {
-    /*.ant-table-content {*/
-    /*    overflow: unset !important;*/
-    /*}*/
-
-    /*.ant-table-body {*/
-    /*    overflow: unset !important;*/
-    /*}*/
-}
