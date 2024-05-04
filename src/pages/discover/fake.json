@@ -1,0 +1,14 @@
+[
+  {
+    "key": "1234567890",
+    "order": 1,
+    "proxyInfo": "http://38.150.119.67:2333",
+    "proxyType": "http",
+    "outIp": "38.150.119.67",
+    "time": "2024-04-18 12:02:01",
+    "queryChannel": "IP2Location",
+    "remark": "111",
+    "cloudPhoneEnvNum": "1",
+    "browserEnvNum": "2"
+  }
+]

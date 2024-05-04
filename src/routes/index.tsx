@@ -1,10 +1,11 @@
 import { createHashHistory, createRootRoute, createRoute, createRouter, Outlet } from '@tanstack/react-router';
 import App from '@/App.tsx';
-import { Wrapper } from '@common';
+import { ErrorComponent } from '@common';
 import Login from '@/pages/login';
 import Layout from '@/pages/layout';
 import Profiles from '@/pages/primary/profiles';
 import NewProfiles from '@/pages/primary/profiles/new-profiles.tsx';
+import Proxy from '@/pages/discover/proxy';
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -14,11 +15,7 @@ const rootRoute = createRootRoute({
       </div>
     </App>
   ),
-  errorComponent: () => (
-    <Wrapper>
-      <div>数据发生了错误，请稍后再试或重启应用！</div>
-    </Wrapper>
-  ),
+  errorComponent: ErrorComponent,
 });
 /** 主页 */
 const indexRoute = createRoute({
@@ -46,9 +43,16 @@ const profiles = createRoute({
   getParentRoute: () => layoutRoute,
   path: '/profiles',
   component: Profiles,
-  meta: () => [{title: '环境管理'}]
-
+  meta: () => [{ title: '环境管理' }],
 });
+/** 代理管理 */
+const proxy = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/proxy',
+  component: Proxy,
+  meta: () => [{ title: '代理管理' }],
+});
+
 /** 新建环境 */
 const newProfiles = createRoute({
   getParentRoute: () => layoutRoute,
@@ -56,17 +60,17 @@ const newProfiles = createRoute({
   component: NewProfiles,
   meta: () => [{
     title: '新建环境',
-    isBack: true
-  }]
-  // meta: {
-  //   title: "新建环境",
-  //   isBack: false
-  // }
+    isBack: true,
+  }],
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, loginRoute, layoutRoute.addChildren([profiles, newProfiles])]);
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  loginRoute,
+  layoutRoute.addChildren([profiles, newProfiles, proxy]),
+]);
 
-export const router = createRouter({ routeTree, history: createHashHistory()});
+export const router = createRouter({ routeTree, history: createHashHistory() });
 declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router;

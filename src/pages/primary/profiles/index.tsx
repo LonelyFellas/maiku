@@ -19,12 +19,10 @@ export default function Profiles() {
   });
 
   return (
-    <div className="mt-4 h-full pb-4 overflow-hidden">
-      <div className="flex gap-2 bg-white h-full rounded-md p-2 overflow-hidden">
-        <Slider {...{ list, currentIndex, setCurrentIndex }} />
-        <div className="flex-1 overflow-hidden">
-          <TableMain deviceId={list[currentIndex].path} />
-        </div>
+    <div className="flex gap-2 h-full rounded-md p-2 overflow-hidden">
+      <Slider {...{ list, currentIndex, setCurrentIndex }} />
+      <div className="flex-1 overflow-hidden">
+        <TableMain deviceId={list[currentIndex].path} />
       </div>
     </div>
   );

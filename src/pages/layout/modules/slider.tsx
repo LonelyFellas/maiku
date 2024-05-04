@@ -1,4 +1,5 @@
-import { Button, Menu, Tooltip } from 'antd';
+import { useEffect, useState } from 'react';
+import { Button, Menu, MenuProps, Tooltip } from 'antd';
 import { useLocalStorage } from '@darwish/hooks-core';
 import { MacScrollbar } from 'mac-scrollbar/src';
 import {
@@ -18,20 +19,27 @@ import { getItem } from './profile-center';
 import type { ItemType, MenuItemType } from 'antd/es/menu/hooks/useItems';
 import '@sty/button.css';
 import '../style.less';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, useRouter } from '@tanstack/react-router';
 
+const MENU_MAP = {
+  '/layout/profiles': ['primary', 'profiles'],
+  '/layout/proxy': ['discover', 'proxy'],
+};
 const Slider = () => {
   const [lang] = useI18nConfig('config.layout.slider');
   const navigate = useNavigate();
+  const { pathname } = useRouter().latestLocation;
+  const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
   const items: ItemType<MenuItemType>[] = [
-    getItem(lang.menu_list.primary.name, '1', <MailOutlined />, [
-      getItem(lang.menu_list.primary.children[0].name, '1-1', <MailOutlined />),
+    getItem(lang.menu_list.primary.name, 'primary', <MailOutlined />, [
+      getItem(lang.menu_list.primary.children[0].name, 'profiles', <MailOutlined />),
       getItem(lang.menu_list.primary.children[1].name, '1-2', <MailOutlined />),
     ]),
-    getItem(lang.menu_list.discover.name, '2', <CalendarOutlined />, [
+    getItem(lang.menu_list.discover.name, 'discover', <CalendarOutlined />, [
       getItem(
         lang.menu_list.discover.children[0].name,
-        '2-1',
+        'proxy',
         <AppstoreOutlined />,
       ),
       getItem(
@@ -83,6 +91,17 @@ const Slider = () => {
   const isMac = isMacFunc();
   const [collapsed, setCollapsed] = useLocalStorage('slider_collapsed', false);
 
+  useEffect(() => {
+    try {
+      const mapValue = MENU_MAP[pathname as keyof typeof MENU_MAP];
+      setSelectedKeys([mapValue[1]]);
+      setOpenKeys(prev => (Array.from(new Set([...prev, mapValue[0]]))));
+    } catch (error) {
+      setSelectedKeys(['profiles']);
+      setOpenKeys(['primary']);
+    }
+  }, [pathname]);
+  console.log('selectedKeys', selectedKeys);
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
   };
@@ -92,8 +111,11 @@ const Slider = () => {
   const handleGoToNewProfiles = () => {
     navigate({ to: '/layout/new_profiles' });
   };
-  const handleMenuClick = (props: unknown) => {
-    console.log('click', props);
+  const handleMenuSelected: MenuProps['onSelect'] = (props) => {
+    navigate({ to: `/layout/${props.key}` });
+  };
+  const handleOpenChange = (keys: string[]) => {
+    setOpenKeys(keys);
   };
   return (
     <div
@@ -156,13 +178,13 @@ const Slider = () => {
       <MacScrollbar className="flex-1 mt-3 w-full">
         <Menu
           className="h-full w-full bg-bg_primary transition-all"
-          defaultSelectedKeys={collapsed ? [] : ['1-1']}
-          defaultOpenKeys={collapsed ? [] : ['1']}
+          defaultSelectedKeys={collapsed ? [] : ['profiles']}
+          defaultOpenKeys={collapsed ? [] : ['primary']}
+          selectedKeys={selectedKeys}
+          openKeys={openKeys}
           inlineCollapsed={collapsed}
-          onClick={handleMenuClick}
-          onSelect={(info) => {
-            console.log('selected', info);
-          }}
+          onSelect={handleMenuSelected}
+          onOpenChange={handleOpenChange}
           inlineIndent={10}
           items={items}
           mode="inline"

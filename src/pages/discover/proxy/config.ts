@@ -1,0 +1,33 @@
+export const columns = [{
+  title: '代理信息',
+  dataIndex: 'proxyInfo',
+  key: 'proxyInfo',
+}, {
+  title: '代理类型',
+  dataIndex: 'proxyType',
+  key: 'proxyType',
+}, {
+  title: '出口IP',
+  dataIndex: 'outIP',
+  key: 'outIp',
+}, {
+  title: '序号',
+  dataIndex: 'order',
+  key: 'order',
+}, {
+  title: 'ip查询渠道',
+  dataIndex: 'queryChannel',
+  key: 'queryChannel',
+}, {
+  title: '备注',
+  dataIndex: 'remark',
+  key: 'remark',
+}, {
+  title: '云手机环境数',
+  dataIndex: 'cloudPhoneEnvNum',
+  key: 'cloudPhoneEnvNum',
+}, {
+  title: '浏览器环境数',
+  dataIndex: 'browserEnvNum',
+  key: 'browserEnvNum',
+}];

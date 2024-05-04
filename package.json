@@ -5,12 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "redev": "npm run dev",
     "build": "tsc && vite build && electron-builder",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
     "@darwish/hooks-core": "^0.0.13",
+    "@darwish/scrollbar-react": "^0.0.5",
     "@darwish/utils-dlv": "^1.0.1",
     "@darwish/utils-is": "^0.0.3",
     "@devicefarmer/adbkit": "^3.2.6",

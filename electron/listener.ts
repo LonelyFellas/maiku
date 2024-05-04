@@ -1,9 +1,10 @@
 import { BrowserWindow, dialog, ipcMain, app } from 'electron';
 import type Store from 'electron-store';
 import share from './utils/share';
-import { exec } from 'node:child_process';
+import { exec, spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+
 
 interface CreateListenerOptions {
   store: Store<{
@@ -85,7 +86,7 @@ export default function createListener(options: CreateListenerOptions) {
   /** 启动scrcpy **/
   ipcMain.on('startScrcpy', (event, deviceId: string) => {
     const command = deviceId ? `scrcpy -s ${deviceId}` : 'scrcpy';
-    
+
     const scrcpyProcess = exec(command, (error, stdout, stderr) => {
       if (error) {
         console.error(`exec error: ${error}`);
@@ -98,6 +99,19 @@ export default function createListener(options: CreateListenerOptions) {
     scrcpyProcess.on('exit', (code) => {
       console.log(`scrcpy exited with code ${code}`);
     });
+  });
+  /** 关闭和重启 */
+  ipcMain.on('app:operate', (_, operation) => {
+    if (operation === 'close') {
+      app.quit();
+    } else if (operation === 'restart') {
+      if (app.isPackaged) {
+        app.relaunch({ args: process.argv.slice(1).concat(['--relaunched']) });
+        app.quit();
+      } else {
+
+      }
+    }
   });
   /** 打开文件框，选择文件，处理文件，拿到文件名和文件大小，返回给renderer **/
   ipcMain.handle('dialog:open', async (_, option) => {

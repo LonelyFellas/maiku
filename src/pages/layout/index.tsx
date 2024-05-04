@@ -13,6 +13,11 @@ export default function Layout() {
     <ConfigProvider
       locale={lang.lang === '简体中文' ? zhCN : enUS}
       theme={{
+        components: {
+          Table: {
+            headerBg: '#d3e3fd',
+          },
+        },
         token: {
           colorPrimary: '#1e4dff',
         },
