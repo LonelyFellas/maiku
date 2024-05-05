@@ -146,6 +146,7 @@ const Slider = () => {
             objectFit: 'fill',
           }}
           src="https://avatars.githubusercontent.com/u/38754760?v=4"
+          alt="add-profile-icon"
         />
         <span
           className="text-black font-bold text-xl"
