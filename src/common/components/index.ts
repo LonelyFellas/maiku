@@ -8,3 +8,4 @@ export { default as Table } from './table';
 export { default as TriggerModal } from './trigger-modal';
 export { default as ContainerWithEmpty } from './container-with-empty';
 export { default as TableCustomRow } from './table-custom-row';
+export { default as Modal } from './modal';
