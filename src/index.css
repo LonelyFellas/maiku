@@ -2,37 +2,43 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .mk_divider {
+    @apply border-b-[1px] border-gray-100
+  }
+}
+
 @layer {
-    .windows_msg {
-        .ant-message-top {
-            top: 18px !important;
-        }
+  .windows_msg {
+    .ant-message-top {
+      top: 18px !important;
     }
+  }
 
-    .drag {
-        -webkit-app-region: drag;
-    }
+  .drag {
+    -webkit-app-region: drag;
+  }
 
-    .no_drag {
-        -webkit-app-region: no-drag;
-    }
+  .no_drag {
+    -webkit-app-region: no-drag;
+  }
 
-    .all_flex {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
+  .all_flex {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 
-    .all_flex_col {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
+  .all_flex_col {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 
-    }
+  }
 }
 
 /* 每个form-item的组件的margin-bottom太大，这里把它改成0，手动控制 */
 .form .ant-form-item {
-    margin-bottom: 0px;
+  margin-bottom: 0px;
 }

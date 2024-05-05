@@ -1,11 +1,18 @@
-import { createHashHistory, createRootRoute, createRoute, createRouter, Outlet } from '@tanstack/react-router';
+import {
+  createHashHistory,
+  createRootRoute,
+  createRoute,
+  createRouter,
+  Outlet,
+} from '@tanstack/react-router';
 import App from '@/App.tsx';
 import { ErrorComponent } from '@common';
 import Login from '@/pages/login';
 import Layout from '@/pages/layout';
 import Profiles from '@/pages/primary/profiles';
-import NewProfiles from '@/pages/primary/profiles/new-profiles.tsx';
+import NewProfiles from '@/pages/layout/new-profiles.tsx';
 import Proxy from '@/pages/discover/proxy';
+import UpgradePkg from '@/pages/layout/upgrade-pkg.tsx';
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -58,16 +65,30 @@ const newProfiles = createRoute({
   getParentRoute: () => layoutRoute,
   path: '/new_profiles',
   component: NewProfiles,
-  meta: () => [{
-    title: '新建环境',
-    isBack: true,
-  }],
+  meta: () => [
+    {
+      title: '新建环境',
+      isBack: true,
+    },
+  ],
+});
+/** 升级套餐 */
+const upgradePkg = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/upgrade_pkg',
+  component: UpgradePkg,
+  meta: () => [
+    {
+      title: '升级套餐',
+      isBack: true,
+    },
+  ],
 });
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
-  layoutRoute.addChildren([profiles, newProfiles, proxy]),
+  layoutRoute.addChildren([profiles, newProfiles, proxy, upgradePkg]),
 ]);
 
 export const router = createRouter({ routeTree, history: createHashHistory() });

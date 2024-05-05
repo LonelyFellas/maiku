@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Menu, MenuProps, Tooltip } from 'antd';
+import { useNavigate, useRouter } from '@tanstack/react-router';
 import { useLocalStorage } from '@darwish/hooks-core';
 import { MacScrollbar } from 'mac-scrollbar/src';
 import {
@@ -19,7 +20,6 @@ import { getItem } from './profile-center';
 import type { ItemType, MenuItemType } from 'antd/es/menu/hooks/useItems';
 import '@sty/button.css';
 import '../style.css';
-import { useNavigate, useRouter } from '@tanstack/react-router';
 
 const MENU_MAP = {
   '/layout/profiles': ['primary', 'profiles'],
@@ -96,16 +96,18 @@ const Slider = () => {
   const [collapsed, setCollapsed] = useLocalStorage('slider_collapsed', false);
 
   useEffect(() => {
-    try {
-      const mapValue = MENU_MAP[pathname as keyof typeof MENU_MAP];
-      setSelectedKeys([mapValue[1]]);
-      setOpenKeys((prev) => Array.from(new Set([...prev, mapValue[0]])));
-    } catch (error) {
-      setSelectedKeys(['profiles']);
-      setOpenKeys(['primary']);
+    if (!collapsed) {
+      try {
+        const mapValue = MENU_MAP[pathname as keyof typeof MENU_MAP];
+        setSelectedKeys([mapValue[1]]);
+        setOpenKeys((prev) => Array.from(new Set([...prev, mapValue[0]])));
+      } catch (error) {
+        setSelectedKeys(['profiles']);
+        setOpenKeys(['primary']);
+      }
     }
-  }, [pathname]);
-  console.log('selectedKeys', selectedKeys);
+  }, [pathname, collapsed]);
+
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
   };
@@ -163,7 +165,6 @@ const Slider = () => {
             type="primary"
             style={{ width: collapsed ? '43px' : '180px' }}
             onClick={handleGoToNewProfiles}
-            // style={{ boxShadow: '0px 13px 15px -3px rgba(0,0,0,0.3);' }}
           >
             {collapsed ? '' : lang.new_project}
           </Button>
@@ -202,12 +203,20 @@ export default Slider;
 
 export const SliderFooterUnCollapse = () => {
   const [lang] = useI18nConfig('config.layout.slider');
+  const navigate = useNavigate();
+
+  const handleGoToUpgrade = () => {
+    navigate({ to: '/layout/upgrade_pkg' });
+  };
+
   return (
     <div className="w-full h-[125px] pt-6 pb-2">
       <div className="w-full h-full bg-bg_secondary/50 rounded-lg p-2">
         <div className="flex justify-between items-center">
           <span className="text-bold text-white text-lg">Free</span>
-          <button className="btn_outside">{lang.first_subs}</button>
+          <button className="btn_outside" onClick={handleGoToUpgrade}>
+            {lang.first_subs}
+          </button>
         </div>
         <div className="flex justify-between items-center pr-5 text-sm mt-1 text-[#272f74]">
           <span>{lang.project_quantity}</span>
@@ -224,8 +233,13 @@ export const SliderFooterUnCollapse = () => {
 
 export const SliderFooterCollapse = () => {
   const [lang] = useI18nConfig('config.layout.slider');
+  const navigate = useNavigate();
+  const handleGoToUpgrade = () => {
+    console.log('handleGoToUpgrade');
+    navigate({ to: '/layout/upgrade_pkg' });
+  };
   return (
-    <div className="w-full h-[125px] pt-6">
+    <div className="w-full h-[125px] pt-6 cursor-pointer">
       <Tooltip
         open={true}
         overlayClassName="slider_tooltip"
@@ -236,6 +250,7 @@ export const SliderFooterCollapse = () => {
         <div
           className="btn_outside all_flex w-14 h-14 !bg-bg_primary"
           style={{ borderRadius: '1.2rem' }}
+          onClick={handleGoToUpgrade}
         >
           <GiftOutlined className="text-3xl text-gray-700" />
         </div>

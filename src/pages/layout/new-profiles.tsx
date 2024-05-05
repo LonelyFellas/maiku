@@ -1,8 +1,8 @@
-import { DetailCollapse } from '@common';
 import { Button, Form, Input, Space, Modal, Divider } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { MacScrollbar } from 'mac-scrollbar';
 import { useRouter } from '@tanstack/react-router';
+import { DetailCollapse } from '@common';
 
 export default function NewProfiles() {
   const { history } = useRouter();
