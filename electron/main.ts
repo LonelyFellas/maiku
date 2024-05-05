@@ -39,11 +39,13 @@ let mainWin: BrowserWindow | null = null;
 let loadingWin: BrowserWindow | null = null;
 
 function createLoadingWindow() {
-  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   // 获取屏幕的尺寸
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+
   loadingWin = createBrowserWindow({
     frame: false,
     icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
+    transparent: true,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
@@ -56,13 +58,13 @@ function createLoadingWindow() {
     y: (height - 300) / 2,
   });
 
-  loadingWin.loadFile('public/loading.html');
+
+  loadingWin.loadFile(isProd ? './dist/loading.html' : 'public/loading.html');
 }
 
 function createMainWindow() {
+  // 获取屏幕的尺寸
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-  console.log('width', width);
-  console.log('height', height);
   mainWin = createBrowserWindow({
     frame: isMac,
     show: false,
