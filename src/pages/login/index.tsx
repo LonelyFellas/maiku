@@ -1,5 +1,10 @@
 import { useState } from 'react';
-import { BgWrapper as Wrapper, useI18nConfig, cn } from '@common';
+import {
+  BgWrapper as Wrapper,
+  useI18nConfig,
+  cn,
+  useLoadingDone,
+} from '@common';
 import MainLogin from './modules/login';
 import MainRegister from './modules/register';
 import MainVerify from './modules/verify';
@@ -9,6 +14,7 @@ export interface LoginProps {
 }
 
 export default function Login() {
+  useLoadingDone();
   const [lang] = useI18nConfig('config.login');
   const modulesConfig = {
     login: {

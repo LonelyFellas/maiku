@@ -5,18 +5,21 @@ import { exec } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
-
 interface CreateListenerOptions {
+  loadingWin: BrowserWindow | null;
+  mainWin: BrowserWindow | null;
   store: Store<{
     window_close: string;
+    twoWindowsLoading: {
+      loading: boolean;
+      main: boolean;
+    };
   }>;
 }
 
 export default function createListener(options: CreateListenerOptions) {
-  const { store } = options;
-  ipcMain.handle('window:platform', async () => {
-    return process.platform;
-  });
+  const { store, mainWin, loadingWin } = options;
+
   /** 处理windows的窗口的状态按钮 */
   ipcMain.handle('window:state', async (event, channel, windowClose) => {
     const window = BrowserWindow.getFocusedWindow();
@@ -64,8 +67,6 @@ export default function createListener(options: CreateListenerOptions) {
         } else {
           closeWindow();
         }
-
-
       }
     }
     return window?.isMaximized();
@@ -128,6 +129,7 @@ export default function createListener(options: CreateListenerOptions) {
     }
     return res.filePaths;
   });
+
   /** 保存文件 **/
   ipcMain.on('file:operation', (event, outputPath, type) => {
     if (type === 'save') {

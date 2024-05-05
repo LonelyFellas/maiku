@@ -1,3 +1,7 @@
 {
-  "window_close": ""
+  "window_close": "",
+  "twoWindowsLoading": {
+    "main": false,
+    "loading": false
+  }
 }
