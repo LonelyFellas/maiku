@@ -1,33 +1,41 @@
-export const columns = [{
+export const columns: AntdColumns = [{
   title: '代理信息',
   dataIndex: 'proxyInfo',
   key: 'proxyInfo',
+  width: 200,
 }, {
   title: '代理类型',
   dataIndex: 'proxyType',
   key: 'proxyType',
+  width: 150,
 }, {
   title: '出口IP',
-  dataIndex: 'outIP',
+  dataIndex: 'outIp',
   key: 'outIp',
+  width: 150,
 }, {
   title: '序号',
   dataIndex: 'order',
   key: 'order',
+  width: 150,
 }, {
   title: 'ip查询渠道',
   dataIndex: 'queryChannel',
   key: 'queryChannel',
+  width: 200,
 }, {
   title: '备注',
   dataIndex: 'remark',
   key: 'remark',
+  width: 150,
 }, {
   title: '云手机环境数',
   dataIndex: 'cloudPhoneEnvNum',
   key: 'cloudPhoneEnvNum',
+  width: 150,
 }, {
   title: '浏览器环境数',
   dataIndex: 'browserEnvNum',
   key: 'browserEnvNum',
+  width: 150,
 }];

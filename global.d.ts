@@ -1,5 +1,6 @@
-import React from 'react';
-import { Client } from '@devicefarmer/adbkit';
+import type React from 'react';
+import type { Client } from '@devicefarmer/adbkit';
+import type { ColumnsType } from 'antd/es/table';
 
 declare global {
   interface I18nConfig {
@@ -60,5 +61,7 @@ declare global {
     role: number;
     username: string;
   }
+
+  type AntdColumns<RecordType = Darwish.AnyObj> = ColumnsType<RecordType>;
 }
 export {};

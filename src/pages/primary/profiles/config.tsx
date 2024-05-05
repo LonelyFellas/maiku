@@ -7,6 +7,7 @@ import {
   NotificationOutlined, RestOutlined, ScanOutlined, ScissorOutlined,
   SettingOutlined, StarOutlined, ToolOutlined, VerifiedOutlined,
 } from '@ant-design/icons';
+import type { DataType } from './type.ts';
 
 export const settingItems: MenuProps['items'] = [
   {
@@ -29,54 +30,110 @@ export const operationItems = [
   {
     key: '1',
     label: '切换键',
-    icon: <SettingOutlined />
+    icon: <SettingOutlined />,
   }, {
     key: '2',
     label: '主屏幕',
-    icon: <HomeOutlined />
+    icon: <HomeOutlined />,
   }, {
     key: '3',
     label: '返回键',
-    icon: <BackwardOutlined />
+    icon: <BackwardOutlined />,
   }, {
     key: '4',
     label: '通知栏',
-    icon: <NotificationOutlined />
+    icon: <NotificationOutlined />,
   }, {
-    key:" 5",
+    key: ' 5',
     label: '电源键',
-    icon: <StarOutlined />
+    icon: <StarOutlined />,
   }, {
     key: '6',
     label: '旋转屏幕',
-    icon: <ScanOutlined />
+    icon: <ScanOutlined />,
   }, {
     key: '7',
     label: '音量控制',
-    icon: <VerifiedOutlined />
+    icon: <VerifiedOutlined />,
   }, {
     key: '8',
     label: '截取屏幕',
-    icon: <ScissorOutlined />
+    icon: <ScissorOutlined />,
   }, {
     key: '9',
     label: '重启设备',
-    icon: <RestOutlined />
+    icon: <RestOutlined />,
   }, {
     key: '10',
     label: '安装应用',
-    icon: <DownloadOutlined />
+    icon: <DownloadOutlined />,
   }, {
     key: '11',
     label: '文件管理',
-    icon: <FileAddOutlined />
+    icon: <FileAddOutlined />,
   }, {
     key: '12',
     label: '反向协同',
-    icon: <FileDoneOutlined />
+    icon: <FileDoneOutlined />,
   }, {
     key: '13',
-    label: "多向协同",
-    icon: <ToolOutlined />
-  }
-]
+    label: '多向协同',
+    icon: <ToolOutlined />,
+  },
+];
+export const columns: AntdColumns<DataType> = [
+  {
+    title: '#',
+    width: 45,
+    dataIndex: 'num',
+    key: 'num',
+  },
+  {
+    title: '类别',
+    width: 120,
+    dataIndex: 'category',
+    key: 'category',
+  },
+  {
+    title: '序号',
+    width: 80,
+    dataIndex: 'index',
+    key: 'index',
+  },
+  {
+    title: '名称',
+    width: 80,
+    dataIndex: 'name',
+    key: 'name',
+  },
+  {
+    title: '设备信息',
+    width: 80,
+    dataIndex: 'deviceInfo',
+    key: 'deviceInfo',
+  },
+  {
+    title: '备注',
+    width: 80,
+    dataIndex: 'remark',
+    key: 'remark',
+  },
+  {
+    title: '标签',
+    width: 80,
+    dataIndex: 'tags',
+    key: 'tags',
+  },
+  {
+    title: '最近打开',
+    width: 80,
+    dataIndex: 'lastOpenTime',
+    key: 'lastOpenTime',
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createTime',
+    width: 80,
+    key: 'createTime',
+  },
+];

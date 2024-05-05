@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@darwish/hooks-core": "^0.0.13",
-    "@darwish/scrollbar-react": "^0.0.5",
+    "@darwish/scrollbar-react": "^0.0.6",
     "@darwish/utils-dlv": "^1.0.1",
     "@darwish/utils-is": "^0.0.3",
     "@devicefarmer/adbkit": "^3.2.6",
