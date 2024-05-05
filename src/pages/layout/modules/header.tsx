@@ -17,10 +17,11 @@ const Header = () => {
       // @ts-ignore
       title = matches?.at(-1)?.meta[0].title ?? '环境管理';
       // @ts-ignore
-      isBack = matches?.at(-1).meta[0].isBack ?? false
+      isBack = matches?.at(-1).meta[0].isBack ?? false;
     }
   } catch {
-    throw Error("路由meta的标题没有设置");
+    title = '环境管理';
+    console.error('路由meta的标题没有设置');
   }
 
   const handleBackClick = () => {
@@ -34,11 +35,22 @@ const Header = () => {
         history.go(-1);
       },
     });
-  }
+  };
   return (
     <div className="flex justify-between h-30px ">
       <h1 className="text-xl font-bold">
-        {isBack &&<span> <span onClick={handleBackClick} className='text-sm font-normal text-text_secondary/80 underline underline-offset-4 cursor-pointer hover:text-text_secondary'>返回</span> / </span>}
+        {isBack && (
+          <span>
+            {' '}
+            <span
+              onClick={handleBackClick}
+              className="text-sm font-normal text-text_secondary/80 underline underline-offset-4 cursor-pointer hover:text-text_secondary"
+            >
+              返回
+            </span>{' '}
+            /{' '}
+          </span>
+        )}
         <span>{title}</span>
       </h1>
       <div>

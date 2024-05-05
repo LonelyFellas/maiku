@@ -1,10 +1,11 @@
 import {
   createHashHistory,
-  createRootRoute,
+  createRootRouteWithContext,
   createRoute,
   createRouter,
   Outlet,
 } from '@tanstack/react-router';
+import { QueryClient } from '@tanstack/react-query';
 import App from '@/App.tsx';
 import { ErrorComponent } from '@common';
 import Login from '@/pages/login';
@@ -13,8 +14,11 @@ import Profiles from '@/pages/primary/profiles';
 import NewProfiles from '@/pages/layout/new-profiles.tsx';
 import Proxy from '@/pages/discover/proxy';
 import UpgradePkg from '@/pages/layout/upgrade-pkg.tsx';
+import { postsProxyQueryOptions } from './data.ts';
 
-const rootRoute = createRootRoute({
+const rootRoute = createRootRouteWithContext<{
+  queryClient: QueryClient;
+}>()({
   component: () => (
     <App>
       <div className="h-full bg-gray-100">
@@ -56,6 +60,8 @@ const profiles = createRoute({
 const proxy = createRoute({
   getParentRoute: () => layoutRoute,
   path: '/proxy',
+  loader: ({ context: { queryClient } }) =>
+    queryClient.ensureQueryData(postsProxyQueryOptions),
   component: Proxy,
   meta: () => [{ title: '代理管理' }],
 });
@@ -91,7 +97,14 @@ const routeTree = rootRoute.addChildren([
   layoutRoute.addChildren([profiles, newProfiles, proxy, upgradePkg]),
 ]);
 
-export const router = createRouter({ routeTree, history: createHashHistory() });
+const queryClient = new QueryClient();
+export const router = createRouter({
+  routeTree,
+  history: createHashHistory(),
+  context: {
+    queryClient,
+  },
+});
 declare module '@tanstack/react-router' {
   interface Register {
     router: typeof router;
