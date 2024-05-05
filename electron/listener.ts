@@ -1,7 +1,7 @@
 import { BrowserWindow, dialog, ipcMain, app } from 'electron';
 import type Store from 'electron-store';
 import share from './utils/share';
-import { exec, spawn } from 'node:child_process';
+import { exec } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 

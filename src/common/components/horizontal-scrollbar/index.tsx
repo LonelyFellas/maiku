@@ -1,6 +1,6 @@
 import { MacScrollbar } from 'mac-scrollbar';
 import { useEffect, useRef } from 'react';
-import { isMacFunc } from '@common';
+// import { isMacFunc } from '@common';
 
 interface HorizontalScrollbarProps {
   className: string;
@@ -15,7 +15,7 @@ const HorizontalScrollbar = (
   props: React.PropsWithChildren<HorizontalScrollbarProps>,
 ) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const isMac = isMacFunc();
+  // const isMac = isMacFunc();
   useEffect(() => {
     // if (isMac) return;
     // const handleMoveSize = (e: WheelEvent) => {
