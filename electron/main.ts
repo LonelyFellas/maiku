@@ -39,8 +39,8 @@ let mainWin: BrowserWindow | null = null;
 let loadingWin: BrowserWindow | null = null;
 
 function createLoadingWindow() {
-  // 获取屏幕的尺寸
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  // 获取屏幕的尺寸
   loadingWin = createBrowserWindow({
     frame: false,
     icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
@@ -60,6 +60,9 @@ function createLoadingWindow() {
 }
 
 function createMainWindow() {
+  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  console.log('width', width);
+  console.log('height', height);
   mainWin = createBrowserWindow({
     frame: isMac,
     show: false,
@@ -70,6 +73,8 @@ function createMainWindow() {
       preload: path.join(__dirname, 'preload.mjs'),
       // devTools: !app.isPackaged,
     },
+    x: (width - 1200) / 2,
+    y: (height - 780) / 2,
   });
 
   // Test active push message to Renderer-process.
