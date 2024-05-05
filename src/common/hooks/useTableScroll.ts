@@ -18,7 +18,7 @@ const useTableScroll = <T>(props: TableScrollProps<T>) => {
 
   useEffect(() => {
     if (scrollRef.current) {
-      setScrollY(scrollRef.current.clientHeight);
+      setScrollY(scrollRef.current.clientHeight - 40);
     }
   }, [scrollRef.current, windowHeight]);
 
