@@ -108,8 +108,6 @@ export default function createListener(options: CreateListenerOptions) {
       if (app.isPackaged) {
         app.relaunch({ args: process.argv.slice(1).concat(['--relaunched']) });
         app.quit();
-      } else {
-
       }
     }
   });
