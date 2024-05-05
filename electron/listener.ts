@@ -6,8 +6,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 interface CreateListenerOptions {
-  loadingWin: BrowserWindow | null;
-  mainWin: BrowserWindow | null;
   store: Store<{
     window_close: string;
     twoWindowsLoading: {
@@ -18,7 +16,7 @@ interface CreateListenerOptions {
 }
 
 export default function createListener(options: CreateListenerOptions) {
-  const { store, mainWin, loadingWin } = options;
+  const { store } = options;
 
   /** 处理windows的窗口的状态按钮 */
   ipcMain.handle('window:state', async (event, channel, windowClose) => {

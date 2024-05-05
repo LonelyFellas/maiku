@@ -181,6 +181,4 @@ ipcMain.on('loading:done', (_, type: 'main' | 'loading' = 'main') => {
 // 监听来自渲染器的消息
 createListener({
   store,
-  loadingWin,
-  mainWin,
 });
