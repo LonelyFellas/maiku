@@ -1,7 +1,7 @@
 import { Popover } from 'antd';
 import OptionItem from './option-item';
 import { ArrowUpOutlined } from '@ant-design/icons';
-import '../style.less';
+import '../style.css';
 import { useI18nConfig } from '@common';
 
 const UpdateCenter = () => {

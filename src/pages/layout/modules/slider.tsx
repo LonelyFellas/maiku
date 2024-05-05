@@ -18,7 +18,7 @@ import { useI18nConfig, isMacFunc } from '@common';
 import { getItem } from './profile-center';
 import type { ItemType, MenuItemType } from 'antd/es/menu/hooks/useItems';
 import '@sty/button.css';
-import '../style.less';
+import '../style.css';
 import { useNavigate, useRouter } from '@tanstack/react-router';
 
 const MENU_MAP = {
@@ -33,7 +33,11 @@ const Slider = () => {
   const [openKeys, setOpenKeys] = useState<string[]>([]);
   const items: ItemType<MenuItemType>[] = [
     getItem(lang.menu_list.primary.name, 'primary', <MailOutlined />, [
-      getItem(lang.menu_list.primary.children[0].name, 'profiles', <MailOutlined />),
+      getItem(
+        lang.menu_list.primary.children[0].name,
+        'profiles',
+        <MailOutlined />,
+      ),
       getItem(lang.menu_list.primary.children[1].name, '1-2', <MailOutlined />),
     ]),
     getItem(lang.menu_list.discover.name, 'discover', <CalendarOutlined />, [
@@ -95,7 +99,7 @@ const Slider = () => {
     try {
       const mapValue = MENU_MAP[pathname as keyof typeof MENU_MAP];
       setSelectedKeys([mapValue[1]]);
-      setOpenKeys(prev => (Array.from(new Set([...prev, mapValue[0]]))));
+      setOpenKeys((prev) => Array.from(new Set([...prev, mapValue[0]])));
     } catch (error) {
       setSelectedKeys(['profiles']);
       setOpenKeys(['primary']);
@@ -177,7 +181,7 @@ const Slider = () => {
       </div>
       <MacScrollbar className="flex-1 mt-3 w-full">
         <Menu
-          className="h-full w-full bg-bg_primary transition-all"
+          className="layout-slider-menu h-full w-full bg-bg_primary transition-all"
           defaultSelectedKeys={collapsed ? [] : ['profiles']}
           defaultOpenKeys={collapsed ? [] : ['primary']}
           selectedKeys={selectedKeys}

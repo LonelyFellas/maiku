@@ -1,0 +1,42 @@
+.card_profile {
+    .ant-popover-inner {
+        padding: 0;
+    }
+
+    li {
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    li:last-child {
+        border-bottom: none;
+    }
+
+    li:first-child {
+        cursor: text;
+    }
+
+    li:first-child:hover {
+        background-color: white !important;
+    }
+}
+
+.header_btn {
+    .ant-popover-title {
+        font-size: 18px;
+        color: #2c406c;
+    }
+}
+
+.slider_tooltip {
+    .ant-tooltip-inner {
+        background-color: #faad14;
+    }
+
+    .ant-tooltip-arrow::before {
+        background: #faad14 !important;
+    }
+}
+
+.layout-slider-menu.ant-menu-root {
+    border-inline-end: none !important;
+}

@@ -5,7 +5,7 @@ import {
   LogoutOutlined,
 } from '@ant-design/icons';
 import { Flex, Menu, MenuProps, Popover, Space } from 'antd';
-import '../style.less';
+import '../style.css';
 import { useNavigate } from '@tanstack/react-router';
 import { useI18nConfig } from '@common';
 
