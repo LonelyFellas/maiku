@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { Button, Space, Popconfirm } from 'antd';
+import { Table, TriggerModal } from '@common';
+import EditModal from './modules/edit';
 import { columns as configColumns } from './config';
-import { Table } from '@common';
 
 
 export default function Proxy() {
@@ -12,7 +13,9 @@ export default function Proxy() {
     width: 180,
     fixed: 'right',
     render: () => <Space>
-      <Button type="primary" ghost>编辑</Button>
+      <TriggerModal renderModal={(renderProps) => <EditModal {...renderProps} title="编辑代理" />}>
+        <Button type="primary" ghost>编辑</Button>
+      </TriggerModal>
       <Popconfirm title="确认删除？" onConfirm={() => {
       }} okText="确认" cancelText="取消">
         <Button danger>删除</Button>

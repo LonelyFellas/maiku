@@ -5,3 +5,6 @@ export { default as DetailCollapse } from './detail-collapse';
 export { default as HorizontalScrollbar } from './horizontal-scrollbar';
 export { default as ErrorComponent } from './error-comp';
 export { default as Table } from './table';
+export { default as TriggerModal } from './trigger-modal';
+export { default as ContainerWithEmpty } from './container-with-empty';
+export { default as TableCustomRow } from './table-custom-row';

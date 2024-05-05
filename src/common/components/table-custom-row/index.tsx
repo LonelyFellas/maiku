@@ -23,10 +23,12 @@ import IconMove from '@img/move.svg?react';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 
 type CustomColumn = Darwish.AnyObj
+
 interface TableCustomRowProps extends Omit<ModalProps, 'onOk'> {
   columns: CustomColumn[];
   onOk: (keys: CustomColumn[]) => void;
 }
+
 export default function TableCustomRow(props: TableCustomRowProps) {
   const [items, setItems] = useState(
     props.columns.filter(
@@ -40,10 +42,11 @@ export default function TableCustomRow(props: TableCustomRowProps) {
       coordinateGetter: sortableKeyboardCoordinates,
     }),
   );
+
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
 
-    if (active.id !== over.id) {
+    if (over && active.id !== over.id) {
       setItems((items) => {
         const oldIndex = items.findIndex((col) => col.key === active.id);
         const newIndex = items.findIndex((col) => col.key === over.id);

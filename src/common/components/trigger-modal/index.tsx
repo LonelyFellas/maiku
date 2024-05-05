@@ -58,7 +58,7 @@ const TriggerModal: FC<PropsWithChildren<CustomModalProps>> = (props) => {
           });
         }
       } catch (error) {
-        throw new Error(error);
+        throw new Error(error as string);
       }
       setOpen(true);
     };
@@ -69,17 +69,17 @@ const TriggerModal: FC<PropsWithChildren<CustomModalProps>> = (props) => {
       children as JSX.Element,
       isDoubleClick
         ? {
-            onDoubleClick: () => handleClick('onDoubleClick'),
-          }
+          onDoubleClick: () => handleClick('onDoubleClick'),
+        }
         : isClick
           ? {
-              onClick: () => handleClick('onClick'),
-            }
+            onClick: () => handleClick('onClick'),
+          }
           : {
-              onClick: () => {
-                console.log('不可点击');
-              },
+            onClick: () => {
+              console.log('不可点击');
             },
+          },
     );
   }, [children, isDoubleClick]);
 
