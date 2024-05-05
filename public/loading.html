@@ -9,29 +9,32 @@
   <title>Document</title>
 </head>
 <body>
-<div class='body'>
+<div class='container'>
+  <div class='body'>
   <span>
     <span></span>
     <span></span>
     <span></span>
     <span></span>
   </span>
-  <div class='base'>
-    <span></span>
-    <div class='face'></div>
+    <div class='base'>
+      <span></span>
+      <div class='face'></div>
+    </div>
   </div>
+  <div class='longfazers'>
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+  <h1>LOADING STUFF...</h1>
 </div>
-<div class='longfazers'>
-  <span></span>
-  <span></span>
-  <span></span>
-  <span></span>
-</div>
-<h1>LOADING STUFF...</h1>
+
 <script>
   setTimeout(function() {
     window.ipcRenderer.send('loading:done', 'loading');
-  }, 2000);
+  }, 20000);
 </script>
 </body>
 </html>

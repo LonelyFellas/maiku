@@ -1,7 +1,18 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:300);
 
-body {
+.container {
+  height: 280px;
+  width: 280px;
+  border-radius: 50%;
   background-color: #f1c40f;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
   overflow: hidden;
 }
 
