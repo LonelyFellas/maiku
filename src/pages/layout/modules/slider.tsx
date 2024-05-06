@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Menu, MenuProps, Modal, Tooltip } from 'antd';
+import { Button, Menu, type MenuProps, Modal, Tooltip } from 'antd';
 import { useNavigate } from '@tanstack/react-router';
 import { useLocalStorage } from '@darwish/hooks-core';
 import { MacScrollbar } from 'mac-scrollbar/src';

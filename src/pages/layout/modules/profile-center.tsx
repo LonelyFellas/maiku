@@ -41,7 +41,7 @@ const ProfileCenter = () => {
 export default ProfileCenter;
 
 const ContentView = () => {
-  const navigator = useNavigate({ from: '/layout' });
+  const navigator = useNavigate();
   const [config, setI81n] = useI18nConfig();
   const lang = config.config.layout.header.profile;
   const items: MenuItem[] = [

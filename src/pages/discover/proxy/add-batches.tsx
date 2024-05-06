@@ -7,7 +7,7 @@ import { addTableColumns } from './config';
  * 批量添加代理
  */
 export default function AddBatches() {
-  const [proxyList] = useState<Darwish.AnyObj[]>([]);
+  const [proxyList] = useState<number[]>([...new Array(100).keys()]);
   const lenList = proxyList.length;
   return (
     <div className="p-4 h-full flex flex-col">
@@ -71,7 +71,8 @@ export default function AddBatches() {
         <div className="flex-1 overflow-hidden">
           <Table
             columns={addTableColumns}
-            dataSource={new Array(100).fill({
+            dataSource={proxyList.map((proxy) => ({
+              key: proxy,
               type: 'socks5',
               ip: '192.168.0.1',
               port: '8000',
@@ -80,7 +81,7 @@ export default function AddBatches() {
               password: '289582304',
               queryChannel: 'ip2',
               outIp: '192.168.0.1',
-            })}
+            }))}
             pagination={false}
           />
         </div>

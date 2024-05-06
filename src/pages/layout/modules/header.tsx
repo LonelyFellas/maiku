@@ -1,4 +1,4 @@
-import { Modal, Space } from 'antd';
+import { App, Space } from 'antd';
 import ProfileCenter from './profile-center';
 import UpdateCenter from './update-center';
 import NotificationCenter from './notification-center';
@@ -6,10 +6,11 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { useRouteMeta } from '@common';
 
 const Header = () => {
+  const { modal } = App.useApp();
   const { title, isBack, history } = useRouteMeta();
 
   const handleBackClick = () => {
-    Modal.confirm({
+    modal.confirm({
       title: '取消确认框',
       icon: <ExclamationCircleOutlined />,
       content: `确认要退出${title}吗？返回后将不会保存已编辑内容`,

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Form, Input, Button, Tooltip, Select, message } from 'antd';
+import { Form, Input, Button, Tooltip, Select, App } from 'antd';
 import { useMutation } from '@tanstack/react-query';
 import { isNumber } from '@darwish/utils-is';
 import {
@@ -32,6 +32,7 @@ const prefixSelector = (
 );
 
 const Register = (props: LoginProps) => {
+  const { message } = App.useApp();
   const [lang] = useI18nConfig('config.login.register');
   const mobileRules = [
     { required: true, message: lang?.placeholder_phone },
@@ -47,7 +48,7 @@ const Register = (props: LoginProps) => {
     mutationFn: registerService,
     onSuccess: (data) => {
       if (isNumber(data)) {
-        message.success(lang.register_msg);
+        message.success(lang?.register_msg);
         props.handleChangeModuleType('login');
       }
     },

@@ -1,5 +1,5 @@
 import React, { useEffect, Fragment, type PropsWithChildren } from 'react';
-import { FloatButton, message, App as AntdApp } from 'antd';
+import { FloatButton, App as AntdApp } from 'antd';
 import { GlobalOutlined as GlobalIcon } from '@ant-design/icons/lib/icons';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
@@ -17,6 +17,7 @@ const ReactQueryDevtoolsProduction = React.lazy(() =>
 );
 
 const App = (props: PropsWithChildren<object>) => {
+  const { message } = AntdApp.useApp();
   const [showDevtools, setShowDevtools] = React.useState(false);
   // const
   const [, setLang] = useI18nConfig();
@@ -25,9 +26,7 @@ const App = (props: PropsWithChildren<object>) => {
   useEffect(() => {
     window.toggleDevtools = () => setShowDevtools((old) => !old);
     window.ipcRenderer.on('error', (_, error) => {
-      message.error(error).then(() => {
-        console.error(error);
-      });
+      message.error(error.toString());
     });
   }, []);
 

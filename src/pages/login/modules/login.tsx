@@ -1,4 +1,4 @@
-import { Form, Input, Button, Flex, Checkbox, Tooltip, message } from 'antd';
+import { Form, Input, Button, Flex, Checkbox, Tooltip, App } from 'antd';
 import { useLocalStorage } from '@darwish/hooks-core';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
@@ -16,6 +16,7 @@ import type { LoginProps } from '@/pages/login';
 type FormValues = LoginParams & { remember: boolean };
 
 const Login = (props: LoginProps) => {
+  const { message } = App.useApp();
   const [lang] = useI18nConfig('config.login.login');
   const [form] = Form.useForm<FormValues>();
   const [, setToken] = useLocalStorage<string>(Constants.LOCAL_TOKEN, '');
@@ -36,13 +37,13 @@ const Login = (props: LoginProps) => {
         setToken(data.token);
         window.userInfo = data.userInfo;
         message.success(lang?.login_info);
+        navigate({ to: '/layout/profiles' });
       }
     },
   });
 
   const onFinish = (values: FormValues) => {
     mutate({ username: values.username, password: values.password });
-    navigate({ to: '/layout/profiles' });
   };
 
   return (
