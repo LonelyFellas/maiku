@@ -107,13 +107,13 @@ const Slider = () => {
         setOpenKeys(['primary']);
       }
     }
-  }, [pathname, collapsed]);
+  }, [pathname, collapsed, isBack]);
 
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
   };
 
-  const ToogleIcon = collapsed ? MenuUnfoldOutlined : MenuFoldOutlined;
+  const ToggleIcon = collapsed ? MenuUnfoldOutlined : MenuFoldOutlined;
 
   const handleGoToNewProfiles = () => {
     navigate({ to: '/layout/new_profiles' });
@@ -214,7 +214,7 @@ const Slider = () => {
           onClick={toggleCollapsed}
           style={{ right: collapsed ? '-1.7rem' : '-1.5rem' }}
         >
-          <ToogleIcon className="text-white" />
+          <ToggleIcon className="text-white" />
         </div>
       </div>
       <MacScrollbar className="flex-1 mt-3 w-full">
