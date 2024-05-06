@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Menu, type MenuProps, Modal, Tooltip } from 'antd';
+import { App, Button, Menu, type MenuProps, Modal, Tooltip } from 'antd';
 import { useNavigate } from '@tanstack/react-router';
 import { useLocalStorage } from '@darwish/hooks-core';
 import { MacScrollbar } from 'mac-scrollbar/src';
@@ -26,6 +26,7 @@ const MENU_MAP = {
   '/layout/proxy': ['discover', 'proxy'],
 };
 const Slider = () => {
+  const { modal } = App.useApp();
   const [lang] = useI18nConfig('config.layout.slider');
   const { pathname, title, isBack } = useRouteMeta();
   const navigate = useNavigate();
@@ -99,7 +100,7 @@ const Slider = () => {
         return;
       }
 
-      Modal.confirm({
+      modal.confirm({
         title: '取消确认框',
         icon: <ExclamationCircleOutlined />,
         content: `确认要退出${title}吗？返回后将不会保存已编辑内容`,

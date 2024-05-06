@@ -4,6 +4,8 @@ import { I18nConfigContextProvider, isMacFunc } from '@common';
 import { router } from '@/routes';
 import './index.css';
 import { RouterProvider } from '@tanstack/react-router';
+import { GlobalScrollbarProvider } from '@darwish/scrollbar-react';
+import '@darwish/scrollbar-react/dist/style.css';
 
 const isMac = isMacFunc();
 window.env = import.meta.env;
@@ -17,21 +19,24 @@ if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <I18nConfigContextProvider>
-      <ConfigProvider
-        theme={{
-          token: {
-            // Seed Token，影响范围大
-            colorPrimary: '#5b7cfd',
-            borderRadius: 4,
-          },
+      <GlobalScrollbarProvider
+        config={{
+          thumbColor: 'rgba(0,0,0,0.5)',
+          trackColor: 'transparent',
         }}
       >
-        <RouterProvider router={router} />
-      </ConfigProvider>
+        <ConfigProvider
+          theme={{
+            token: {
+              // Seed Token，影响范围大
+              colorPrimary: '#5b7cfd',
+              borderRadius: 4,
+            },
+          }}
+        >
+          <RouterProvider router={router} />
+        </ConfigProvider>
+      </GlobalScrollbarProvider>
     </I18nConfigContextProvider>,
   );
 }
-// Use contextBridge
-window.ipcRenderer.on('main-process-message', (_event, message) => {
-  console.log(message);
-});

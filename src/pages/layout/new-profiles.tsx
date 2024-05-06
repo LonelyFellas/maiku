@@ -1,24 +1,17 @@
 import { useState } from 'react';
-import {
-  Button,
-  Form,
-  Input,
-  Space,
-  Modal,
-  Divider,
-  Radio,
-  Select,
-} from 'antd';
+import { Button, Form, Input, Space, Divider, Radio, Select, App } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { MacScrollbar } from 'mac-scrollbar';
+// import { MacScrollbar } from 'mac-scrollbar';
 import { useRouter } from '@tanstack/react-router';
 import { DetailCollapse } from '@common';
 import './style.css';
 import { AddProxyFormItems } from '@/pages/discover/proxy/modules/edit.tsx';
+import { Scrollbar } from '@darwish/scrollbar-react';
 
 type ProxyType = 'custom' | 'list';
 const inputStyle = { width: '240px' };
 export default function NewProfiles() {
+  const { modal } = App.useApp();
   const { history } = useRouter();
   const [form] = Form.useForm();
   const [proxyType, setProxyType] = useState<ProxyType>('custom');
@@ -28,12 +21,11 @@ export default function NewProfiles() {
   }: {
     formProxyType: ProxyType;
   }) => {
-    console.log(formProxyType);
     setProxyType(formProxyType);
   };
 
   const handleCancel = () => {
-    Modal.confirm({
+    modal.confirm({
       title: '取消确认框',
       icon: <ExclamationCircleOutlined />,
       content: '确认要退出新建环境吗？取消后将不会保存已编辑内容',
@@ -47,7 +39,7 @@ export default function NewProfiles() {
 
   return (
     <div className="flex flex-col h-full rounded-md p-4">
-      <MacScrollbar className="flex-1">
+      <Scrollbar className="flex-1">
         <Form
           form={form}
           labelCol={{ span: 8 }}
@@ -145,7 +137,7 @@ export default function NewProfiles() {
             ]}
           />
         </Form>
-      </MacScrollbar>
+      </Scrollbar>
       <Divider className="mt-0 my-4" />
       <Space>
         <Button onClick={handleCancel}>取消</Button>

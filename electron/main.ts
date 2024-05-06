@@ -58,7 +58,6 @@ function createLoadingWindow() {
     y: (height - 300) / 2,
   });
 
-
   loadingWin.loadFile(isProd ? './dist/loading.html' : 'public/loading.html');
 }
 
@@ -79,15 +78,6 @@ function createMainWindow() {
     y: (height - 780) / 2,
   });
 
-  // Test active push message to Renderer-process.
-  mainWin.webContents.on('did-finish-load', () => {
-    mainWin?.webContents.send(
-      'main-process-message',
-      new Date().toLocaleString(),
-    );
-  });
-
-  console.log(path.join(RENDERER_DIST));
   if (VITE_DEV_SERVER_URL) {
     mainWin.loadURL(VITE_DEV_SERVER_URL);
   } else {
