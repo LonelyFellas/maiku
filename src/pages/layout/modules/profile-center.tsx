@@ -4,10 +4,11 @@ import {
   GlobalOutlined,
   LogoutOutlined,
 } from '@ant-design/icons';
-import { Flex, Menu, MenuProps, Popover, Space } from 'antd';
+import { Flex, Menu, Popover, Space } from 'antd';
 import '../style.css';
 import { useNavigate } from '@tanstack/react-router';
-import { useI18nConfig } from '@common';
+import { useI18nConfig, getItem } from '@common';
+import { MenuItem } from '@common/utils/get-item';
 
 const ProfileCenter = () => {
   const [lang] = useI18nConfig('config.layout.header.profile');
@@ -38,24 +39,6 @@ const ProfileCenter = () => {
   );
 };
 export default ProfileCenter;
-
-type MenuItem = Required<MenuProps>['items'][number];
-
-export function getItem(
-  label: React.ReactNode,
-  key?: React.Key | null,
-  icon?: React.ReactNode,
-  children?: MenuItem[],
-  type?: 'group',
-): MenuItem {
-  return {
-    key,
-    icon,
-    children,
-    label,
-    type,
-  } as MenuItem;
-}
 
 const ContentView = () => {
   const navigator = useNavigate({ from: '/layout' });

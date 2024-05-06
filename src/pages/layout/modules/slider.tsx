@@ -16,8 +16,7 @@ import {
   SettingOutlined,
   TikTokOutlined,
 } from '@ant-design/icons';
-import { useI18nConfig, isMacFunc, useRouteMeta } from '@common';
-import { getItem } from './profile-center';
+import { useI18nConfig, isMacFunc, useRouteMeta, getItem } from '@common';
 import type { ItemType, MenuItemType } from 'antd/es/menu/hooks/useItems';
 import '@sty/button.css';
 import '../style.css';
