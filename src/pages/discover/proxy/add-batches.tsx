@@ -7,7 +7,7 @@ import { addTableColumns } from './config';
  * 批量添加代理
  */
 export default function AddBatches() {
-  const [proxyList, setProxyList] = useState<Darwish.AnyObj[]>([]);
+  const [proxyList] = useState<Darwish.AnyObj[]>([]);
   const lenList = proxyList.length;
   return (
     <div className="p-4 h-full flex flex-col">
