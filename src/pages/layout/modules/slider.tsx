@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Button, Menu, MenuProps, Tooltip } from 'antd';
-import { useNavigate, useRouter } from '@tanstack/react-router';
+import { Button, Menu, MenuProps, Modal, Tooltip } from 'antd';
+import { useNavigate } from '@tanstack/react-router';
 import { useLocalStorage } from '@darwish/hooks-core';
 import { MacScrollbar } from 'mac-scrollbar/src';
 import {
   AppstoreOutlined,
   CalendarOutlined,
+  ExclamationCircleOutlined,
   GiftOutlined,
   LinkOutlined,
   MailOutlined,
@@ -15,7 +16,7 @@ import {
   SettingOutlined,
   TikTokOutlined,
 } from '@ant-design/icons';
-import { useI18nConfig, isMacFunc } from '@common';
+import { useI18nConfig, isMacFunc, useRouteMeta } from '@common';
 import { getItem } from './profile-center';
 import type { ItemType, MenuItemType } from 'antd/es/menu/hooks/useItems';
 import '@sty/button.css';
@@ -27,9 +28,8 @@ const MENU_MAP = {
 };
 const Slider = () => {
   const [lang] = useI18nConfig('config.layout.slider');
+  const { pathname, title, isBack } = useRouteMeta();
   const navigate = useNavigate();
-  const router = useRouter();
-  const { pathname } = router.latestLocation;
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   const [openKeys, setOpenKeys] = useState<string[]>([]);
   const items: ItemType<MenuItemType>[] = [
@@ -97,8 +97,7 @@ const Slider = () => {
   const [collapsed, setCollapsed] = useLocalStorage('slider_collapsed', false);
 
   useEffect(() => {
-    console.log('router', router);
-    if (!collapsed) {
+    if (!collapsed && !isBack) {
       try {
         const mapValue = MENU_MAP[pathname as keyof typeof MENU_MAP];
         setSelectedKeys([mapValue[1]]);
@@ -120,7 +119,42 @@ const Slider = () => {
     navigate({ to: '/layout/new_profiles' });
   };
   const handleMenuSelected: MenuProps['onSelect'] = (props) => {
-    navigate({ to: `/layout/${props.key}` });
+    // 只处理当前菜单和和跳转菜单不相同的情况
+    if (props.key === selectedKeys[0]) return;
+    confirmJump(props.key);
+  };
+  const handleMenuClick: MenuProps['onClick'] = (props) => {
+    // 只处理当前选中菜单和跳转菜单相同的情况，但是当前路径和跳转路径不相同的情况
+    if (props.key !== selectedKeys[0]) return;
+    confirmJump(props.key);
+  };
+
+  /** 跳转确认 */
+  const confirmJump = (selectKey: string) => {
+    const nextPathName = `/layout/${selectKey}`;
+    if (isBack) {
+      if (selectKey === selectedKeys[0]) {
+        history.back();
+        return;
+      }
+
+      Modal.confirm({
+        title: '取消确认框',
+        icon: <ExclamationCircleOutlined />,
+        content: `确认要退出${title}吗？返回后将不会保存已编辑内容`,
+        okText: '确认',
+        cancelText: '取消',
+        onOk: () => {
+          navigate({ to: nextPathName });
+        },
+      });
+    } else {
+      const nextPathName = `/layout/${selectKey}`;
+      // 如果当前路径和跳转路径相同，则不跳转
+      // 防止重复跳转
+      if (pathname === nextPathName) return;
+      navigate({ to: nextPathName });
+    }
   };
   const handleOpenChange = (keys: string[]) => {
     setOpenKeys(keys);
@@ -192,6 +226,7 @@ const Slider = () => {
           openKeys={openKeys}
           inlineCollapsed={collapsed}
           onSelect={handleMenuSelected}
+          onClick={handleMenuClick}
           onOpenChange={handleOpenChange}
           inlineIndent={10}
           items={items}

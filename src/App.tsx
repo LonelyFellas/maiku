@@ -1,11 +1,11 @@
 import React, { useEffect, Fragment, type PropsWithChildren } from 'react';
-import { isMacFunc, useI18nConfig, Wrapper } from '@common';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import 'mac-scrollbar/dist/mac-scrollbar.css';
 import { FloatButton, message, App as AntdApp } from 'antd';
 import { GlobalOutlined as GlobalIcon } from '@ant-design/icons/lib/icons';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { isMacFunc, useI18nConfig, Wrapper } from '@common';
+import 'mac-scrollbar/dist/mac-scrollbar.css';
 
 const queryClient = new QueryClient();
 const ReactQueryDevtoolsProduction = React.lazy(() =>
