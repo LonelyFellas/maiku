@@ -41,6 +41,24 @@
   border-inline-end: none !important;
 }
 
+.new_profiles_compact {
+  .ant-row {
+    height: 100%;
+
+    .ant-col {
+      height: 100%;
+
+      .ant-form-item-control-input-content {
+        height: 100%;
+
+        .ant-space-compact {
+          height: 100%;
+        }
+      }
+    }
+  }
+}
+
 @layer layout_page {
   .order_rounded_full {
     @apply w-10 h-10 rounded-full bg-bg_primary text-text_primary text-lg;

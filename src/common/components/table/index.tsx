@@ -16,7 +16,7 @@ interface TableProps extends AntdTableProps {
  * @constructor
  */
 const Table = (props: TableProps) => {
-  const { tableClassName, className, ...restProps } = props;
+  const { tableClassName, pagination = true, className, ...restProps } = props;
   const scrollRef = useRef<HTMLDivElement>(null);
   const scroll = useTableScroll({
     scrollRef,
@@ -25,7 +25,10 @@ const Table = (props: TableProps) => {
 
   return (
     <>
-      <div className={cn('flex-1 overflow-hidden', className)} ref={scrollRef}>
+      <div
+        className={cn('flex-1 overflow-hidden h-full', className)}
+        ref={scrollRef}
+      >
         <AntdTable
           className={tableClassName}
           pagination={false}
@@ -35,13 +38,15 @@ const Table = (props: TableProps) => {
           {...restProps}
         />
       </div>
-      <Pagination
-        className="flex justify-end"
-        total={85}
-        showTotal={(total) => `共 ${total} 条数据`}
-        defaultPageSize={20}
-        defaultCurrent={1}
-      />
+      {pagination && (
+        <Pagination
+          className="flex justify-end"
+          total={85}
+          showTotal={(total) => `共 ${total} 条数据`}
+          defaultPageSize={20}
+          defaultCurrent={1}
+        />
+      )}
     </>
   );
 };

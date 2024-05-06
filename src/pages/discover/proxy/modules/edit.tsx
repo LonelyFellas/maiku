@@ -38,48 +38,57 @@ const Edit = (props: EditProps) => {
             <Tag color="blue">123456</Tag>
           </Item>
         ) : null}
-        <Item
-          label="代理类型"
-          name="proxyType"
-          required
-          rules={[{ required: true, message: '请输入代理类型' }]}
-        >
-          <Select
-            options={[
-              { label: 'Socks5', value: 'socks5' },
-              { label: 'Http', value: 'http', disabled: true },
-              { label: 'Https', value: 'https', disabled: true },
-            ]}
-            placeholder="请选择代理类型"
-          />
-        </Item>
-        {/*<Item label="代理查询渠道" name="queryChannel">*/}
-        {/*  <Select*/}
-        {/*    options={[*/}
-        {/*      { label: 'IP2Location', value: 'IP2Location' },*/}
-        {/*      { label: 'ip-api', value: 'ip-api' },*/}
-        {/*    ]}*/}
-        {/*    placeholder="请选择代理查询渠道"*/}
-        {/*  />*/}
-        {/*</Item>*/}
-        <Item label="主机 : 端口" style={{ height: '32px' }}>
-          <Space.Compact>
-            <Item name="host">
-              <Input placeholder="请输入主机" />
-            </Item>
-            <Item name="port">
-              <Input addonBefore=":" placeholder="请输入端口" />
-            </Item>
-          </Space.Compact>
-        </Item>
-        <Item label="代理账号" name="username">
-          <Input placeholder="请输入代理账号" />
-        </Item>
-        <Item label="代理密码" name="password">
-          <Input.Password placeholder="请输入代理密码" />
-        </Item>
+        <AddProxyFormItems />
       </Form>
     </Modal>
   );
 };
 export default Edit;
+
+export function AddProxyFormItems() {
+  return (
+    <>
+      <Item
+        label="代理类型"
+        name="proxyType"
+        required
+        rules={[{ required: true, message: '请输入代理类型' }]}
+      >
+        <Select
+          className="!w-[240px]"
+          options={[
+            { label: 'Socks5', value: 'socks5' },
+            { label: 'Http', value: 'http', disabled: true },
+            { label: 'Https', value: 'https', disabled: true },
+          ]}
+          placeholder="请选择代理类型"
+        />
+      </Item>
+      {/*<Item label="代理查询渠道" name="queryChannel">*/}
+      {/*  <Select*/}
+      {/*    options={[*/}
+      {/*      { label: 'IP2Location', value: 'IP2Location' },*/}
+      {/*      { label: 'ip-api', value: 'ip-api' },*/}
+      {/*    ]}*/}
+      {/*    placeholder="请选择代理查询渠道"*/}
+      {/*  />*/}
+      {/*</Item>*/}
+      <Item label="主机 : 端口" style={{ height: '32px' }}>
+        <Space.Compact className="w-[240px]">
+          <Item name="host">
+            <Input placeholder="请输入主机" />
+          </Item>
+          <Item name="port">
+            <Input addonBefore=":" placeholder="请输入端口" />
+          </Item>
+        </Space.Compact>
+      </Item>
+      <Item label="代理账号" name="username">
+        <Input className="w-[240px]" placeholder="请输入代理账号" />
+      </Item>
+      <Item label="代理密码" name="password">
+        <Input.Password className="w-[240px]" placeholder="请输入代理密码" />
+      </Item>
+    </>
+  );
+}
