@@ -3,26 +3,11 @@ import { Modal, Space } from 'antd';
 import ProfileCenter from './profile-center';
 import UpdateCenter from './update-center';
 import NotificationCenter from './notification-center';
-import { useMatches, useRouter } from '@tanstack/react-router';
-import { isArray } from '@darwish/utils-is';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { useRouteMeta } from '@common';
 
 const Header = () => {
-  const { history } = useRouter();
-  const matches = useMatches();
-  let title = '环境管理';
-  let isBack = false;
-  try {
-    if (matches && isArray(matches)) {
-      // @ts-ignore
-      title = matches?.at(-1)?.meta[0].title ?? '环境管理';
-      // @ts-ignore
-      isBack = matches?.at(-1).meta[0].isBack ?? false;
-    }
-  } catch {
-    title = '环境管理';
-    console.error('路由meta的标题没有设置');
-  }
+  const { title, isBack, history } = useRouteMeta();
 
   const handleBackClick = () => {
     Modal.confirm({
@@ -41,7 +26,6 @@ const Header = () => {
       <h1 className="text-xl font-bold">
         {isBack && (
           <span>
-            {' '}
             <span
               onClick={handleBackClick}
               className="text-sm font-normal text-text_secondary/80 underline underline-offset-4 cursor-pointer hover:text-text_secondary"

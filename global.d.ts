@@ -8,13 +8,23 @@ declare global {
     config: typeof import('@/assets/messages/en.json');
   };
 
-  type PathValue<T, P extends string> = P extends `${infer K}.${infer Rest}`
-    ? K extends keyof T
-      ? PathValue<T[K], Rest>
-      : never
-    : P extends keyof T
-      ? T[P]
-      : never;
+  /**
+   *  获取对象属性值类型
+   *  @example
+   *  type A = { a: { b: string } };
+   *  type B = PathValue<A, 'a'>; // { b: string }
+   *  type B = PathValue<A, 'a.b'>; // string
+   *  type C = PathValue<A, 'a.c'>; // never
+   */
+  type PathValue<T, P extends string | null = null> = P extends null
+    ? T
+    : P extends `${infer K}.${infer Rest}`
+      ? K extends keyof T
+        ? PathValue<T[K], Rest>
+        : never
+      : P extends keyof T
+        ? T[P]
+        : never;
 
   // Used in Renderer process, expose in `preload.ts`
   interface Window {
@@ -63,6 +73,16 @@ declare global {
     username: string;
   }
 
+  /**
+   * Antd Table Column 的类型定义
+   */
   type AntdColumns<RecordType = Darwish.AnyObj> = ColumnsType<RecordType>;
+  /**
+   * React.MouseEvent 的类型定义
+   */
+  type ReactMouseEvent<
+    T extends Element,
+    E = React.MouseEvent<T, MouseEvent>,
+  > = E;
 }
 export {};

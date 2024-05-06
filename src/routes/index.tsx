@@ -13,6 +13,7 @@ import Layout from '@/pages/layout';
 import Profiles from '@/pages/primary/profiles';
 import NewProfiles from '@/pages/layout/new-profiles.tsx';
 import Proxy from '@/pages/discover/proxy';
+import AddBatches from '@/pages/discover/proxy/add-batches.tsx';
 import UpgradePkg from '@/pages/layout/upgrade-pkg.tsx';
 import { postsProxyQueryOptions } from './data.ts';
 
@@ -65,6 +66,18 @@ const proxy = createRoute({
   component: Proxy,
   meta: () => [{ title: '代理管理' }],
 });
+/** 批量添加代理 */
+const addBatchesProxy = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/add_batches_proxy',
+  component: AddBatches,
+  meta: () => [
+    {
+      title: '批量添加',
+      isBack: true,
+    },
+  ],
+});
 
 /** 新建环境 */
 const newProfiles = createRoute({
@@ -94,7 +107,13 @@ const upgradePkg = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   loginRoute,
-  layoutRoute.addChildren([profiles, newProfiles, proxy, upgradePkg]),
+  layoutRoute.addChildren([
+    profiles,
+    newProfiles,
+    proxy,
+    upgradePkg,
+    addBatchesProxy,
+  ]),
 ]);
 
 const queryClient = new QueryClient();

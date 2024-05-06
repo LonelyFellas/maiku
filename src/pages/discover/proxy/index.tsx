@@ -4,6 +4,7 @@ import { Table, TriggerModal } from '@common';
 import EditModal from './modules/edit';
 import { columns as configColumns } from './config';
 import { postsProxyQueryOptions } from '@/routes/data.ts';
+import { useNavigate } from '@tanstack/react-router';
 
 export default function Proxy() {
   const columns = configColumns.concat({
@@ -34,17 +35,31 @@ export default function Proxy() {
       </Space>
     ),
   });
+  const navigate = useNavigate();
 
   const { data, isLoading } = useSuspenseQuery(postsProxyQueryOptions);
 
+  const handleGoToAddBatches = () => {
+    navigate({ to: '/layout/add_batches_proxy' });
+  };
+
   return (
-    <div className="flex flex-col p-2 h-full">
+    <div className="flex flex-col p-2 h-full 2xl:p-4">
       <div className="">
-        <Button type="primary">添加代理</Button>
+        <TriggerModal
+          renderModal={(renderProps) => (
+            <EditModal {...renderProps} title="添加代理" />
+          )}
+        >
+          <Button type="primary">添加代理</Button>
+        </TriggerModal>
+        <Button className="ml-2 2xl:ml-4" onClick={handleGoToAddBatches}>
+          批量导入
+        </Button>
       </div>
       <Table
         loading={isLoading}
-        className="mt-2"
+        className="mt-2 2xl:mt-4"
         virtual
         columns={columns}
         dataSource={data}

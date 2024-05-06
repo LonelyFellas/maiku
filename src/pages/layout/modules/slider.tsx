@@ -28,7 +28,8 @@ const MENU_MAP = {
 const Slider = () => {
   const [lang] = useI18nConfig('config.layout.slider');
   const navigate = useNavigate();
-  const { pathname } = useRouter().latestLocation;
+  const router = useRouter();
+  const { pathname } = router.latestLocation;
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   const [openKeys, setOpenKeys] = useState<string[]>([]);
   const items: ItemType<MenuItemType>[] = [
@@ -96,6 +97,7 @@ const Slider = () => {
   const [collapsed, setCollapsed] = useLocalStorage('slider_collapsed', false);
 
   useEffect(() => {
+    console.log('router', router);
     if (!collapsed) {
       try {
         const mapValue = MENU_MAP[pathname as keyof typeof MENU_MAP];

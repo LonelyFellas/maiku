@@ -19,7 +19,7 @@ export default function Profiles() {
   });
 
   return (
-    <div className="flex gap-2 h-full rounded-md p-2 overflow-hidden">
+    <div className="flex gap-2 h-full rounded-md p-2 overflow-hidden 2xl:p-4 2xl:gap-4">
       <Slider {...{ list, currentIndex, setCurrentIndex }} />
       <div className="flex-1 overflow-hidden">
         <TableMain deviceId={list[currentIndex].path} />

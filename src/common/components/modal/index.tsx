@@ -2,6 +2,12 @@ import type React from 'react';
 import { Modal as AntdModal, type ModalProps } from 'antd';
 import './index.css';
 
+/**
+ * 加了一些modal的项目统一样式
+ * 其他的和antd的modal用法一致
+ * @param props
+ * @constructor
+ */
 const Modal = (props: React.PropsWithChildren<ModalProps>) => (
   <AntdModal
     className="general-maiku-modal border-gray-100"

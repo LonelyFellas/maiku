@@ -1,12 +1,12 @@
 import { useLocalStorage } from '@darwish/hooks-core';
 import React, { useEffect, useState } from 'react';
-import { I18nConfigContext } from './I18nconfigContext.ts';
+import { I18nConfigContext } from './I18nconfigContext';
 
 export function I18nConfigContextProvider(
   props: React.PropsWithChildren<object>,
 ) {
   const [config, setConfig] = useState<I18nConfig>({} as I18nConfig);
-  const [language, setLanguage] = useLocalStorage('i18n', 'zh');
+  const [language, setLanguage] = useLocalStorage<Common.Locale>('i18n', 'zh');
   useEffect(() => {
     import(
       language === 'zh'

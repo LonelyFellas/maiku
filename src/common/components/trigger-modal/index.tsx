@@ -25,7 +25,7 @@ interface CustomModalProps {
 }
 
 /**
- *
+ * 触发模态框的组件，内部管理模态框的状态
  * @param props
  * @param props.title 模态框标题
  * @param props.renderModal 渲染模态框的函数
@@ -69,17 +69,17 @@ const TriggerModal: FC<PropsWithChildren<CustomModalProps>> = (props) => {
       children as JSX.Element,
       isDoubleClick
         ? {
-          onDoubleClick: () => handleClick('onDoubleClick'),
-        }
+            onDoubleClick: () => handleClick('onDoubleClick'),
+          }
         : isClick
           ? {
-            onClick: () => handleClick('onClick'),
-          }
+              onClick: () => handleClick('onClick'),
+            }
           : {
-            onClick: () => {
-              console.log('不可点击');
+              onClick: () => {
+                console.log('不可点击');
+              },
             },
-          },
     );
   }, [children, isDoubleClick]);
 

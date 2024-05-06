@@ -1,9 +1,11 @@
 import { createContext } from 'react';
 
-export const I18nConfigContext = createContext<{
+export interface I18nConfigContextType {
   config: I18nConfig;
-  setLanguage: (lang: I18nConfig['lang']) => void;
-}>({
+  setLanguage: (lang: (prev: Common.Locale) => Common.Locale) => void;
+}
+
+export const I18nConfigContext = createContext<I18nConfigContextType>({
   config: {} as I18nConfig,
   setLanguage: () => null,
 });

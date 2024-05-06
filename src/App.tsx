@@ -32,7 +32,7 @@ const App = (props: PropsWithChildren<object>) => {
   }, []);
 
   const handleLanguageChange = () => {
-    setLang((prev: string) => (prev === 'zh' ? 'en' : 'zh'));
+    setLang((prev) => (prev === 'zh' ? 'en' : 'zh'));
   };
 
   const Component = isMac ? Fragment : Wrapper;
@@ -55,10 +55,8 @@ const App = (props: PropsWithChildren<object>) => {
 
       <Component>
         {/* 主要是为了去除antd的错误message提示， */}
-        <AntdApp>
-          {props.children}
-        </AntdApp>
-        </Component>
+        <AntdApp>{props.children}</AntdApp>
+      </Component>
     </QueryClientProvider>
   );
 };
