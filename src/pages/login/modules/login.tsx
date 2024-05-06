@@ -2,16 +2,16 @@ import { Form, Input, Button, Flex, Checkbox, Tooltip, message } from 'antd';
 import { useLocalStorage } from '@darwish/hooks-core';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
+import { isObject } from '@darwish/utils-is';
 import {
   InfoCircleOutlined,
   LockOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import { useI18nConfig, Constants, useTagTitle } from '@common';
+import { useI18nConfig, Constants } from '@common';
 import { loginService } from '@api/user/login';
 import type { LoginParams } from '@api/type';
-import { isObject } from '@darwish/utils-is';
-import { LoginProps } from '@/pages/login';
+import type { LoginProps } from '@/pages/login';
 
 type FormValues = LoginParams & { remember: boolean };
 
@@ -23,7 +23,6 @@ const Login = (props: LoginProps) => {
     Constants.LOCAL_LOGIN_INFO,
     null,
   );
-  const setTagTitle = useTagTitle((state) => state.setTagTitle);
 
   const navigate = useNavigate({ from: '/login' });
 
@@ -36,11 +35,7 @@ const Login = (props: LoginProps) => {
         );
         setToken(data.token);
         window.userInfo = data.userInfo;
-        message.success('登录成功');
-        setTagTitle({
-          title: '环境管理',
-          url: '/layout/profiles',
-        });
+        message.success(lang?.login_info);
       }
     },
   });

@@ -16,7 +16,8 @@
       "required_psw": "Please enter your password",
       "filed_psw_info": "Must contain numbers and uppercase and lowercase letters, 8-20 characters",
       "option_remember_me": "Save password",
-      "option_forgot_psw": "Forgot password?"
+      "option_forgot_psw": "Forgot password?",
+      "login_info": "login success!"
     },
     "register": {
       "btn_title": "Register",
@@ -27,6 +28,7 @@
       "filed_phone": "Phone number (It's recommended to use a commonly used phone number to receive verification codes)",
       "filed_email": "E-Mail",
       "placeholder_phone": "Please enter a phone number.",
+      "phone_rule": "Mobile phone number format is incorrect!",
       "placeholder_email": "Please enter your email address.",
       "filed_phone_info": "One the country code +86 is supported",
       "filed_email_info": "Please do not register using a temporary email address, We will not assist you if you experence login issues.",
@@ -37,7 +39,9 @@
       "placeholder_psw": "Please enter your password.",
       "filed_psw_info": "Must contain numbers and uppercase and lowercase letters, 8-20 characters",
       "filed_referral_code": "Referral code",
-      "placeholder_referral_code": "Please enter your referral code.(Optional)"
+      "placeholder_referral_code": "Please enter your referral code.(Optional)",
+      "register_msg": "Registration success! Heading to log in...",
+      "psw_error": "The passwords entered twice are inconsistent!"
     },
     "verify": {
       "btn_title": "Verify",

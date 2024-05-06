@@ -16,7 +16,8 @@
       "required_psw": "请输入密码",
       "filed_psw_info": "必须包含数字和大小写字母,8-20位",
       "option_remember_me": "记住密码",
-      "option_forgot_psw": "忘记密码?"
+      "option_forgot_psw": "忘记密码?",
+      "login_info": "登录成功！"
     },
     "register": {
       "btn_title": "注册",
@@ -26,7 +27,8 @@
       "email_title": "邮箱注册",
       "filed_phone": "手机号(建议使用常用的手机号码，以便接收验证码)",
       "filed_email": "邮箱",
-      "placeholder_phone": "请输入手机号",
+      "placeholder_phone": "请输入手机号码",
+      "phone_rule": "手机号码格式不正确！",
       "placeholder_email": "请输入邮箱",
       "filed_phone_info": "仅支持区号86",
       "filed_email_info": "请勿使用临时邮箱注册。当此类账号无法登录时，我们不提供协助",
@@ -37,7 +39,9 @@
       "placeholder_psw": "请输入密码",
       "filed_psw_info": "必须包含数字和大小写字母,8-20位",
       "filed_referral_code": "邀请码",
-      "placeholder_referral_code": "请输入邀请码(选填)"
+      "placeholder_referral_code": "请输入邀请码(选填)",
+      "register_msg": "注册成功！正在前往登录...",
+      "psw_error": "两次输入的密码不一致！"
     },
     "verify": {
       "btn_title": "验证",

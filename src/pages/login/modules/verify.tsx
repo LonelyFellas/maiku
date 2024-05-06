@@ -17,10 +17,7 @@ const prefixSelector = (
         style={{
           width: 100,
         }}
-      >
-        {/* <Select.Option value="86">+86</Select.Option> */}
-        {/* <Select.Option value="87">+87</Select.Option> */}
-      </Select>
+      />
     </div>
   </Form.Item>
 );

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Form, Input, Button, Tooltip, Select, message } from 'antd';
 import { useMutation } from '@tanstack/react-query';
+import { isNumber } from '@darwish/utils-is';
 import {
   InfoCircleOutlined,
   LockOutlined,
@@ -13,8 +14,7 @@ import imgMail from '@img/mail.png?url';
 import { useI18nConfig } from '@common';
 import { registerService } from '@api/user/login';
 import type { RegisterParams } from '@api/type';
-import { isNumber } from '@darwish/utils-is';
-import { LoginProps } from '@/pages/login';
+import type { LoginProps } from '@/pages/login';
 
 const prefixSelector = (
   <Form.Item name="prefix" noStyle>
@@ -26,32 +26,28 @@ const prefixSelector = (
         style={{
           width: 100,
         }}
-      >
-        {/* <Select.Option value="86">+86</Select.Option> */}
-        {/* <Select.Option value="87">+87</Select.Option> */}
-      </Select>
+      />
     </div>
-
   </Form.Item>
 );
 
-const mobileRules = [
-  { required: true, message: '请输入手机号码!' },
-  { pattern: /^1[3-9]\d{9}$/, message: '手机号码格式不正确!' },
-];
-const pswRules = [
-  { required: true, message: '请输入密码' },
-  { min: 6, message: '密码长度至少为6位' },
-];
 const Register = (props: LoginProps) => {
   const [lang] = useI18nConfig('config.login.register');
+  const mobileRules = [
+    { required: true, message: lang?.placeholder_phone },
+    { pattern: /^1[3-9]\d{9}$/, message: lang?.phone_rule },
+  ];
+  const pswRules = [
+    { required: true, message: lang.placeholder_psw },
+    { min: 8, message: lang.filed_psw_info },
+  ];
   const [form] = Form.useForm<RegisterParams>();
   const [isPhoneRegister, setIsPhoneRegister] = useState(true);
   const { mutate, isPending } = useMutation({
     mutationFn: registerService,
     onSuccess: (data) => {
       if (isNumber(data)) {
-        message.success('注册成功! 正在前往登录..');
+        message.success(lang.register_msg);
         props.handleChangeModuleType('login');
       }
     },
@@ -66,12 +62,12 @@ const Register = (props: LoginProps) => {
     if (!value || form.getFieldValue('password') === value) {
       return Promise.resolve();
     }
-    return Promise.reject(new Error('两次输入的密码不一致!'));
+    return Promise.reject(new Error(lang.psw_error));
   };
 
   // 确认密码规则
   const confirmRules = [
-    { required: true, message: '请确认您的密码!' },
+    { required: true, message: lang.placeholder_psw },
     { validator: compareToFirstPassword },
   ];
 

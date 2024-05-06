@@ -5,7 +5,7 @@ import type { ColumnsType } from 'antd/es/table';
 declare global {
   type I18nConfig = {
     lang: '简体中文' | 'English';
-    config: typeof import('@/assets/messages/zh.json');
+    config: typeof import('@/assets/messages/en.json');
   };
 
   type PathValue<T, P extends string> = P extends `${infer K}.${infer Rest}`
