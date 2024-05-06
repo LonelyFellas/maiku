@@ -86,75 +86,21 @@
       "first_subs": "首次订阅",
       "project_quantity": "环境数量",
       "user_quantity": "用户数量",
-      "menu_list": {
-        "primary": {
-          "name": "常用",
-          "children": [
-            {
-              "name": "环境管理",
-              "children": []
-            },
-            {
-              "name": "分组管理",
-              "children": []
-            }
-          ]
-        },
-        "discover": {
-          "name": "发现",
-          "children": [
-            {
-              "name": "代理管理",
-              "children": []
-            },
-            {
-              "name": "手机管理",
-              "children": []
-            },
-            {
-              "name": "应用中心",
-              "children": [
-                {
-                  "name": "云手机应用",
-                  "children": []
-                },
-                {}
-              ]
-            }
-          ]
-        },
-        "automation": {
-          "name": "自动化",
-          "children": [
-            {
-              "name": "TK 自动化",
-              "children": []
-            }
-          ]
-        },
-        "team": {
-          "name": "团队",
-          "children": [
-            {
-              "name": "费用管理",
-              "children": []
-            },
-            {
-              "name": "团队管理",
-              "children": [
-                {
-                  "name": "成员管理",
-                  "children": []
-                },
-                {
-                  "name": "操作日志",
-                  "children": []
-                }
-              ]
-            }
-          ]
-        }
-      }
+      "menu_name_1": "常用",
+      "menu_name_1_1": "环境管理",
+      "menu_name_1_2": "分组管理",
+      "menu_name_2": "发现",
+      "menu_name_2_1": "代理管理",
+      "menu_name_2_2": "拓展中心",
+      "menu_name_2_3": "应用中心",
+      "menu_name_2_3_1": "云手机应用",
+      "menu_name_3": "自动化",
+      "menu_name_3_1": "TK 自动化",
+      "menu_name_4": "团队",
+      "menu_name_4_1": "费用管理",
+      "menu_name_4_2": "团队管理",
+      "menu_name_4_2_1": "成员管理",
+      "menu_name_4_2_2": "操作日志"
     }
   }
 }

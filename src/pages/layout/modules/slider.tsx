@@ -33,64 +33,26 @@ const Slider = () => {
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   const [openKeys, setOpenKeys] = useState<string[]>([]);
   const items: ItemType<MenuItemType>[] = [
-    getItem(lang.menu_list.primary.name, 'primary', <MailOutlined />, [
-      getItem(
-        lang.menu_list.primary.children[0].name,
-        'profiles',
-        <MailOutlined />,
-      ),
-      getItem(lang.menu_list.primary.children[1].name, '1-2', <MailOutlined />),
+    getItem(lang.menu_name_1, 'primary', <MailOutlined />, [
+      getItem(lang.menu_name_1_1, 'profiles', <MailOutlined />),
+      getItem(lang.menu_name_1_2, '1-2', <MailOutlined />),
     ]),
-    getItem(lang.menu_list.discover.name, 'discover', <CalendarOutlined />, [
-      getItem(
-        lang.menu_list.discover.children[0].name,
-        'proxy',
-        <AppstoreOutlined />,
-      ),
-      getItem(
-        lang.menu_list.discover.children[1].name,
-        '2-2',
-        <GiftOutlined />,
-      ),
-      getItem(
-        lang.menu_list.discover.children[2].name,
-        '2-3',
-        <LinkOutlined />,
-        [
-          getItem(
-            lang.menu_list.discover.children[2].children[0].name,
-            '2-3-1',
-            <LinkOutlined />,
-          ),
-        ],
-      ),
+    getItem(lang.menu_name_2, 'discover', <CalendarOutlined />, [
+      getItem(lang.menu_name_2_1, 'proxy', <AppstoreOutlined />),
+      getItem(lang.menu_name_2_2, '2-2', <GiftOutlined />),
+      getItem(lang.menu_name_2_3, '2-3', <LinkOutlined />, [
+        getItem(lang.menu_name_2_3_1, '2-3-1', <LinkOutlined />),
+      ]),
     ]),
-    getItem(lang.menu_list.automation.name, '3', <AppstoreOutlined />, [
-      getItem(
-        lang.menu_list.automation.children[0].name,
-        '3-1',
-        <TikTokOutlined />,
-      ),
+    getItem(lang.menu_name_3, '3', <AppstoreOutlined />, [
+      getItem(lang.menu_name_3_1, '3-1', <TikTokOutlined />),
     ]),
-    getItem(lang.menu_list.team.name, '4', <SettingOutlined />, [
-      getItem(lang.menu_list.team.children[0].name, '4-1', <SettingOutlined />),
-      getItem(
-        lang.menu_list.team.children[1].name,
-        '4-2',
-        <SettingOutlined />,
-        [
-          getItem(
-            lang.menu_list.team.children[1].children[0].name,
-            '4-2-1',
-            <SettingOutlined />,
-          ),
-          getItem(
-            lang.menu_list.team.children[1].children[1].name,
-            '4-2-2',
-            <SettingOutlined />,
-          ),
-        ],
-      ),
+    getItem(lang.menu_name_4, '4', <SettingOutlined />, [
+      getItem(lang.menu_name_4_1, '4-1', <SettingOutlined />),
+      getItem(lang.menu_name_4_2, '4-2', <SettingOutlined />, [
+        getItem(lang.menu_name_4_2_1, '4-2-1', <SettingOutlined />),
+        getItem(lang.menu_name_4_2_2, '4-2-2', <SettingOutlined />),
+      ]),
     ]),
   ];
   const isMac = isMacFunc();

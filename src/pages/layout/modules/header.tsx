@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { Modal, Space } from 'antd';
 import ProfileCenter from './profile-center';
 import UpdateCenter from './update-center';

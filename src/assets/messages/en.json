@@ -86,75 +86,21 @@
       "first_subs": "First-Subs",
       "project_quantity": "profiles",
       "user_quantity": "users",
-      "menu_list": {
-        "primary": {
-          "name": "Primary",
-          "children": [
-            {
-              "name": "profiles",
-              "children": []
-            },
-            {
-              "name": "groups",
-              "children": []
-            }
-          ]
-        },
-        "discover": {
-          "name": "Discover",
-          "children": [
-            {
-              "name": "Proxies",
-              "children": []
-            },
-            {
-              "name": "Devices",
-              "children": []
-            },
-            {
-              "name": "Extensions",
-              "children": [
-                {
-                  "name": "Cloud Mobile Applications",
-                  "children": []
-                },
-                {}
-              ]
-            }
-          ]
-        },
-        "automation": {
-          "name": "Automation",
-          "children": [
-            {
-              "name": "TK Automation",
-              "children": []
-            }
-          ]
-        },
-        "team": {
-          "name": "Team",
-          "children": [
-            {
-              "name": "Billing",
-              "children": []
-            },
-            {
-              "name": "Settings",
-              "children": [
-                {
-                  "name": "Members",
-                  "children": []
-                },
-                {
-                  "name": "Action Logs",
-                  "children": []
-                }
-              ]
-            }
-          ]
-        }
-      }
+      "menu_name_1": "Primary",
+      "menu_name_1_1": "Profiles",
+      "menu_name_1_2": "Groups",
+      "menu_name_2": "Discover",
+      "menu_name_2_1": "Proxies",
+      "menu_name_2_2": "Extensions",
+      "menu_name_2_3": "App Store",
+      "menu_name_2_3_1": "Cloud Mobile",
+      "menu_name_3": "Automation",
+      "menu_name_3_1": "TK Automation",
+      "menu_name_4": "Team",
+      "menu_name_4_1": "Billing",
+      "menu_name_4_2": "Settings",
+      "menu_name_4_2_1": "Members",
+      "menu_name_4_2_2": "Action Logs"
     }
   }
 }

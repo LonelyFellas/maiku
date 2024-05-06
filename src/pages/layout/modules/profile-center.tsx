@@ -80,7 +80,7 @@ const ContentView = () => {
     }
     // 语言切换
     if (key.includes('lang')) {
-      setI81n(key.split('-')[1]);
+      setI81n(key.split('-')[1] as Common.Locale);
     }
   };
   return (
