@@ -2,7 +2,7 @@
  * @desc 使用async await 进项进行延时操作
  * @param {*} time
  */
-export default function sleep(time: any = 1000) {
+export default function sleep(time = 1000) {
   return new Promise((resolve) => {
     setTimeout(() => resolve(true), time);
   });
