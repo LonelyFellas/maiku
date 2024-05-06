@@ -14,7 +14,7 @@
       "filed_psw": "密码",
       "placeholder_psw": "请输入密码",
       "required_psw": "请输入密码",
-      "filed_password_info": "必须包含数字和大小写字母,8-20位",
+      "filed_psw_info": "必须包含数字和大小写字母,8-20位",
       "option_remember_me": "记住密码",
       "option_forgot_psw": "忘记密码?"
     },

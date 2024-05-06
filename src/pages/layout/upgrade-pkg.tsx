@@ -28,7 +28,7 @@ export default function UpgradePkg() {
           2.订单信息
         </div>
       </div>
-      <MacScrollbar className="flex flex-col gap-8 flex-1 pl-24 my-10">
+      <MacScrollbar className="flex flex-col gap-8 flex-1 pl-24 my-6">
         <div className="select_item">
           <span className="order_rounded_full all_flex">1</span>
           <div>选择适合你的套餐</div>

@@ -14,7 +14,7 @@
       "filed_psw": "Password",
       "placeholder_psw": "Please enter your password.",
       "required_psw": "Please enter your password",
-      "filed_password_info": "Must contain numbers and uppercase and lowercase letters, 8-20 characters",
+      "filed_psw_info": "Must contain numbers and uppercase and lowercase letters, 8-20 characters",
       "option_remember_me": "Save password",
       "option_forgot_psw": "Forgot password?"
     },

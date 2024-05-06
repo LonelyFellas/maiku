@@ -3,17 +3,18 @@ import type { Client } from '@devicefarmer/adbkit';
 import type { ColumnsType } from 'antd/es/table';
 
 declare global {
-  interface I18nConfig {
+  type I18nConfig = {
     lang: '简体中文' | 'English';
-    config: {
-      metadata: {
-        basic: {
-          title: string;
-          description: string;
-        };
-      };
-    };
-  }
+    config: typeof import('@/assets/messages/zh.json');
+  };
+
+  type PathValue<T, P extends string> = P extends `${infer K}.${infer Rest}`
+    ? K extends keyof T
+      ? PathValue<T[K], Rest>
+      : never
+    : P extends keyof T
+      ? T[P]
+      : never;
 
   // Used in Renderer process, expose in `preload.ts`
   interface Window {
