@@ -8,14 +8,12 @@ import 'mac-scrollbar/dist/mac-scrollbar.css';
 
 const App = (props: PropsWithChildren<object>) => {
   const { message } = AntdApp.useApp();
-  // const [showDevtools, setShowDevtools] = React.useState(false);
-  // const
   const [, setLang] = useI18nConfig();
   const isMac = isMacFunc();
 
   useEffect(() => {
-    // window.toggleDevtools = () => setShowDevtools((old) => !old);
     window.ipcRenderer.on('error', (_, error) => {
+      console.error(error.toString());
       message.error(error.toString());
     });
   }, []);

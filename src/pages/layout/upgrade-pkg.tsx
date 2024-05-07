@@ -1,7 +1,7 @@
 import { Button, Divider, InputNumber, Select, Tooltip } from 'antd';
 import { useState } from 'react';
 import { cn } from '@common';
-import { MacScrollbar } from 'mac-scrollbar';
+import { Scrollbar } from '@darwish/scrollbar-react';
 import { InfoCircleOutlined, CheckCircleFilled } from '@ant-design/icons';
 import './style.css';
 
@@ -28,7 +28,14 @@ export default function UpgradePkg() {
           2.订单信息
         </div>
       </div>
-      <MacScrollbar className="flex flex-col gap-8 flex-1 pl-24 my-6">
+      <Scrollbar
+        className="flex-1 pl-24 my-6"
+        contentStyle={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '2rem',
+        }}
+      >
         <div className="select_item">
           <span className="order_rounded_full all_flex">1</span>
           <div>选择适合你的套餐</div>
@@ -83,7 +90,7 @@ export default function UpgradePkg() {
             <span className="text-red-500">+$5.00/人</span>
           </div>
         </div>
-      </MacScrollbar>
+      </Scrollbar>
       <div className="text-center border-t-[1px] border-gray-100 py-5">
         <p>
           <span className="text-lg">套餐费用</span>

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Button, Form, Input, Space, Divider, Radio, Select, App } from 'antd';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-// import { MacScrollbar } from 'mac-scrollbar';
 import { useRouter } from '@tanstack/react-router';
 import { DetailCollapse } from '@common';
 import './style.css';

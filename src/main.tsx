@@ -26,6 +26,7 @@ if (!rootElement.innerHTML) {
           config={{
             thumbColor: 'rgba(0,0,0,0.5)',
             trackColor: 'transparent',
+            scrollbarWidth: 6,
           }}
         >
           <ConfigProvider

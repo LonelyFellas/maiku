@@ -1,11 +1,11 @@
-import { MacScrollbar } from 'mac-scrollbar';
+import { useState } from 'react';
 import { Button, Collapse, Flex } from 'antd';
+import { isArray } from '@darwish/utils-is';
+import { Scrollbar } from '@darwish/scrollbar-react';
+import { LeftOutlined } from '@ant-design/icons';
 import phone from '@img/phone-test.png';
 import '../index.css';
 import { cn, toNumber } from '@common';
-import { isArray } from '@darwish/utils-is';
-import { LeftOutlined } from '@ant-design/icons';
-import { useState } from 'react';
 
 interface SliderProps {
   list: { order: number; name: string; path: string }[];
@@ -25,7 +25,7 @@ const Slider = (props: SliderProps) => {
     }
   };
   return (
-    <MacScrollbar
+    <Scrollbar
       className="w-[230px] h-full bg-bg_primary/50 rounded-md"
       style={{
         overflowX: 'hidden',
@@ -89,7 +89,7 @@ const Slider = (props: SliderProps) => {
         {/*  </Collapse.Panel>*/}
         {/*))}*/}
       </Collapse>
-    </MacScrollbar>
+    </Scrollbar>
   );
 };
 

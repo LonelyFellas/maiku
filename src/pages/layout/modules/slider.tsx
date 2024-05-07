@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { App, Button, Menu, type MenuProps, Modal, Tooltip } from 'antd';
+import { App, Button, Menu, type MenuProps, Tooltip } from 'antd';
 import { useNavigate } from '@tanstack/react-router';
 import { useLocalStorage } from '@darwish/hooks-core';
-import { MacScrollbar } from 'mac-scrollbar/src';
+import { Scrollbar } from '@darwish/scrollbar-react';
 import {
   AppstoreOutlined,
   CalendarOutlined,
@@ -179,7 +179,7 @@ const Slider = () => {
           <ToggleIcon className="text-white" />
         </div>
       </div>
-      <MacScrollbar className="flex-1 mt-3 w-full">
+      <Scrollbar className="flex-1 mt-3 w-full">
         <Menu
           className="layout-slider-menu h-full w-full bg-bg_primary transition-all"
           defaultSelectedKeys={collapsed ? [] : ['profiles']}
@@ -194,7 +194,7 @@ const Slider = () => {
           items={items}
           mode="inline"
         />
-      </MacScrollbar>
+      </Scrollbar>
       {collapsed ? <SliderFooterCollapse /> : <SliderFooterUnCollapse />}
     </div>
   );
