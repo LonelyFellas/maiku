@@ -11,7 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@darwish/hooks-core": "^0.0.13",
+    "@darwish/hooks-core": "^0.0.14",
     "@darwish/scrollbar-react": "^0.1.3",
     "@darwish/utils-dlv": "^1.0.1",
     "@darwish/utils-is": "^0.0.3",

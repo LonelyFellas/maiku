@@ -78,7 +78,7 @@ const Slider = () => {
   const ToggleIcon = collapsed ? MenuUnfoldOutlined : MenuFoldOutlined;
 
   const handleGoToNewProfiles = () => {
-    navigate({ to: '/layout/new_profiles' });
+    navigate({ to: '/layout/new_profiles/-1' as string });
   };
   const handleMenuSelected: MenuProps['onSelect'] = (props) => {
     // 只处理当前菜单和和跳转菜单不相同的情况

@@ -13,7 +13,9 @@ export const fetchData = async <TData, TParams = null>(
     credentials: 'same-origin',
     headers: {
       'Content-type': 'application/json',
-      'X-Token': window.localStorage.getItem(Constants.LOCAL_TOKEN) || '',
+      'X-Token': JSON.parse(
+        window.localStorage.getItem(Constants.LOCAL_TOKEN) || 'null',
+      ),
     },
     redirect: 'follow',
     referrerPolicy: 'no-referrer',
@@ -38,7 +40,6 @@ export const fetchData = async <TData, TParams = null>(
   return fetch(url, options)
     .then((response) => response.json())
     .then((res) => {
-      console.log(res);
       /**
        * errno 编码为101，未登录，
        */
@@ -48,9 +49,7 @@ export const fetchData = async <TData, TParams = null>(
         });
         return null;
       } else if (isObject(res) && 'errno' in res && res.errno !== 0) {
-        /**
-         * errno 编码为0：请求成功
-         */
+        // 其他错误编码
         message.error(res.errmsg);
         return res.errmsg;
       }

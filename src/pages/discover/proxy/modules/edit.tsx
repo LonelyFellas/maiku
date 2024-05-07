@@ -1,4 +1,12 @@
-import { Form, type ModalProps, Input, Select, Tag, Space } from 'antd';
+import {
+  Form,
+  type ModalProps,
+  Input,
+  Select,
+  Tag,
+  Space,
+  InputNumber,
+} from 'antd';
 import { Modal } from '@common';
 
 interface EditProps extends ModalProps {}
@@ -57,9 +65,9 @@ export function AddProxyFormItems() {
         <Select
           className="!w-[240px]"
           options={[
-            { label: 'Socks5', value: 'socks5' },
-            { label: 'Http', value: 'http', disabled: true },
-            { label: 'Https', value: 'https', disabled: true },
+            { label: 'Socks5', value: '1' },
+            { label: 'Http', value: '2', disabled: true },
+            { label: 'Https', value: '3', disabled: true },
           ]}
           placeholder="请选择代理类型"
         />
@@ -73,13 +81,21 @@ export function AddProxyFormItems() {
       {/*    placeholder="请选择代理查询渠道"*/}
       {/*  />*/}
       {/*</Item>*/}
-      <Item label="主机 : 端口" style={{ height: '32px' }}>
+      <Item label="主机 : 端口" style={{ height: '32px' }} required>
         <Space.Compact className="w-[240px]">
-          <Item name="host">
-            <Input placeholder="请输入主机" />
+          <Item
+            name="address"
+            required
+            rules={[{ required: true, message: '请输入主机' }]}
+          >
+            <Input name="port" placeholder="请输入主机" />
           </Item>
-          <Item name="port">
-            <Input addonBefore=":" placeholder="请输入端口" />
+          <Item
+            name="port"
+            required
+            rules={[{ required: true, message: '请输入端口' }]}
+          >
+            <InputNumber addonBefore=":" placeholder="请输入端口" />
           </Item>
         </Space.Compact>
       </Item>
@@ -88,6 +104,13 @@ export function AddProxyFormItems() {
       </Item>
       <Item label="代理密码" name="password">
         <Input.Password className="w-[240px]" placeholder="请输入代理密码" />
+      </Item>
+      <Item label="备注" name="detail">
+        <Input.TextArea
+          className="!w-[240px]"
+          placeholder="请输入备注"
+          style={{ resize: 'none' }}
+        />
       </Item>
     </>
   );

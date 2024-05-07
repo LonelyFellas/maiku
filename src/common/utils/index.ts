@@ -3,4 +3,5 @@ export { default as isMacFunc } from './is-mac-func';
 export { default as isReactFragment } from './is-react-fragment';
 export { default as sleep } from './sleep';
 export { default as toNumber } from './to-number';
-export { default as getItem } from './get-item.ts';
+export { default as getItem } from './get-item';
+export { default as onlyTrueObj } from './only-true-obj.ts';

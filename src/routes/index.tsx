@@ -15,7 +15,7 @@ import NewProfiles from '@/pages/layout/new-profiles.tsx';
 import Proxy from '@/pages/discover/proxy';
 import AddBatches from '@/pages/discover/proxy/add-batches.tsx';
 import UpgradePkg from '@/pages/layout/upgrade-pkg.tsx';
-import { postsProxyQueryOptions } from './data.ts';
+import { postsEnvQueryOptions, postsProxyQueryOptions } from './data.ts';
 
 const rootRoute = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -55,6 +55,8 @@ const profiles = createRoute({
   getParentRoute: () => layoutRoute,
   path: '/profiles',
   component: Profiles,
+  loader: ({ context: { queryClient } }) =>
+    queryClient.ensureQueryData(postsEnvQueryOptions),
   meta: () => [{ title: '环境管理' }],
 });
 /** 代理管理 */
@@ -79,14 +81,15 @@ const addBatchesProxy = createRoute({
   ],
 });
 
-/** 新建环境 */
+/** 新建环境或者编辑环境 */
 const newProfiles = createRoute({
   getParentRoute: () => layoutRoute,
-  path: '/new_profiles',
+  // id为-1时为新建环境，否则为编辑环境
+  path: `/new_profiles/$id`,
   component: NewProfiles,
-  meta: () => [
+  meta: (context) => [
     {
-      title: '新建环境',
+      title: context.params.id === '-1' ? '新建环境' : '编辑环境',
       isBack: true,
     },
   ],
