@@ -1,5 +1,5 @@
 import { fetchData } from '../fetch-data';
-import { LoginParams, LoginResult, RegisterParams } from '@api/type';
+import { LoginParams, LoginResult, RegisterParams } from '@api/user/type.ts';
 
 export const loginService: Api.IFetch<LoginResult, LoginParams> = (data) =>
   fetchData('auth/login', {

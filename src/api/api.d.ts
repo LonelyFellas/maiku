@@ -7,5 +7,7 @@ declare namespace Api {
     body?: string;
   }
 
-  type IFetch<TData, TParams> = (data: TParams) => Promise<TData>;
+  type IFetch<TData, TParams = null> = TParams extends null
+    ? () => Promise<TData>
+    : (data: TParams) => Promise<TData>;
 }

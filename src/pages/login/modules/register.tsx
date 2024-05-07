@@ -13,7 +13,7 @@ import imgPhone from '@img/phone.png?url';
 import imgMail from '@img/mail.png?url';
 import { useI18nConfig } from '@common';
 import { registerService } from '@api/user/login';
-import type { RegisterParams } from '@api/type';
+import type { RegisterParams } from '@api/user/type.ts';
 import type { LoginProps } from '@/pages/login';
 
 const prefixSelector = (

@@ -1,5 +1,6 @@
 import { message } from 'antd';
 import { isObject } from '@darwish/utils-is';
+import { Constants } from '@common';
 
 export const fetchData = async <TData, TParams = null>(
   url: Api.Url,
@@ -12,6 +13,7 @@ export const fetchData = async <TData, TParams = null>(
     credentials: 'same-origin',
     headers: {
       'Content-type': 'application/json',
+      'X-Token': window.localStorage.getItem(Constants.LOCAL_TOKEN) || '',
     },
     redirect: 'follow',
     referrerPolicy: 'no-referrer',
@@ -36,13 +38,23 @@ export const fetchData = async <TData, TParams = null>(
   return fetch(url, options)
     .then((response) => response.json())
     .then((res) => {
+      console.log(res);
       /**
-       * errno 编码为0：请求成功
+       * errno 编码为101，未登录，
        */
-      if (isObject(res) && 'errno' in res && res.errno !== 0) {
+      if (res.errno === 101) {
+        message.error('登录失效，请重新登录').then(() => {
+          window.location.href = '/login';
+        });
+        return null;
+      } else if (isObject(res) && 'errno' in res && res.errno !== 0) {
+        /**
+         * errno 编码为0：请求成功
+         */
         message.error(res.errmsg);
         return res.errmsg;
       }
+
       return res.data;
     })
     .catch((err) => {

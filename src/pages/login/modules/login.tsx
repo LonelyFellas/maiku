@@ -10,7 +10,7 @@ import {
 } from '@ant-design/icons';
 import { useI18nConfig, Constants } from '@common';
 import { loginService } from '@api/user/login';
-import type { LoginParams } from '@api/type';
+import type { LoginParams } from '@api/user/type.ts';
 import type { LoginProps } from '@/pages/login';
 
 type FormValues = LoginParams & { remember: boolean };

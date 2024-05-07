@@ -1,12 +1,7 @@
 import { queryOptions } from '@tanstack/react-query';
-
-async function fetchProxyData(): Promise<Darwish.AnyObj[]> {
-  return new Promise((resolve) => {
-    import('./fake.json').then((res) => resolve(res.default));
-  });
-}
+import { getProxyList } from '@api/discover/proxy.ts';
 
 export const postsProxyQueryOptions = queryOptions({
   queryKey: ['posts-proxy-list'],
-  queryFn: () => fetchProxyData(),
+  queryFn: getProxyList,
 });
