@@ -1,11 +1,12 @@
 import ReactDOM from 'react-dom/client';
 import { ConfigProvider, message } from 'antd';
 import { I18nConfigContextProvider, isMacFunc } from '@common';
-import { router } from '@/routes';
+import { queryClient, router } from '@/routes';
 import './index.css';
 import { RouterProvider } from '@tanstack/react-router';
 import { GlobalScrollbarProvider } from '@darwish/scrollbar-react';
 import '@darwish/scrollbar-react/dist/style.css';
+import { QueryClientProvider } from '@tanstack/react-query';
 
 const isMac = isMacFunc();
 window.env = import.meta.env;
@@ -17,26 +18,29 @@ message.config({
 const rootElement = document.getElementById('app')!;
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
+
   root.render(
-    <I18nConfigContextProvider>
-      <GlobalScrollbarProvider
-        config={{
-          thumbColor: 'rgba(0,0,0,0.5)',
-          trackColor: 'transparent',
-        }}
-      >
-        <ConfigProvider
-          theme={{
-            token: {
-              // Seed Token，影响范围大
-              colorPrimary: '#5b7cfd',
-              borderRadius: 4,
-            },
+    <QueryClientProvider client={queryClient}>
+      <I18nConfigContextProvider>
+        <GlobalScrollbarProvider
+          config={{
+            thumbColor: 'rgba(0,0,0,0.5)',
+            trackColor: 'transparent',
           }}
         >
-          <RouterProvider router={router} />
-        </ConfigProvider>
-      </GlobalScrollbarProvider>
-    </I18nConfigContextProvider>,
+          <ConfigProvider
+            theme={{
+              token: {
+                // Seed Token，影响范围大
+                colorPrimary: '#5b7cfd',
+                borderRadius: 4,
+              },
+            }}
+          >
+            <RouterProvider router={router} />
+          </ConfigProvider>
+        </GlobalScrollbarProvider>
+      </I18nConfigContextProvider>
+    </QueryClientProvider>,
   );
 }

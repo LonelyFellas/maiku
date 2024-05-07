@@ -1,30 +1,20 @@
-import React, { useEffect, Fragment, type PropsWithChildren } from 'react';
+import { useEffect, Fragment, type PropsWithChildren } from 'react';
 import { FloatButton, App as AntdApp } from 'antd';
 import { GlobalOutlined as GlobalIcon } from '@ant-design/icons/lib/icons';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { isMacFunc, useI18nConfig, Wrapper } from '@common';
 import 'mac-scrollbar/dist/mac-scrollbar.css';
 
-const queryClient = new QueryClient();
-const ReactQueryDevtoolsProduction = React.lazy(() =>
-  import('@tanstack/react-query-devtools/build/modern/production.js').then(
-    (d) => ({
-      default: d.ReactQueryDevtools,
-    }),
-  ),
-);
-
 const App = (props: PropsWithChildren<object>) => {
   const { message } = AntdApp.useApp();
-  const [showDevtools, setShowDevtools] = React.useState(false);
+  // const [showDevtools, setShowDevtools] = React.useState(false);
   // const
   const [, setLang] = useI18nConfig();
   const isMac = isMacFunc();
 
   useEffect(() => {
-    window.toggleDevtools = () => setShowDevtools((old) => !old);
+    // window.toggleDevtools = () => setShowDevtools((old) => !old);
     window.ipcRenderer.on('error', (_, error) => {
       message.error(error.toString());
     });
@@ -36,8 +26,8 @@ const App = (props: PropsWithChildren<object>) => {
 
   const Component = isMac ? Fragment : Wrapper;
   return (
-    <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen />
+    <>
+      {window.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
       {window.env.DEV && <TanStackRouterDevtools />}
       {window.env.DEV && (
         <FloatButton
@@ -46,17 +36,11 @@ const App = (props: PropsWithChildren<object>) => {
           style={{ top: 24 }}
         />
       )}
-      {showDevtools && (
-        <React.Suspense fallback={null}>
-          <ReactQueryDevtoolsProduction />
-        </React.Suspense>
-      )}
-
       <Component>
         {/* 主要是为了去除antd的错误message提示， */}
         <AntdApp>{props.children}</AntdApp>
       </Component>
-    </QueryClientProvider>
+    </>
   );
 };
 export default App;

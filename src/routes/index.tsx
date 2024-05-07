@@ -116,10 +116,12 @@ const routeTree = rootRoute.addChildren([
   ]),
 ]);
 
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
 export const router = createRouter({
   routeTree,
   history: createHashHistory(),
+  defaultPreload: 'intent',
+  defaultStaleTime: 0,
   context: {
     queryClient,
   },
