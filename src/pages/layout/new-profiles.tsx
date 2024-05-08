@@ -17,9 +17,9 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { useParams, useRouter } from '@tanstack/react-router';
 import { DetailCollapse, onlyTrueObj } from '@common';
 import './style.css';
-import { AddProxyFormItems } from '@/pages/discover/proxy/modules/edit.tsx';
+import { AddProxyFormItems } from '@/pages/discover/proxy/modules/add-proxy-common-formitem.tsx';
 import { postAddEnvService } from '@api/primary/env.ts';
-import { getProxyList } from '@api/discover/proxy.ts';
+import { getProxyListService } from '@api/discover/proxy.ts';
 
 type ProxyType = 'custom' | 'list';
 const inputStyle = { width: '240px' };
@@ -33,6 +33,7 @@ export default function NewProfiles() {
 
   const mutation = useMutation({
     mutationFn: postAddEnvService,
+    mutationKey: ['add-edit-env'],
     onSuccess: () => {
       modal.success({
         title: '新建环境成功',
@@ -48,8 +49,8 @@ export default function NewProfiles() {
   });
 
   const handleProxyTypeChange = ({
-    formProxyType,
-  }: {
+                                   formProxyType,
+                                 }: {
     formProxyType: ProxyType;
   }) => {
     console.log(formProxyType);
@@ -187,7 +188,7 @@ export default function NewProfiles() {
       <Divider className="mt-0 my-4" />
       <Space>
         <Button onClick={handleCancel}>取消</Button>
-        <Button type="primary" onClick={handleSubmit}>
+        <Button type="primary" onClick={handleSubmit} loading={mutation.isPending}>
           确定
         </Button>
       </Space>
@@ -197,12 +198,12 @@ export default function NewProfiles() {
 
 function GetProxyView() {
   const mutation = useMutation({
-    mutationFn: getProxyList,
+    mutationFn: getProxyListService,
+    mutationKey: ['posts-env-list'],
   });
 
   const handleDropdownVisibleChange = (visible: boolean) => {
     if (visible) {
-      console.log('visible', visible);
       mutation.mutate();
     }
   };

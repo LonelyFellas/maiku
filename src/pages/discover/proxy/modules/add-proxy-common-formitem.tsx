@@ -1,64 +1,18 @@
-import {
-  Form,
-  type ModalProps,
-  Input,
-  Select,
-  Tag,
-  Space,
-  InputNumber,
-} from 'antd';
-import { Modal } from '@common';
+import { Form, Input, InputNumber, Select, Space } from 'antd';
 
-interface EditProps extends ModalProps {}
+const { Item } = Form;
 
-interface FormValues {
-  order?: number;
-  proxyType: string;
-  ip: string;
-  username: string;
-  password: string;
-}
-
-const Item = Form.Item;
-const Edit = (props: EditProps) => {
-  const { onOk, ...restProps } = props;
-  const isAdd = props.title === '添加代理';
-  const [form] = Form.useForm<FormValues>();
-
-  const handleOk = async (event: ReactMouseEvent<HTMLButtonElement>) => {
-    const validRes = await form.validateFields();
-    console.log(validRes);
-    onOk?.(event);
-  };
-  return (
-    <Modal {...restProps} width={700} onOk={handleOk}>
-      <Form
-        form={form}
-        className="w-[500px] m-auto"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
-        initialValues={{
-          proxyType: 'socks5',
-        }}
-      >
-        {!isAdd ? (
-          <Item label="代理" name="order">
-            <Tag color="blue">123456</Tag>
-          </Item>
-        ) : null}
-        <AddProxyFormItems />
-      </Form>
-    </Modal>
-  );
-};
-export default Edit;
-
+/**
+ * 添加代理的一些别的地方（添加环境）用到公共的ui组件
+ * 所以分离出来
+ * @constructor
+ */
 export function AddProxyFormItems() {
   return (
     <>
       <Item
         label="代理类型"
-        name="proxyType"
+        name="type"
         required
         rules={[{ required: true, message: '请输入代理类型' }]}
       >

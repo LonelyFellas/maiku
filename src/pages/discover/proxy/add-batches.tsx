@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Form, Input, Select, Space } from 'antd';
 import { Table } from '@common';
-import { addTableColumns } from './config';
+import { addTableColumns } from './config.tsx';
 
 /**
  * 批量添加代理

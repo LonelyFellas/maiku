@@ -1,23 +1,30 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { Button, Space, Popconfirm } from 'antd';
 import { Table, TriggerModal } from '@common';
-import EditModal from './modules/edit';
+import AddEditModal from './modules/add-edit';
 import { columns as configColumns } from './config';
-import { postsProxyQueryOptions } from '@/routes/data.ts';
+import { postsProxyQueryOptions } from '@/routes/data';
 import { useNavigate } from '@tanstack/react-router';
+import type { GetProxyListResult } from '@api/discover/type';
+import { postDeleteProxyService } from '@api/discover/proxy.ts';
 
 export default function Proxy() {
+  const navigate = useNavigate();
+  const { data, refetch, isLoading } = useSuspenseQuery(postsProxyQueryOptions);
+  const deleteMutation = useMutation({
+    mutationFn: postDeleteProxyService,
+  });
   const columns = configColumns.concat({
     title: '操作',
     dataIndex: 'action',
     key: 'action',
-    width: 180,
+    width: 150,
     fixed: 'right',
-    render: () => (
+    render: (_: unknown, record: GetProxyListResult) => (
       <Space>
         <TriggerModal
           renderModal={(renderProps) => (
-            <EditModal {...renderProps} title="编辑代理" />
+            <AddEditModal {...renderProps} title="编辑代理" handleUpdateList={handleUpdateList} id={record.id} />
           )}
         >
           <Button type="primary" ghost>
@@ -26,7 +33,7 @@ export default function Proxy() {
         </TriggerModal>
         <Popconfirm
           title="确认删除？"
-          onConfirm={() => {}}
+          onConfirm={() => handleDelete(record.id)}
           okText="确认"
           cancelText="取消"
         >
@@ -35,12 +42,22 @@ export default function Proxy() {
       </Space>
     ),
   });
-  const navigate = useNavigate();
 
-  const { data, isLoading } = useSuspenseQuery(postsProxyQueryOptions);
 
+  /** 更新列表数据 */
+  const handleUpdateList = () => {
+    refetch();
+  };
+
+  /** 跳转批量导入页面 */
   const handleGoToAddBatches = () => {
     navigate({ to: '/layout/add_batches_proxy' });
+  };
+
+  /** 删除代理 */
+  const handleDelete = (id: number) => {
+    deleteMutation.mutate({ id });
+    refetch();
   };
 
   return (
@@ -48,7 +65,7 @@ export default function Proxy() {
       <div className="">
         <TriggerModal
           renderModal={(renderProps) => (
-            <EditModal {...renderProps} title="添加代理" />
+            <AddEditModal {...renderProps} title="添加代理" handleUpdateList={handleUpdateList} />
           )}
         >
           <Button type="primary">添加代理</Button>
@@ -59,6 +76,7 @@ export default function Proxy() {
       </div>
       <Table
         loading={isLoading}
+        rowKey={record => record.id}
         className="mt-2 2xl:mt-4"
         virtual
         columns={columns}

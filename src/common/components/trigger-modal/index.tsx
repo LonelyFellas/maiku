@@ -18,6 +18,7 @@ interface CustomModalProps {
   renderModal: (
     params: Pick<ModalProps, 'title' | 'onCancel' | 'open'> & {
       onOk: <T>(event?: React.MouseEvent<HTMLElement, MouseEvent> | T) => void;
+      onCancel: <T>(event?: React.MouseEvent<HTMLElement, MouseEvent> | T) => void;
     },
   ) => JSX.Element;
   isDoubleClick?: boolean;
@@ -69,17 +70,17 @@ const TriggerModal: FC<PropsWithChildren<CustomModalProps>> = (props) => {
       children as JSX.Element,
       isDoubleClick
         ? {
-            onDoubleClick: () => handleClick('onDoubleClick'),
-          }
+          onDoubleClick: () => handleClick('onDoubleClick'),
+        }
         : isClick
           ? {
-              onClick: () => handleClick('onClick'),
-            }
+            onClick: () => handleClick('onClick'),
+          }
           : {
-              onClick: () => {
-                console.log('不可点击');
-              },
+            onClick: () => {
+              console.log('不可点击');
             },
+          },
     );
   }, [children, isDoubleClick]);
 

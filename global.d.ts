@@ -1,6 +1,7 @@
 import type React from 'react';
 import type { Client } from '@devicefarmer/adbkit';
 import type { ColumnsType } from 'antd/es/table';
+import { ModalProps } from 'antd';
 
 declare global {
   type I18nConfig = {
@@ -84,5 +85,28 @@ declare global {
     T extends Element,
     E = React.MouseEvent<T, MouseEvent>,
   > = E;
+
+  /**
+   * Antd Modal 的类型定义
+   * 重写了onOk的类型定义，把event参数改为可选参数
+   */
+  interface AntdModalProps<T extends Element = HTMLButtonElement> extends Omit<ModalProps, 'onOk' | 'onCancel'> {
+    onOk: (e?: ReactMouseEvent<T>) => void;
+    onCancel: (e?: ReactMouseEvent<T>) => void;
+  }
+
+  /**
+   * 新增编辑统一的接口定义
+   */
+  type AnyObj = Darwish.AnyObj;
+  type EmptyObj = Darwish.EmptyObj;
+  type MergeObj<T extends AnyObj, U extends AnyObj, Merge extends AnyObj = U extends EmptyObj ? T : T extends EmptyObj ? U : T & U> = {
+    [K in keyof Merge]: Merge[K]
+  }
+  type AddEditType<Obj extends AnyObj, IsEdit extends boolean = false, ExcludeParams extends AnyObj = {
+    id: number
+  }> = MergeObj<Obj, IsEdit extends true ? ExcludeParams : {}>
+
 }
+
 export {};

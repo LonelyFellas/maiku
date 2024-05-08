@@ -46,6 +46,7 @@ const Register = (props: LoginProps) => {
   const [isPhoneRegister, setIsPhoneRegister] = useState(true);
   const { mutate, isPending } = useMutation({
     mutationFn: registerService,
+    mutationKey: ['register-usr'],
     onSuccess: (data) => {
       if (isNumber(data)) {
         message.success(lang?.register_msg);

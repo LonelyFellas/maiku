@@ -10,7 +10,7 @@ export const getEnvListService: Api.IFetch<GetAllEnvListResult[]> = () =>
     method: 'GET',
   });
 /** 添加环境 */
-export const postAddEnvService: Api.IFetch<any, PostAddEnvParams> = (data) =>
+export const postAddEnvService: Api.IFetch<number, PostAddEnvParams> = (data) =>
   fetchData('env/add', {
     method: 'POST',
     data,
