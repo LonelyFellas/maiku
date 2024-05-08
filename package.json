@@ -1,14 +1,17 @@
 {
   "name": "maiku",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "redev": "npm run dev",
     "build": "tsc && vite build && electron-builder",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "update:client:patch": "node update-client.js",
+    "update:client:minor": "node update-client.js minor",
+    "update:client:major": "node update-client.js major"
   },
   "dependencies": {
     "@darwish/hooks-core": "^0.0.14",
@@ -47,6 +50,7 @@
     "less": "^4.2.0",
     "postcss": "^8.4.38",
     "prettier": "^3.2.5",
+    "semver": "^7.6.1",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.2.2",
     "vite": "^5.1.6",
