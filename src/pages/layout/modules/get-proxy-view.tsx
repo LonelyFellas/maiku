@@ -11,7 +11,7 @@ const GetProxyView = (props: GetProxyViewProps) => {
       proxyMutation.mutate();
     }
   };
-  const filterSelectData = proxyMutation.data?.map((item) => ({
+  const filterSelectData = proxyMutation.data?.map((item: any) => ({
     value: item.id,
     label: `socks://${item.address}:${item.port} ${item.username ? `(${item.username})` : ''}`,
   }));

@@ -3,22 +3,11 @@ import { App, Button, Menu, type MenuProps, Tooltip } from 'antd';
 import { useNavigate } from '@tanstack/react-router';
 import { useLocalStorage } from '@darwish/hooks-core';
 import { Scrollbar } from '@darwish/scrollbar-react';
-import {
-  AppstoreOutlined,
-  CalendarOutlined,
-  ExclamationCircleOutlined,
-  GiftOutlined,
-  LinkOutlined,
-  MailOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  PlusOutlined,
-  SettingOutlined,
-  TikTokOutlined,
-} from '@ant-design/icons';
+import { AppstoreOutlined, CalendarOutlined, ExclamationCircleOutlined, GiftOutlined, LinkOutlined, MailOutlined, MenuFoldOutlined, MenuUnfoldOutlined, PlusOutlined, SettingOutlined, TikTokOutlined } from '@ant-design/icons';
 import { useI18nConfig, isMacFunc, useRouteMeta, getItem } from '@common';
 import type { ItemType, MenuItemType } from 'antd/es/menu/hooks/useItems';
 import '@sty/button.css';
+import avatar from '/public/electron-vite.animate.svg';
 import '../style.css';
 
 const MENU_MAP = {
@@ -33,26 +22,16 @@ const Slider = () => {
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   const [openKeys, setOpenKeys] = useState<string[]>([]);
   const items: ItemType<MenuItemType>[] = [
-    getItem(lang.menu_name_1, 'primary', <MailOutlined />, [
-      getItem(lang.menu_name_1_1, 'profiles', <MailOutlined />),
-      getItem(lang.menu_name_1_2, '1-2', <MailOutlined />),
-    ]),
+    getItem(lang.menu_name_1, 'primary', <MailOutlined />, [getItem(lang.menu_name_1_1, 'profiles', <MailOutlined />), getItem(lang.menu_name_1_2, '1-2', <MailOutlined />)]),
     getItem(lang.menu_name_2, 'discover', <CalendarOutlined />, [
       getItem(lang.menu_name_2_1, 'proxy', <AppstoreOutlined />),
       getItem(lang.menu_name_2_2, '2-2', <GiftOutlined />),
-      getItem(lang.menu_name_2_3, '2-3', <LinkOutlined />, [
-        getItem(lang.menu_name_2_3_1, '2-3-1', <LinkOutlined />),
-      ]),
+      getItem(lang.menu_name_2_3, '2-3', <LinkOutlined />, [getItem(lang.menu_name_2_3_1, '2-3-1', <LinkOutlined />)]),
     ]),
-    getItem(lang.menu_name_3, '3', <AppstoreOutlined />, [
-      getItem(lang.menu_name_3_1, '3-1', <TikTokOutlined />),
-    ]),
+    getItem(lang.menu_name_3, '3', <AppstoreOutlined />, [getItem(lang.menu_name_3_1, '3-1', <TikTokOutlined />)]),
     getItem(lang.menu_name_4, '4', <SettingOutlined />, [
       getItem(lang.menu_name_4_1, '4-1', <SettingOutlined />),
-      getItem(lang.menu_name_4_2, '4-2', <SettingOutlined />, [
-        getItem(lang.menu_name_4_2_1, '4-2-1', <SettingOutlined />),
-        getItem(lang.menu_name_4_2_2, '4-2-2', <SettingOutlined />),
-      ]),
+      getItem(lang.menu_name_4_2, '4-2', <SettingOutlined />, [getItem(lang.menu_name_4_2_1, '4-2-1', <SettingOutlined />), getItem(lang.menu_name_4_2_2, '4-2-2', <SettingOutlined />)]),
     ]),
   ];
   const isMac = isMacFunc();
@@ -143,28 +122,16 @@ const Slider = () => {
             height: collapsed ? '2.5rem' : '2rem',
             objectFit: 'fill',
           }}
-          src="https://avatars.githubusercontent.com/u/38754760?v=4"
+          src={avatar}
           alt="add-profile-icon"
         />
-        <span
-          className="text-black font-bold text-xl"
-          style={{ display: collapsed ? 'none' : 'unset' }}
-        >
+        <span className="text-black font-bold text-xl" style={{ display: collapsed ? 'none' : 'unset' }}>
           MaiKu-Net
         </span>
       </div>
       <div className="relative">
-        <Tooltip
-          title={lang.new_project}
-          {...(collapsed ? {} : { open: false })}
-        >
-          <Button
-            icon={<PlusOutlined />}
-            className="h-10 rounded-lg mt-2 shadow-3xl transition-all"
-            type="primary"
-            style={{ width: collapsed ? '43px' : '180px' }}
-            onClick={handleGoToNewProfiles}
-          >
+        <Tooltip title={lang.new_project} {...(collapsed ? {} : { open: false })}>
+          <Button icon={<PlusOutlined />} className="h-10 rounded-lg mt-2 shadow-3xl transition-all" type="primary" style={{ width: collapsed ? '43px' : '180px' }} onClick={handleGoToNewProfiles}>
             {collapsed ? '' : lang.new_project}
           </Button>
         </Tooltip>
@@ -240,18 +207,8 @@ export const SliderFooterCollapse = () => {
   };
   return (
     <div className="w-full h-[125px] pt-6 cursor-pointer">
-      <Tooltip
-        open={true}
-        overlayClassName="slider_tooltip"
-        title={lang.first_subs}
-        placement="topLeft"
-        trigger="click"
-      >
-        <div
-          className="btn_outside all_flex w-14 h-14 !bg-bg_primary"
-          style={{ borderRadius: '1.2rem' }}
-          onClick={handleGoToUpgrade}
-        >
+      <Tooltip open={true} overlayClassName="slider_tooltip" title={lang.first_subs} placement="topLeft" trigger="click">
+        <div className="btn_outside all_flex w-14 h-14 !bg-bg_primary" style={{ borderRadius: '1.2rem' }} onClick={handleGoToUpgrade}>
           <GiftOutlined className="text-3xl text-gray-700" />
         </div>
       </Tooltip>

@@ -156,7 +156,7 @@ export default function NewProfiles() {
   const handleSubmit = async () => {
     const values = await form.validateFields();
     const filteredValues = filterFormValues(values);
-    addMutation.mutate(filteredValues);
+    addMutation.mutate(filteredValues as any);
   };
 
   return (

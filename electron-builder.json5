@@ -28,6 +28,12 @@
     ],
     "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
   },
+  extraFiles: [
+    {
+      from: "resources",
+      to: "resources",
+    }
+  ],
   "nsis": {
     "oneClick": false,
     "perMachine": false,
