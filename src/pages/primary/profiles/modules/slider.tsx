@@ -42,7 +42,7 @@ const Slider = (props: SliderProps) => {
         overflowY: 'auto',
       }}
     >
-      <ContainerWithEmpty className="h-full" list={envList} isRefetching={isRefetching} isFetching={isFetching}>
+      <ContainerWithEmpty className="h-full" hasData={envList?.length > 0} isRefetching={isRefetching} isFetching={isFetching}>
         <Collapse
           className="profiles-slider-collapse flex flex-col items-center"
           accordion

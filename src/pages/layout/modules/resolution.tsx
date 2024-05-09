@@ -8,14 +8,17 @@ import type { PXType } from '@/pages/layout/new-profiles.tsx';
  */
 const Resolution = (props: { pxType: PXType }) => {
   return (
-    <Form.Item className="resolution" name="px_type">
+    <Form.Item className="resolution" name="px_type_super">
       <div className="flex gap-4">
-        <Radio.Group value={props.pxType}>
-          <Radio.Button value={1}>720P</Radio.Button>
-          <Radio.Button value={2}>1080P</Radio.Button>
-          <Radio.Button value={100}>自定义</Radio.Button>
-        </Radio.Group>
-        {props.pxType === 100 ? (
+        <Form.Item name="px_type">
+          <Radio.Group value={props.pxType}>
+            <Radio.Button value="1">720P</Radio.Button>
+            <Radio.Button value="2">1080P</Radio.Button>
+            <Radio.Button value="100">自定义</Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+
+        {props.pxType === '100' ? (
           <Space.Compact>
             <Form.Item name="width" className="w-20">
               <InputNumber placeholder="宽度" />

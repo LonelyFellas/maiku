@@ -1,6 +1,8 @@
+import { PROXY_TYPE } from '@common';
+
 export interface GetProxyListResult {
   id: number;
-  type: string;
+  type: keyof typeof PROXY_TYPE;
   address: string;
   port: number;
   username: string;
@@ -12,11 +14,14 @@ export interface GetProxyListResult {
   create_at: string;
 }
 
-export type PostAddEditProxyParams<IsEdit extends boolean = false> = AddEditType<{
-  type: string;
-  address: string;
-  port: number;
-  username: string;
-  password: string;
-  detail: string;
-}, IsEdit>
+export type PostAddEditProxyParams<IsEdit extends boolean = false> = AddEditType<
+  {
+    type: string;
+    address: string;
+    port: number;
+    username: string;
+    password: string;
+    detail: string;
+  },
+  IsEdit
+>;

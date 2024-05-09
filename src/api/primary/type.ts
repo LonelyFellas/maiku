@@ -13,24 +13,27 @@ export interface GetAllEnvListResult {
   password: string;
 }
 
-export interface PostAddEnvParams {
-  name?: string;
-  width?: number;
-  height?: number;
-  dpi?: number;
-  disk?: number;
-  memory?: number;
-  type: string;
-  address: string;
-  port: number;
-  username?: string;
-  password?: string;
-  detail?: string;
+export type PostAddEnvParams<IsEdit extends boolean = false> = AddEditType<
+  {
+    name?: string;
+    width?: number;
+    height?: number;
+    dpi?: number;
+    disk?: number;
+    memory?: number;
+    type: string;
+    address: string;
+    port: number;
+    username?: string;
+    password?: string;
+    detail?: string;
 
-  /**
-   * * 1: auto-720
-   * * 2: auto-1080
-   * * 100: custom 自定义分辨率
-   */
-  px_type: 1 | 2 | 100;
-}
+    /**
+     * * 1: auto-720
+     * * 2: auto-1080
+     * * 100: custom 自定义分辨率
+     */
+    px_type: '1' | '2' | '100';
+  },
+  IsEdit
+>;
