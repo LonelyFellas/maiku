@@ -6,7 +6,7 @@ import { LeftOutlined } from '@ant-design/icons';
 import phone from '@img/phone-test.png';
 import '../index.css';
 import { cn, ContainerWithEmpty, toNumber } from '@common';
-import type { GetAllEnvListResult } from '@api/primary/type.ts';
+import type { GetAllEnvListResult } from '@api';
 import { useNavigate } from '@tanstack/react-router';
 
 interface SliderProps {
@@ -19,8 +19,7 @@ interface SliderProps {
 
 const Slider = (props: SliderProps) => {
   const navigate = useNavigate();
-  const { isFetching, isRefetching, envList, currentKey, setCurrentKey } =
-    props;
+  const { isFetching, isRefetching, envList, currentKey, setCurrentKey } = props;
   const [collapse, setCollapse] = useState([`${currentKey}`]);
   const handleChange = (indexStr: string | string[]) => {
     if (isArray(indexStr)) {
@@ -43,12 +42,7 @@ const Slider = (props: SliderProps) => {
         overflowY: 'auto',
       }}
     >
-      <ContainerWithEmpty
-        className="h-full"
-        list={envList}
-        isRefetching={isRefetching}
-        isFetching={isFetching}
-      >
+      <ContainerWithEmpty className="h-full" list={envList} isRefetching={isRefetching} isFetching={isFetching}>
         <Collapse
           className="profiles-slider-collapse flex flex-col items-center"
           accordion

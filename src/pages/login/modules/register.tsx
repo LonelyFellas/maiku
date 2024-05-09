@@ -2,18 +2,11 @@ import { useState } from 'react';
 import { Form, Input, Button, Tooltip, Select, App } from 'antd';
 import { useMutation } from '@tanstack/react-query';
 import { isNumber } from '@darwish/utils-is';
-import {
-  InfoCircleOutlined,
-  LockOutlined,
-  MailOutlined,
-  MobileOutlined,
-  UsergroupAddOutlined,
-} from '@ant-design/icons';
+import { InfoCircleOutlined, LockOutlined, MailOutlined, MobileOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import imgPhone from '@img/phone.png?url';
 import imgMail from '@img/mail.png?url';
 import { useI18nConfig } from '@common';
-import { registerService } from '@api/user/login';
-import type { RegisterParams } from '@api/user/type.ts';
+import { registerService, type RegisterParams } from '@api';
 import type { LoginProps } from '@/pages/login';
 
 const prefixSelector = (
@@ -68,10 +61,7 @@ const Register = (props: LoginProps) => {
   };
 
   // 确认密码规则
-  const confirmRules = [
-    { required: true, message: lang.placeholder_psw },
-    { validator: compareToFirstPassword },
-  ];
+  const confirmRules = [{ required: true, message: lang.placeholder_psw }, { validator: compareToFirstPassword }];
 
   return (
     <div className="relative">
@@ -80,14 +70,9 @@ const Register = (props: LoginProps) => {
           cursor-pointer opacity-80 hover:opacity-100 transition-opacity"
         onClick={() => setIsPhoneRegister((prev) => !prev)}
       >
-        <img
-          src={isPhoneRegister ? imgPhone : imgMail}
-          alt="icon phone or mail"
-        />
+        <img src={isPhoneRegister ? imgPhone : imgMail} alt="icon phone or mail" />
       </div>
-      <h1 className="text-2xl text-bold">
-        {isPhoneRegister ? lang.phone_title : lang.email_title}
-      </h1>
+      <h1 className="text-2xl text-bold">{isPhoneRegister ? lang.phone_title : lang.email_title}</h1>
       <Form
         layout="vertical"
         className="mt-6"
@@ -98,13 +83,7 @@ const Register = (props: LoginProps) => {
         }}
       >
         {isPhoneRegister ? (
-          <Form.Item
-            label={lang.filed_phone}
-            name="mobile"
-            required
-            rules={mobileRules}
-            validateTrigger="onBlur"
-          >
+          <Form.Item label={lang.filed_phone} name="mobile" required rules={mobileRules} validateTrigger="onBlur">
             <Input
               type="text"
               placeholder={lang.placeholder_phone}
@@ -121,12 +100,7 @@ const Register = (props: LoginProps) => {
             />
           </Form.Item>
         ) : (
-          <Form.Item
-            label={lang.filed_email}
-            name="email"
-            required
-            rules={[{ required: true, message: lang.placeholder_email }]}
-          >
+          <Form.Item label={lang.filed_email} name="email" required rules={[{ required: true, message: lang.placeholder_email }]}>
             <Input
               type="text"
               placeholder={lang.placeholder_email}
@@ -162,13 +136,7 @@ const Register = (props: LoginProps) => {
         {/*    }*/}
         {/*  />*/}
         {/*</Form.Item>*/}
-        <Form.Item
-          label={lang.filed_psw}
-          name="password"
-          required
-          rules={pswRules}
-          validateTrigger="onBlur"
-        >
+        <Form.Item label={lang.filed_psw} name="password" required rules={pswRules} validateTrigger="onBlur">
           <Input.Password
             placeholder={lang.placeholder_psw}
             prefix={<LockOutlined className="site-form-item-icon" />}
@@ -183,13 +151,7 @@ const Register = (props: LoginProps) => {
             }
           />
         </Form.Item>
-        <Form.Item
-          label="确认密码"
-          name="password2"
-          required
-          rules={confirmRules}
-          validateTrigger="onBlur"
-        >
+        <Form.Item label="确认密码" name="password2" required rules={confirmRules} validateTrigger="onBlur">
           <Input.Password
             placeholder={lang.placeholder_psw}
             prefix={<LockOutlined className="site-form-item-icon" />}
@@ -205,18 +167,10 @@ const Register = (props: LoginProps) => {
           />
         </Form.Item>
         <Form.Item label={lang.filed_referral_code} name="referal_code">
-          <Input
-            placeholder={lang.placeholder_referral_code}
-            prefix={<UsergroupAddOutlined className="site-form-item-icon" />}
-          />
+          <Input placeholder={lang.placeholder_referral_code} prefix={<UsergroupAddOutlined className="site-form-item-icon" />} />
         </Form.Item>
         <Form.Item>
-          <Button
-            loading={isPending}
-            type="primary"
-            className="w-full h-10 text-lg"
-            htmlType="submit"
-          >
+          <Button loading={isPending} type="primary" className="w-full h-10 text-lg" htmlType="submit">
             {lang.btn_title}
           </Button>
         </Form.Item>

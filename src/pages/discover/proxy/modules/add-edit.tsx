@@ -1,15 +1,10 @@
 import { useEffect } from 'react';
+import { Form, Tag, App } from 'antd';
 import { useMutation } from '@tanstack/react-query';
-import {
-  Form,
-  Tag,
-  App,
-} from 'antd';
-import { Modal } from '@common';
-import { getProxyByIdService, postAddProxyService, postUpdateProxyService } from '@api/discover/proxy';
-import { AddProxyFormItems } from '@/pages/discover/proxy/modules/add-proxy-common-formitem';
-import type { PostAddEditProxyParams } from '@api/discover/type';
 import { isUndef } from '@darwish/utils-is';
+import { Modal } from '@common';
+import { getProxyByIdService, postAddProxyService, postUpdateProxyService, type PostAddEditProxyParams } from '@api';
+import { AddProxyFormItems } from '@/pages/discover/proxy/modules/add-proxy-common-formitem';
 
 const Item = Form.Item;
 
@@ -42,7 +37,6 @@ const AddEdit = (props: AddEditProps) => {
     handleUpdateList();
     onOk?.();
   };
-
 
   const queryMutation = useMutation({
     mutationFn: getProxyByIdService,
@@ -88,4 +82,3 @@ const AddEdit = (props: AddEditProps) => {
   );
 };
 export default AddEdit;
-

@@ -1,16 +1,12 @@
 import { useState } from 'react';
+import { useQueries, useSuspenseQuery } from '@tanstack/react-query';
+import { postsEnvQueryOptions } from '@/routes/data';
 import Slider from './modules/slider';
 import TableMain from './modules/tabel-main';
-import { useQueries, useSuspenseQuery } from '@tanstack/react-query';
-import { postsEnvQueryOptions } from '@/routes/data.ts';
 
 export default function Profiles() {
   const [currentKey, setCurrentKey] = useState(0);
-  const {
-    data: envList,
-    isRefetching,
-    isFetching,
-  } = useSuspenseQuery(postsEnvQueryOptions);
+  const { data: envList, isRefetching, isFetching } = useSuspenseQuery(postsEnvQueryOptions);
   useQueries({
     queries: envList?.map((li) => ({
       queryKey: ['connect adb', li.id],
@@ -34,13 +30,7 @@ export default function Profiles() {
         }}
       />
       <div className="flex-1 overflow-hidden">
-        <TableMain
-          deviceId={
-            collapsedItems
-              ? `${collapsedItems.adbAddr}:${collapsedItems.adbPort}`
-              : ''
-          }
-        />
+        <TableMain deviceId={collapsedItems ? `${collapsedItems.adbAddr}:${collapsedItems.adbPort}` : ''} />
       </div>
     </div>
   );

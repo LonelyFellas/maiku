@@ -1,4 +1,4 @@
-import type { GetProxyListResult } from '@api/discover/type.ts';
+import type { GetProxyListResult } from '@api';
 
 export const columns: AntdColumns<GetProxyListResult> = [
   {
@@ -15,7 +15,11 @@ export const columns: AntdColumns<GetProxyListResult> = [
     width: 200,
     render: (_: unknown, record: GetProxyListResult) => {
       const proxyType = record.type === '1' ? 'socks5' : 'https';
-      return <span>{proxyType}://{record.address}:{record.port}</span>;
+      return (
+        <span>
+          {proxyType}://{record.address}:{record.port}
+        </span>
+      );
     },
   },
   {
@@ -23,7 +27,7 @@ export const columns: AntdColumns<GetProxyListResult> = [
     dataIndex: 'type',
     key: 'type',
     width: 150,
-    render: (text: string) => text === '1' ? 'socks5' : 'https',
+    render: (text: string) => (text === '1' ? 'socks5' : 'https'),
   },
   {
     title: '出口IP',
