@@ -1,28 +1,30 @@
 import React, { createContext, useRef, useState } from 'react';
-import {
-  Button,
-  Dropdown,
-  Space,
-  Popconfirm,
-} from 'antd';
+import { Button, Dropdown, Space, Popconfirm } from 'antd';
 import { Table } from '@common';
-import {
-  operationItems,
-  columns as configColumns,
-} from '../config';
+import { operationItems, columns as configColumns } from '../config';
+import { useQuery } from '@tanstack/react-query';
+import { getBackupListByEnvIdService } from '@api/primary/backup.ts';
 
 export const TableContext = createContext<{ deviceId: string }>({
   deviceId: '-1',
 });
 
-
 interface TableMainProps {
   deviceId: string;
+  envId: number;
 }
 
 const TableMain = (props: TableMainProps) => {
-  const { deviceId } = props;
+  const { deviceId, envId } = props;
   const scrollRef = useRef<React.ElementRef<'div'>>(null);
+  const { data } = useQuery({
+    queryKey: ['backupList', envId],
+    queryFn: () => getBackupListByEnvIdService({ envId: envId + '' }),
+    enabled: !!envId,
+  });
+
+  console.log('data11', envId);
+
   const [columns] = useState(() => {
     const defaultColumns = configColumns.concat([
       {
@@ -52,14 +54,12 @@ const TableMain = (props: TableMainProps) => {
                 删除
               </Button>
             </Popconfirm>
-
           </Space>
         ),
       },
     ]);
     return defaultColumns.map((col) => ({ ...col, isVisible: true }));
   });
-
 
   const handleStartScrcpy = (id: string) => {
     window.ipcRenderer.send('startScrcpy', id);
@@ -68,14 +68,12 @@ const TableMain = (props: TableMainProps) => {
   return (
     <div ref={scrollRef} className="flex flex-col gap-2 flex-1 h-full bg-white rounded-md">
       <Table
-        columns={
-          columns
-            .filter((col) => col.isVisible)
-            .map((col) => ({
-              ...col,
-              ellipsis: true,
-            }))
-        }
+        columns={columns
+          .filter((col) => col.isVisible)
+          .map((col) => ({
+            ...col,
+            ellipsis: true,
+          }))}
         dataSource={[...new Array(40).keys()].map((item, index) => ({
           key: index,
           num: item,

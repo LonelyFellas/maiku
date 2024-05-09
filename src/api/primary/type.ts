@@ -37,3 +37,12 @@ export type PostAddEnvParams<IsEdit extends boolean = false> = AddEditType<
   },
   IsEdit
 >;
+
+export type GetBackupListByIdParams = {
+  envId: string;
+};
+export type GetBackupListByIdResult = {
+  Names: string;
+  state: string;
+  index: number;
+};
