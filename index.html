@@ -5,9 +5,20 @@
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>迈库网络</title>
+  <style>
+    .windows-platform {
+      .ant-message {
+        top: 28px !important;
+      }
+    }
+  </style>
 </head>
 <body>
 <div id="app"></div>
 <script type="module" src="/src/main.tsx"></script>
+<script>
+  const isMacPlatform = navigator.platform.toLowerCase().includes('mac');
+  document.body.classList.add(isMacPlatform? 'mac-platform' : 'windows-platform');
+</script>
 </body>
 </html>
