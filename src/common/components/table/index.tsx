@@ -1,13 +1,13 @@
 import { useRef } from 'react';
-import {
-  Pagination,
-  type TableProps as AntdTableProps,
-  Table as AntdTable,
-} from 'antd';
+import { TableFetch } from '../table-fetch';
+import { Pagination, type TableProps as AntdTableProps } from 'antd';
 import { cn, useTableScroll } from '@/common';
 
 interface TableProps extends AntdTableProps {
   tableClassName?: string;
+  isFetching?: boolean;
+  isRefetching?: boolean;
+  isSuccess?: boolean;
 }
 
 /**
@@ -25,28 +25,10 @@ const Table = (props: TableProps) => {
 
   return (
     <>
-      <div
-        className={cn('flex-1 overflow-hidden h-full', className)}
-        ref={scrollRef}
-      >
-        <AntdTable
-          className={tableClassName}
-          pagination={false}
-          size="small"
-          virtual
-          scroll={scroll}
-          {...restProps}
-        />
+      <div className={cn('flex-1 overflow-hidden h-full', className)} ref={scrollRef}>
+        <TableFetch className={tableClassName} pagination={false} size="small" virtual scroll={scroll} {...restProps} />
       </div>
-      {pagination && (
-        <Pagination
-          className="flex justify-end"
-          total={85}
-          showTotal={(total) => `共 ${total} 条数据`}
-          defaultPageSize={20}
-          defaultCurrent={1}
-        />
-      )}
+      {pagination && <Pagination className="flex justify-end" total={85} showTotal={(total) => `共 ${total} 条数据`} defaultPageSize={20} defaultCurrent={1} />}
     </>
   );
 };

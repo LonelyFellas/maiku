@@ -4,6 +4,7 @@ import { Table } from '@common';
 import { operationItems, columns as configColumns } from '../config';
 import { useQuery } from '@tanstack/react-query';
 import { getBackupListByEnvIdService } from '@api/primary/backup.ts';
+import { useUpdateEffect } from '@darwish/hooks-core';
 
 export const TableContext = createContext<{ deviceId: string }>({
   deviceId: '-1',
@@ -12,18 +13,23 @@ export const TableContext = createContext<{ deviceId: string }>({
 interface TableMainProps {
   deviceId: string;
   envId: number;
+  isRefetching: boolean;
 }
 
 const TableMain = (props: TableMainProps) => {
   const { deviceId, envId } = props;
   const scrollRef = useRef<React.ElementRef<'div'>>(null);
-  const { data } = useQuery({
+  const { data, isFetching, isRefetching, isFetched, refetch } = useQuery({
     queryKey: ['backupList', envId],
     queryFn: () => getBackupListByEnvIdService({ envId: envId + '' }),
     enabled: !!envId,
   });
 
-  console.log('data11', envId);
+  useUpdateEffect(() => {
+    if (props.isRefetching) {
+      refetch();
+    }
+  }, [props.isRefetching]);
 
   const [columns] = useState(() => {
     const defaultColumns = configColumns.concat([
@@ -42,7 +48,7 @@ const TableMain = (props: TableMainProps) => {
             <Button size="small" type="primary" onClick={() => handleStartScrcpy(id)}>
               启动
             </Button>
-            <Button type="text" size="small">
+            <Button type="text" size="small" onClick={() => handleStopScrcpy(id)}>
               编辑
             </Button>
 
@@ -62,31 +68,26 @@ const TableMain = (props: TableMainProps) => {
   });
 
   const handleStartScrcpy = (id: string) => {
-    window.ipcRenderer.send('startScrcpy', id);
+    window.ipcRenderer.send('scrcpy:listen', id);
+  };
+  const handleStopScrcpy = (id: string) => {
+    window.ipcRenderer.send('scrcpy:kill', id);
   };
 
   return (
     <div ref={scrollRef} className="flex flex-col gap-2 flex-1 h-full bg-white rounded-md">
       <Table
+        isFetching={isFetching}
+        isRefetching={isRefetching}
+        isSuccess={isFetched}
         columns={columns
           .filter((col) => col.isVisible)
           .map((col) => ({
             ...col,
             ellipsis: true,
           }))}
-        dataSource={[...new Array(40).keys()].map((item, index) => ({
-          key: index,
-          num: item,
-          category: '云手机环境',
-          index: 1,
-          name: '云手机1',
-          deviceInfo: '设备信息',
-          remark: '备注',
-          tags: '标签',
-          lastOpenTime: '最近打开',
-          createTime: '创建时间',
-          operation: deviceId,
-        }))}
+        rowKey="Names"
+        dataSource={data?.map((item) => ({ ...item, operation: deviceId })) || []}
       />
     </div>
   );

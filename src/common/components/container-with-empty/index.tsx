@@ -16,7 +16,7 @@ const contentStyle: React.CSSProperties = {
 
 const content = <div style={contentStyle} />;
 
-function LoadingView({ tip }: { tip: string }) {
+export function LoadingView({ tip }: { tip: string }) {
   return (
     <div className="all_flex h-full w-full">
       <Spin tip={tip} size="large">

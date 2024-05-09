@@ -15,7 +15,7 @@ import {
   ToolOutlined,
   VerifiedOutlined,
 } from '@ant-design/icons';
-import type { MenuProps } from 'antd';
+import { MenuProps, Tag } from 'antd';
 import type { DataType } from './type.ts';
 
 export const settingItems: MenuProps['items'] = [
@@ -102,59 +102,82 @@ export const operationItems = [
     icon: <ToolOutlined />,
   },
 ];
+
+const TAG_MAP = {
+  created: {
+    color: 'blue',
+    title: '已创建',
+  },
+  running: {
+    color: 'green',
+    title: '运行中',
+  },
+  exited: {
+    color: 'yellow',
+    title: '已退出',
+  },
+};
 export const columns: AntdColumns<DataType> = [
   {
     title: '#',
     width: 45,
     dataIndex: 'num',
     key: 'num',
+    render: (_, __, index) => index + 1,
   },
-  {
-    title: '类别',
-    width: 120,
-    dataIndex: 'category',
-    key: 'category',
-  },
-  {
-    title: '序号',
-    width: 80,
-    dataIndex: 'index',
-    key: 'index',
-  },
+  // {
+  //   title: '类别',
+  //   width: 120,
+  //   dataIndex: 'category',
+  //   key: 'category',
+  // },
+  // {
+  //   title: '序号',
+  //   width: 80,
+  //   dataIndex: 'index',
+  //   key: 'index',
+  // },
   {
     title: '名称',
-    width: 80,
-    dataIndex: 'name',
-    key: 'name',
+    width: 250,
+    dataIndex: 'Names',
+    key: 'Names',
   },
   {
-    title: '设备信息',
+    title: '状态',
     width: 80,
-    dataIndex: 'deviceInfo',
-    key: 'deviceInfo',
+    dataIndex: 'State',
+    key: 'State',
+    render: (text: keyof typeof TAG_MAP) => <Tag color={TAG_MAP[text].color}>{TAG_MAP[text].title}</Tag>,
   },
-  {
-    title: '备注',
-    width: 80,
-    dataIndex: 'remark',
-    key: 'remark',
-  },
-  {
-    title: '标签',
-    width: 80,
-    dataIndex: 'tags',
-    key: 'tags',
-  },
-  {
-    title: '最近打开',
-    width: 80,
-    dataIndex: 'lastOpenTime',
-    key: 'lastOpenTime',
-  },
-  {
-    title: '创建时间',
-    dataIndex: 'createTime',
-    width: 80,
-    key: 'createTime',
-  },
+  // {
+  //   title: '设备信息',
+  //   width: 80,
+  //   dataIndex: 'deviceInfo',
+  //   key: 'deviceInfo',
+  // },
+  // {
+  //   title: '备注',
+  //   width: 80,
+  //   dataIndex: 'remark',
+  //   key: 'remark',
+  // },
+  // {
+  //   title: '标签',
+  //   width: 80,
+  //   dataIndex: 'tags',
+  //   key: 'tags',
+  // },
+  // {
+  //   title: '最近打开',
+  //   width: 80,
+  //   dataIndex: 'lastOpenTime',
+  //   key: 'lastOpenTime',
+  // },
+  // {
+  //   title: '创建时间',
+  //   dataIndex: 'createTime',
+  //   width: 80,
+  //   key: 'createTime',
+  // },
 ];

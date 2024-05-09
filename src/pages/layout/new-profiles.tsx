@@ -55,7 +55,7 @@ export default function NewProfiles() {
 
   useEffect(() => {
     if (isEdit && isObject(data)) {
-      const toStrPxType = data.px_type.toString() as PXType;
+      const toStrPxType = (data.px_type ?? 1).toString() as PXType;
       form.setFieldsValue({ ...data, formProxyType: 'list', px_type: toStrPxType });
       setPxType(toStrPxType);
       console.log('data', form.getFieldsValue());

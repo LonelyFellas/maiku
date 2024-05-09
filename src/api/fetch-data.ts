@@ -2,10 +2,7 @@ import { message } from 'antd';
 import { isObject } from '@darwish/utils-is';
 import { Constants } from '@common';
 
-export const fetchData = async <TData, TParams = null>(
-  url: Api.Url,
-  init: Api.Init<TParams>,
-): Promise<TData> => {
+export const fetchData = async <TData, TParams = null>(url: Api.Url, init: Api.Init<TParams>): Promise<TData> => {
   const defaultInit: Api.Init<unknown> = {
     method: 'GET',
     mode: 'cors',
@@ -13,9 +10,7 @@ export const fetchData = async <TData, TParams = null>(
     credentials: 'same-origin',
     headers: {
       'Content-type': 'application/json',
-      'X-Token': JSON.parse(
-        window.localStorage.getItem(Constants.LOCAL_TOKEN) || 'null',
-      ),
+      'X-Token': JSON.parse(window.localStorage.getItem(Constants.LOCAL_TOKEN) || 'null'),
     },
     redirect: 'follow',
     referrerPolicy: 'no-referrer',
@@ -51,7 +46,7 @@ export const fetchData = async <TData, TParams = null>(
       } else if (isObject(res) && 'errno' in res && res.errno !== 0) {
         // 其他错误编码
         message.error(res.errmsg);
-        return res.errmsg;
+        return res.data;
       }
 
       return res.data;
@@ -66,10 +61,7 @@ function getSerialUrl<T extends Darwish.AnyObj>(baseUrl: string, params: T) {
   if (Object.keys(params || {}).length === 0) return baseUrl;
   // 将参数对象转换为查询字符串
   const queryString = Object.entries(params)
-    .map(
-      ([key, value]) =>
-        `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
-    )
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
     .join('&');
 
   // 拼接基础 URL 和查询字符串

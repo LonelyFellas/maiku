@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Button, Collapse, Flex } from 'antd';
+import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 import { isArray } from '@darwish/utils-is';
 import { Scrollbar } from '@darwish/scrollbar-react';
+import { GetAllEnvListResult, getEnvByIdService } from '@api';
 import { LeftOutlined } from '@ant-design/icons';
 import phone from '@img/phone-test.png';
 import '../index.css';
 import { cn, ContainerWithEmpty, toNumber } from '@common';
-import type { GetAllEnvListResult } from '@api';
-import { useNavigate } from '@tanstack/react-router';
 
 interface SliderProps {
   isFetching: boolean;
@@ -21,6 +22,13 @@ const Slider = (props: SliderProps) => {
   const navigate = useNavigate();
   const { isFetching, isRefetching, envList, currentKey, setCurrentKey } = props;
   const [collapse, setCollapse] = useState([`${currentKey}`]);
+  const { data } = useQuery({
+    queryKey: ['env-detail-by-id', currentKey],
+    queryFn: () => getEnvByIdService({ id: envList.find((item) => item.id === currentKey)!.id }),
+    refetchInterval: 1000 * 5,
+    enabled: envList.length > 0 && collapse.length > 0,
+  });
+
   const handleChange = (indexStr: string | string[]) => {
     if (isArray(indexStr)) {
       if (indexStr.length) {

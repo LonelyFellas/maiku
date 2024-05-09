@@ -1,20 +1,44 @@
 import { BrowserWindow, dialog, ipcMain, app } from 'electron';
 import type Store from 'electron-store';
 import share from './utils/share';
-import { exec } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
 
 interface CreateListenerOptions {
-  store: Store<{
-    window_close: string;
-    twoWindowsLoading: {
-      loading: boolean;
-      main: boolean;
-    };
-  }>;
+  store: Store<typeof import('./config/electron-store-schema.json')>;
 }
 
+//
+// function createScrcpyWindow() {
+//   // 创建一个新的浏览器窗口
+//   const win = new BrowserWindow({
+//     width: 800,
+//     height: 600,
+//     webPreferences: {
+//       nodeIntegration: true, // 允许在渲染进程中使用Node.js
+//     },
+//   });
+//
+//   // 加载index.html文件
+//   win.loadFile('./demo.html');
+//
+//   // 获取窗口句柄
+//   const windowHandle = win.getNativeWindowHandle().readUInt32LE(0);
+//   console.log('windowHandle:', windowHandle);
+//
+//   // 使用scrcpy并传递窗口句柄
+//   exec(`scrcpy -s bgm8.cn:65341 --window-handle ${windowHandle}`, (error, stdout, stderr) => {
+//     if (error) {
+//       console.error(`执行的错误: ${error}`);
+//       return;
+//     }
+//     console.log(`stdout: ${stdout}`);
+//     console.error(`stderr: ${stderr}`);
+//   });
+// }
+
+const scrcpyProcessObj: Record<string, ChildProcessWithoutNullStreams> = {};
 export default function createListener(options: CreateListenerOptions) {
   const { store } = options;
 
@@ -83,22 +107,27 @@ export default function createListener(options: CreateListenerOptions) {
     });
   });
   /** 启动scrcpy **/
-  ipcMain.on('startScrcpy', (event, deviceId: string) => {
-    const command = deviceId ? `scrcpy -s ${deviceId}` : 'scrcpy';
+  ipcMain.on('scrcpy:listen', async (event, deviceId: string) => {
+    if (Object.prototype.hasOwnProperty.call(scrcpyProcessObj, deviceId)) {
+      scrcpyProcessObj[deviceId].kill('SIGTERM');
+      delete scrcpyProcessObj[deviceId];
+    }
 
-    const scrcpyProcess = exec(command, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`exec error: ${error}`);
-        event.reply('error', `exec error: ${error}`);
-      }
-      console.log(`stdout: ${stdout}`);
-      console.error(`stderr: ${stderr}`);
+    // await sleep(2000);
+    scrcpyProcessObj[deviceId] = spawn('scrcpy', ['-s', deviceId]);
+    scrcpyProcessObj[deviceId].stdout.on('data', (data) => {
+      console.log(`stdout: ${data}`);
     });
 
-    scrcpyProcess.on('exit', (code) => {
-      console.log(`scrcpy exited with code ${code}`);
+    scrcpyProcessObj[deviceId].stderr.on('data', (data) => {
+      console.error(`stderr: ${data}`);
+    });
+
+    scrcpyProcessObj[deviceId].on('close', (code) => {
+      console.log(`child process exited with code ${code}`);
     });
   });
+
   /** 关闭和重启 */
   ipcMain.on('app:operate', (_, operation) => {
     if (operation === 'close') {
