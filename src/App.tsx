@@ -1,5 +1,5 @@
 import { useEffect, Fragment, type PropsWithChildren } from 'react';
-import { FloatButton, App as AntdApp } from 'antd';
+import { FloatButton, App as AntdApp, message } from 'antd';
 import { GlobalOutlined as GlobalIcon } from '@ant-design/icons/lib/icons';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -7,15 +7,15 @@ import { isMacFunc, useI18nConfig, Wrapper } from '@common';
 import 'mac-scrollbar/dist/mac-scrollbar.css';
 
 const App = (props: PropsWithChildren<object>) => {
-  const { message } = AntdApp.useApp();
+  // const { message } = AntdApp.useApp();
   const [, setLang] = useI18nConfig();
   const isMac = isMacFunc();
 
   useEffect(() => {
     window.ipcRenderer.on('error', (_, error) => {
-      message.error(error.toString());
+      message.error(error);
     });
-  }, []);
+  }, [message]);
 
   const handleLanguageChange = () => {
     setLang((prev) => (prev === 'zh' ? 'en' : 'zh'));

@@ -1,12 +1,17 @@
 import { Adb } from '@devicefarmer/adbkit';
 import path from 'node:path';
+import { getAdbPath} from "../../utils/getAdbPath"
 
 export default function adbkit(): Partial<Window['adbApi']> {
-  const client = Adb.createClient();
+  const client = Adb.createClient({
+    bin: getAdbPath(),
+  });
   console.log('client', client);
   // console.log(import.meta);
   return {
-    connect: async (...params) => client.connect(...params),
+    connect: async (...params) => client.connect(...params).then((res) => {
+      console.log('client', res);
+    }),
     disconnect: async (...params) => client.disconnect(...params),
     getDevice: (serial) => client.getDevice(serial),
     getPackages: (serial: string) => client.getDevice(serial).getPackages(),

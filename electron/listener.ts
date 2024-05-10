@@ -3,41 +3,16 @@ import type Store from 'electron-store';
 import share from './utils/share';
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
+import {spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
+import * as process from "node:process";
+import {fileURLToPath} from "node:url";
+import {getScrcpyCwd} from "/electron/utils/getScrcpyPath.ts";
 
 interface CreateListenerOptions {
   store: Store<typeof import('./config/electron-store-schema.json')>;
 }
-
-//
-// function createScrcpyWindow() {
-//   // 创建一个新的浏览器窗口
-//   const win = new BrowserWindow({
-//     width: 800,
-//     height: 600,
-//     webPreferences: {
-//       nodeIntegration: true, // 允许在渲染进程中使用Node.js
-//     },
-//   });
-//
-//   // 加载index.html文件
-//   win.loadFile('./demo.html');
-//
-//   // 获取窗口句柄
-//   const windowHandle = win.getNativeWindowHandle().readUInt32LE(0);
-//   console.log('windowHandle:', windowHandle);
-//
-//   // 使用scrcpy并传递窗口句柄
-//   exec(`scrcpy -s bgm8.cn:65341 --window-handle ${windowHandle}`, (error, stdout, stderr) => {
-//     if (error) {
-//       console.error(`执行的错误: ${error}`);
-//       return;
-//     }
-//     console.log(`stdout: ${stdout}`);
-//     console.error(`stderr: ${stderr}`);
-//   });
-// }
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const scrcpyProcessObj: Record<string, ChildProcessWithoutNullStreams> = {};
 export default function createListener(options: CreateListenerOptions) {
   const { store } = options;
@@ -94,7 +69,6 @@ export default function createListener(options: CreateListenerOptions) {
     return window?.isMaximized();
   });
   ipcMain.handle('lang:i18n', async (_, lang: string) => {
-    console.log('lang:', lang);
     const [get, set] = share('i81n');
     const value = await get();
     set('en');
@@ -108,19 +82,33 @@ export default function createListener(options: CreateListenerOptions) {
   });
   /** 启动scrcpy **/
   ipcMain.on('scrcpy:listen', async (event, deviceId: string) => {
+    const scrcpyCwd = getScrcpyCwd();
     if (Object.prototype.hasOwnProperty.call(scrcpyProcessObj, deviceId)) {
       scrcpyProcessObj[deviceId].kill('SIGTERM');
       delete scrcpyProcessObj[deviceId];
     }
 
-    // await sleep(2000);
-    scrcpyProcessObj[deviceId] = spawn('scrcpy', ['-s', deviceId]);
+    scrcpyProcessObj[deviceId] = spawn('scrcpy', ['-s', deviceId], {
+      cwd: scrcpyCwd,
+      shell: true,
+    });
     scrcpyProcessObj[deviceId].stdout.on('data', (data) => {
-      console.log(`stdout: ${data}`);
+      const strData = data.toString();
+      console.error(`stdout: ${strData}`);
+
+      if (strData.includes("ERROR")) {
+        event.reply('error', strData);
+      }
+
     });
 
     scrcpyProcessObj[deviceId].stderr.on('data', (data) => {
-      console.error(`stderr: ${data}`);
+      const strData = data.toString();
+      console.error(`stdrr: ${strData}`);
+
+      if (strData.includes("ERROR")) {
+        event.reply('error', strData);
+      }
     });
 
     scrcpyProcessObj[deviceId].on('close', (code) => {

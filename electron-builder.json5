@@ -31,8 +31,8 @@
   },
   extraFiles: [
     {
-      from: "resources",
-      to: "resources"
+      from: "electron/resources",
+      to: "lib"
     }
   ],
   "nsis": {

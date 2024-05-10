@@ -28,6 +28,7 @@ const Slider = (props: SliderProps) => {
     refetchInterval: 1000 * 5,
     enabled: envList.length > 0 && collapse.length > 0,
   });
+  console.log(data);
 
   const handleChange = (indexStr: string | string[]) => {
     if (isArray(indexStr)) {
