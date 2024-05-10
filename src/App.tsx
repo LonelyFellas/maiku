@@ -13,6 +13,7 @@ const App = (props: PropsWithChildren<object>) => {
 
   useEffect(() => {
     window.ipcRenderer.on('error', (_, error) => {
+      console.error(error);
       message.error(error);
     });
   }, [message]);

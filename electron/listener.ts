@@ -68,7 +68,7 @@ export default function createListener(options: CreateListenerOptions) {
     }
     return window?.isMaximized();
   });
-  ipcMain.handle('lang:i18n', async (_, lang: string) => {
+  ipcMain.handle('lang:i18n', async () => {
     const [get, set] = share('i81n');
     const value = await get();
     set('en');

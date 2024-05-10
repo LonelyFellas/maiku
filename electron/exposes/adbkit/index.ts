@@ -9,9 +9,7 @@ export default function adbkit(): Partial<Window['adbApi']> {
   console.log('client', client);
   // console.log(import.meta);
   return {
-    connect: async (...params) => client.connect(...params).then((res) => {
-      console.log('client', res);
-    }),
+    connect: async (...params) => client.connect(...params),
     disconnect: async (...params) => client.disconnect(...params),
     getDevice: (serial) => client.getDevice(serial),
     getPackages: (serial: string) => client.getDevice(serial).getPackages(),
