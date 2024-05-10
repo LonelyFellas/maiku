@@ -3,14 +3,15 @@ import type Store from 'electron-store';
 import share from './utils/share';
 import fs from 'node:fs';
 import path from 'node:path';
-import {spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
-import * as process from "node:process";
-import {fileURLToPath} from "node:url";
-import {getScrcpyCwd} from "/electron/utils/getScrcpyPath.ts";
+import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
+import * as process from 'node:process';
+import { fileURLToPath } from 'node:url';
+import { getScrcpyCwd } from '/electron/utils/getScrcpyPath.ts';
 
 interface CreateListenerOptions {
   store: Store<typeof import('./config/electron-store-schema.json')>;
 }
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const scrcpyProcessObj: Record<string, ChildProcessWithoutNullStreams> = {};
@@ -83,6 +84,7 @@ export default function createListener(options: CreateListenerOptions) {
   /** 启动scrcpy **/
   ipcMain.on('scrcpy:listen', async (event, deviceId: string) => {
     const scrcpyCwd = getScrcpyCwd();
+    console.log(scrcpyCwd);
     if (Object.prototype.hasOwnProperty.call(scrcpyProcessObj, deviceId)) {
       scrcpyProcessObj[deviceId].kill('SIGTERM');
       delete scrcpyProcessObj[deviceId];
@@ -96,17 +98,16 @@ export default function createListener(options: CreateListenerOptions) {
       const strData = data.toString();
       console.error(`stdout: ${strData}`);
 
-      if (strData.includes("ERROR")) {
+      if (strData.includes('ERROR')) {
         event.reply('error', strData);
       }
-
     });
 
     scrcpyProcessObj[deviceId].stderr.on('data', (data) => {
       const strData = data.toString();
       console.error(`stdrr: ${strData}`);
 
-      if (strData.includes("ERROR")) {
+      if (strData.includes('ERROR')) {
         event.reply('error', strData);
       }
     });

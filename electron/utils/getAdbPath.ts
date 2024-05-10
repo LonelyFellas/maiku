@@ -1,4 +1,4 @@
-import { extraResolve } from "./extraResolve";
+import { extraResolve } from './extraResolve';
 
 /**
  * Get the path of adb binary.
@@ -6,8 +6,8 @@ import { extraResolve } from "./extraResolve";
 export function getAdbPath() {
   switch (process.platform) {
     case 'win32':
-      return extraResolve(`win/android-platform-tools/adb.exe`)
+      return extraResolve(`win/scrcpy/adb.exe`);
     case 'darwin':
-      return extraResolve(`mac/android-platform-tools/adb`)
+      return extraResolve(`mac/scrcpy/adb`);
   }
 }

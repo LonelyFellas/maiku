@@ -1,12 +1,8 @@
 import { Adb } from '@devicefarmer/adbkit';
 import path from 'node:path';
-import { getAdbPath} from "../../utils/getAdbPath"
 
 export default function adbkit(): Partial<Window['adbApi']> {
-  const client = Adb.createClient({
-    bin: getAdbPath(),
-  });
-  console.log('client', client);
+  const client = Adb.createClient();
   // console.log(import.meta);
   return {
     connect: async (...params) => client.connect(...params),
@@ -14,15 +10,11 @@ export default function adbkit(): Partial<Window['adbApi']> {
     getDevice: (serial) => client.getDevice(serial),
     getPackages: (serial: string) => client.getDevice(serial).getPackages(),
     kill: () => client.kill(),
-    shell: (id, command) =>
-      client.getDevice(id).shell(command).then(Adb.util.readAll),
+    shell: (id, command) => client.getDevice(id).shell(command).then(Adb.util.readAll),
     push: async (
       id,
       filePath,
-      {
-        progress,
-        savePath = `${window.env.VITE_UPLOAD_FILE}${path.basename(filePath)}`,
-      } = {
+      { progress, savePath = `${window.env.VITE_UPLOAD_FILE}${path.basename(filePath)}` } = {
         progress: () => null,
         savePath: window.env.VITE_UPLOAD_FILE,
       },

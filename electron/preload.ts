@@ -1,5 +1,5 @@
 import { ipcRenderer, contextBridge } from 'electron';
-import exposes from './exposes';
+import exposes from './exposes/index.ts';
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', {
@@ -24,6 +24,4 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   // ...
 });
 
-
 contextBridge.exposeInMainWorld('adbApi', exposes.init());
-
