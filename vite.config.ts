@@ -50,6 +50,7 @@ export default defineConfig({
           }
         },
       },
+      external: ['ffi-napi'],
     },
   },
 });

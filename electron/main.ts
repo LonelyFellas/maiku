@@ -7,6 +7,7 @@ import { createTray } from '/electron/utils/tray.ts';
 // import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { test } from './utils/aa.ts';
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -60,6 +61,7 @@ function createLoadingWindow() {
 }
 
 function createMainWindow() {
+  console.log('test', test());
   // 获取屏幕的尺寸
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
   mainWin = createBrowserWindow({
