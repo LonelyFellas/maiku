@@ -7,6 +7,8 @@ import { createTray } from '/electron/utils/tray.ts';
 // import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import { createLoadWindow } from './utils/createLoadWindow.ts';
+import { isProd } from '/electron/utils/helper.ts';
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -26,38 +28,13 @@ process.env.APP_ROOT = path.join(__dirname, '..');
 export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL'];
 export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron');
 export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist');
-
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST;
 
-const isProd = app.isPackaged;
 // 初始化electron-store
 const store = new Store({ defaults: schema });
 const isMac = process.platform === 'darwin';
 let mainWin: BrowserWindow | null = null;
-let loadingWin: BrowserWindow | null = null;
-
-function createLoadingWindow() {
-  // 获取屏幕的尺寸
-  const { width, height } = screen.getPrimaryDisplay().workAreaSize;
-
-  loadingWin = createBrowserWindow({
-    frame: false,
-    icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
-    transparent: true,
-    webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: true,
-      preload: path.join(__dirname, 'preload.mjs'),
-      devTools: !app.isPackaged,
-    },
-    width: 300,
-    height: 300,
-    x: (width - 300) / 2,
-    y: (height - 300) / 2,
-  });
-
-  loadingWin.loadFile(isProd ? './dist/loading.html' : 'public/loading.html');
-}
+let loadingWin: Electron.BrowserWindow | null = null;
 
 function createMainWindow() {
   // 获取屏幕的尺寸
@@ -133,7 +110,7 @@ app.on('ready', () => {
     main: true,
     loading: true,
   });
-  createLoadingWindow();
+  loadingWin = createLoadWindow(loadingWin);
   createMainWindow();
 });
 
