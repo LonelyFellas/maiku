@@ -28,6 +28,7 @@
     "antd": "^5.16.5",
     "clsx": "^2.1.1",
     "electron-store": "^8.2.0",
+    "ffi-napi": "^4.0.3",
     "mac-scrollbar": "^0.13.6",
     "pretty-bytes": "^6.1.1",
     "react": "^18.3.1",
@@ -36,6 +37,7 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@types/ffi-napi": "^4.0.10",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.1.1",

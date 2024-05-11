@@ -44,13 +44,7 @@ const Slider = (props: SliderProps) => {
   };
 
   return (
-    <Scrollbar
-      className="w-[230px] h-full bg-bg_primary/50 rounded-md"
-      style={{
-        overflowX: 'hidden',
-        overflowY: 'auto',
-      }}
-    >
+    <Scrollbar className="w-[230px] h-full bg-bg_primary/50 rounded-md">
       <ContainerWithEmpty className="h-full" hasData={envList?.length > 0} isRefetching={isRefetching} isFetching={isFetching}>
         <Collapse
           className="profiles-slider-collapse flex flex-col items-center"

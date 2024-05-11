@@ -7,7 +7,6 @@ import { RouterProvider } from '@tanstack/react-router';
 import { GlobalScrollbarProvider } from '@darwish/scrollbar-react';
 import '@darwish/scrollbar-react/dist/style.css';
 import { QueryClientProvider } from '@tanstack/react-query';
-
 window.env = import.meta.env;
 
 const rootElement = document.getElementById('app')!;
