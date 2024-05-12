@@ -4,3 +4,4 @@ import { fileURLToPath } from 'node:url';
 
 export const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const isProd = app.isPackaged;
+export const isMac = process.platform === 'darwin';

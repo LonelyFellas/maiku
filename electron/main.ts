@@ -1,27 +1,11 @@
 import { app, BrowserWindow, ipcMain, screen } from 'electron';
+import path from 'node:path';
+import { isProd, createLoadWindow, createBrowserWindow, createTray, isMac, __dirname } from './utils';
 import Store from 'electron-store';
-import { createBrowserWindow } from './utils/createWindow.ts';
 import schema from './config/electron-store-schema.json';
 import createListener from '/electron/listener.ts';
-import { createTray } from '/electron/utils/tray.ts';
-// import { createRequire } from 'node:module'
-import { fileURLToPath } from 'node:url';
-import path from 'node:path';
-import { createLoadWindow } from './utils/createLoadWindow.ts';
-import { isProd } from '/electron/utils/helper.ts';
+import { test } from 'window_test';
 
-// const require = createRequire(import.meta.url)
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-// The built directory structure
-//
-// ├─┬─┬ dist
-// │ │ └── index.html
-// │ │
-// │ ├─┬ dist-electron
-// │ │ ├── main.js
-// │ │ └── preload.mjs
-// │
 process.env.APP_ROOT = path.join(__dirname, '..');
 
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
@@ -32,9 +16,11 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 
 
 // 初始化electron-store
 const store = new Store({ defaults: schema });
-const isMac = process.platform === 'darwin';
 let mainWin: BrowserWindow | null = null;
 let loadingWin: Electron.BrowserWindow | null = null;
+// console.log('createMainWindow');
+
+console.log('test', test);
 
 function createMainWindow() {
   // 获取屏幕的尺寸
