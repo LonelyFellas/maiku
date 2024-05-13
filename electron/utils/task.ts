@@ -1,24 +1,46 @@
-interface TaskCheckOptions {
-  type: 'check';
-  maxAttempts: number;
-  timeout: number;
-  attempts: number;
+interface TaskOptions<T> {
+  type: T;
+  maxAttempts?: number;
+  timeout?: number;
+  attempts?: number;
+  onSuccess?: () => void;
+  onFailure?: () => void;
 }
 
-interface TaskTaskOptions {
-  type: 'task';
-  maxAttempts: number;
-  timeout: number;
-  attempts: number;
-}
+export function task(callback: () => boolean, options: TaskOptions<'check'>): void;
+export function task(callback: () => void, options: TaskOptions<'action'>): void;
+export function task(callback: () => boolean | void, options: TaskOptions<'check' | 'action'>): void {
+  const { type = 'action', maxAttempts = 5, timeout = 1000, onSuccess, onFailure } = options;
+  let attempts = options.attempts ?? 0;
+  let intervalId: NodeJS.Timeout;
+  const handleFailure = () => {
+    clearInterval(intervalId);
+    onFailure?.();
+    return;
+  };
 
-export function task(callback: () => boolean, options: TaskCheckOptions): void;
-export function task(callback: () => void, options: TaskTaskOptions): void;
-export function task(callback: () => boolean | void, options: TaskTaskOptions | TaskCheckOptions): void {
-  const { type, maxAttempts, timeout, attempts } = options;
-  // let attempts = 0;
-  // let maxAttempts = 5;
-  // let timeout = 1000;
+  const handleSuccess = () => {
+    clearInterval(intervalId);
+    onSuccess?.();
+    return;
+  };
 
-  const intervalId = setInterval(() => {}, timeout);
+  intervalId = setInterval(() => {
+    if (type === 'check') {
+      const result = callback() as boolean;
+      if (result) {
+        console.log('Task succeeded');
+        handleSuccess();
+      } else if (attempts >= maxAttempts) {
+        console.log('Task failed1');
+        handleFailure();
+      }
+    } else {
+      callback() as void;
+      if (attempts >= maxAttempts) {
+        handleSuccess();
+      }
+    }
+    attempts++;
+  }, timeout);
 }

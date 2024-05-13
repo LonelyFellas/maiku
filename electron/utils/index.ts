@@ -8,3 +8,4 @@ export * from './share';
 export * from './tray';
 export * from './getActiveWindowRect';
 export * from './killProcessWithWindows';
+export * from './task';

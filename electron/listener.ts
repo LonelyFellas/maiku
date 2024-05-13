@@ -6,7 +6,7 @@ import path from 'node:path';
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
 import * as process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import { isMac, getWindowRect, getScrcpyCwd, killProcessWithWindows } from '/electron/utils';
+import { isMac, getWindowRect, getScrcpyCwd, killProcessWithWindows, task, checkWindowExists } from '/electron/utils';
 
 interface CreateListenerOptions {
   store: Store<typeof import('./config/electron-store-schema.json')>;
@@ -105,6 +105,23 @@ export default function createListener(options: CreateListenerOptions) {
 
       if (strData.includes('ERROR')) {
         event.reply('error', strData);
+      } else {
+        console.log('Task failed3');
+        /**
+         * 执行一个定时任务，检查窗口是否存在
+         * 如果窗口存在，则打开scrcpy的taskbar窗口
+         * 如果窗口不存在，则尝试重新打开窗口
+         */
+        task(() => checkWindowExists(winName), {
+          type: 'check',
+          attempts: 0,
+          maxAttempts: 5,
+          timeout: 1000,
+          onSuccess: () => {
+            const rect = getWindowRect(winName)!;
+            console.log('rect', rect);
+          },
+        });
       }
     });
 
