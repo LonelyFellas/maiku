@@ -4,7 +4,9 @@ import { isProd, createLoadWindow, createBrowserWindow, createTray, isMac, __dir
 import Store from 'electron-store';
 import schema from './config/electron-store-schema.json';
 import createListener from '/electron/listener.ts';
-import { test } from 'window_test';
+
+
+
 
 process.env.APP_ROOT = path.join(__dirname, '..');
 
@@ -20,7 +22,6 @@ let mainWin: BrowserWindow | null = null;
 let loadingWin: Electron.BrowserWindow | null = null;
 // console.log('createMainWindow');
 
-console.log('test', test);
 
 function createMainWindow() {
   // 获取屏幕的尺寸

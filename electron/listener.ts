@@ -6,7 +6,7 @@ import path from 'node:path';
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
 import * as process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import { getScrcpyCwd } from '/electron/utils/getScrcpyPath.ts';
+import { isMac, getWindowRect, getScrcpyCwd, killProcessWithWindows } from '/electron/utils';
 
 interface CreateListenerOptions {
   store: Store<typeof import('./config/electron-store-schema.json')>;
@@ -82,18 +82,23 @@ export default function createListener(options: CreateListenerOptions) {
     });
   });
   /** 启动scrcpy **/
-  ipcMain.on('scrcpy:listen', async (event, deviceId: string) => {
+  ipcMain.on('scrcpy:start', async (event, deviceId: string, winName: string = 'Test') => {
     const scrcpyCwd = getScrcpyCwd();
-    console.log(scrcpyCwd);
     if (Object.prototype.hasOwnProperty.call(scrcpyProcessObj, deviceId)) {
-      scrcpyProcessObj[deviceId].kill('SIGTERM');
-      delete scrcpyProcessObj[deviceId];
+      if (isMac) {
+        scrcpyProcessObj[deviceId].kill('SIGTERM');
+        delete scrcpyProcessObj[deviceId];
+      } else {
+        killProcessWithWindows(scrcpyProcessObj[deviceId].pid!);
+        delete scrcpyProcessObj[deviceId];
+      }
     }
 
-    scrcpyProcessObj[deviceId] = spawn('scrcpy', ['-s', deviceId], {
+    scrcpyProcessObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', winName], {
       cwd: scrcpyCwd,
       shell: true,
     });
+
     scrcpyProcessObj[deviceId].stdout.on('data', (data) => {
       const strData = data.toString();
       console.error(`stdout: ${strData}`);
@@ -105,10 +110,11 @@ export default function createListener(options: CreateListenerOptions) {
 
     scrcpyProcessObj[deviceId].stderr.on('data', (data) => {
       const strData = data.toString();
-      console.error(`stdrr: ${strData}`);
+      console.log(`stdrr: ${strData}`);
 
       if (strData.includes('ERROR')) {
         event.reply('error', strData);
+      } else {
       }
     });
 
@@ -177,5 +183,9 @@ export default function createListener(options: CreateListenerOptions) {
     event.reply('download-file-progress', {
       // progress:
     });
+  });
+  ipcMain.on('window:scrcpy-listen', (_, winName: string) => {
+    const rect = getWindowRect(winName);
+    console.log('rect', rect);
   });
 }

@@ -30,6 +30,10 @@ const TableMain = (props: TableMainProps) => {
       refetch();
     }
   }, [props.isRefetching]);
+  const handleGetWindowRect = () => {
+    console.log('111');
+    window.ipcRenderer.send('window:scrcpy-listen', 'SM-F711N');
+  };
 
   const [columns] = useState(() => {
     const defaultColumns = configColumns.concat([
@@ -48,7 +52,7 @@ const TableMain = (props: TableMainProps) => {
             <Button size="small" type="primary" onClick={() => handleStartScrcpy(id)}>
               启动
             </Button>
-            <Button type="text" size="small" onClick={() => handleStopScrcpy(id)}>
+            <Button type="text" size="small" onClick={handleGetWindowRect}>
               编辑
             </Button>
 
@@ -68,10 +72,7 @@ const TableMain = (props: TableMainProps) => {
   });
 
   const handleStartScrcpy = (id: string) => {
-    window.ipcRenderer.send('scrcpy:listen', id);
-  };
-  const handleStopScrcpy = (id: string) => {
-    window.ipcRenderer.send('scrcpy:kill', id);
+    window.ipcRenderer.send('scrcpy:start', id, 'Test');
   };
 
   return (
