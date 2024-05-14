@@ -1,10 +1,4 @@
-import {
-  createHashHistory,
-  createRootRouteWithContext,
-  createRoute,
-  createRouter,
-  Outlet,
-} from '@tanstack/react-router';
+import { createHashHistory, createRootRouteWithContext, createRoute, createRouter, Outlet } from '@tanstack/react-router';
 import { QueryClient } from '@tanstack/react-query';
 import App from '@/App.tsx';
 import { ErrorComponent } from '@common';
@@ -16,6 +10,8 @@ import Proxy from '@/pages/discover/proxy';
 import AddBatches from '@/pages/discover/proxy/add-batches.tsx';
 import UpgradePkg from '@/pages/layout/upgrade-pkg.tsx';
 import { postsEnvQueryOptions, postsProxyQueryOptions } from './data.ts';
+import { IndexPage } from '@/pages/index-page.tsx';
+import ScrcpyWindow from '@/pages/scrcpy';
 
 const rootRoute = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -33,7 +29,7 @@ const rootRoute = createRootRouteWithContext<{
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
-  component: Login,
+  component: IndexPage,
 });
 
 /** 登录页面 */
@@ -41,6 +37,12 @@ const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/login',
   component: Login,
+});
+/** scrcpy 页面 */
+const scrcpyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/scrcpy',
+  component: ScrcpyWindow,
 });
 
 /** home */
@@ -55,16 +57,14 @@ const profiles = createRoute({
   getParentRoute: () => layoutRoute,
   path: '/profiles',
   component: Profiles,
-  loader: ({ context: { queryClient } }) =>
-    queryClient.ensureQueryData(postsEnvQueryOptions),
+  loader: ({ context: { queryClient } }) => queryClient.ensureQueryData(postsEnvQueryOptions),
   meta: () => [{ title: '环境管理' }],
 });
 /** 代理管理 */
 const proxy = createRoute({
   getParentRoute: () => layoutRoute,
   path: '/proxy',
-  loader: ({ context: { queryClient } }) =>
-    queryClient.ensureQueryData(postsProxyQueryOptions),
+  loader: ({ context: { queryClient } }) => queryClient.ensureQueryData(postsProxyQueryOptions),
   component: Proxy,
   meta: () => [{ title: '代理管理' }],
 });
@@ -107,17 +107,7 @@ const upgradePkg = createRoute({
   ],
 });
 
-const routeTree = rootRoute.addChildren([
-  indexRoute,
-  loginRoute,
-  layoutRoute.addChildren([
-    profiles,
-    newProfiles,
-    proxy,
-    upgradePkg,
-    addBatchesProxy,
-  ]),
-]);
+const routeTree = rootRoute.addChildren([indexRoute, scrcpyRoute, loginRoute, layoutRoute.addChildren([profiles, newProfiles, proxy, upgradePkg, addBatchesProxy])]);
 
 export const queryClient = new QueryClient();
 export const router = createRouter({

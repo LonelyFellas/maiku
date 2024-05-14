@@ -13,32 +13,26 @@ export function task(callback: () => boolean | void, options: TaskOptions<'check
   const { type = 'action', maxAttempts = 5, timeout = 1000, onSuccess, onFailure } = options;
   let attempts = options.attempts ?? 0;
   let intervalId: NodeJS.Timeout;
-  const handleFailure = () => {
-    clearInterval(intervalId);
-    onFailure?.();
-    return;
-  };
-
-  const handleSuccess = () => {
-    clearInterval(intervalId);
-    onSuccess?.();
-    return;
-  };
 
   intervalId = setInterval(() => {
     if (type === 'check') {
       const result = callback() as boolean;
       if (result) {
-        console.log('Task succeeded');
-        handleSuccess();
+        console.log('result', result);
+        clearInterval(intervalId);
+        onSuccess?.();
+        return;
       } else if (attempts >= maxAttempts) {
-        console.log('Task failed1');
-        handleFailure();
+        clearInterval(intervalId);
+        onFailure?.();
+        return;
       }
     } else {
       callback() as void;
       if (attempts >= maxAttempts) {
-        handleSuccess();
+        clearInterval(intervalId);
+        onSuccess?.();
+        return;
       }
     }
     attempts++;

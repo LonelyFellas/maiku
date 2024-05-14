@@ -1,7 +1,7 @@
 import { screen } from 'electron';
-import { __dirname, isProd } from './helper.ts';
-import { createBrowserWindow } from '/electron/utils/createWindow.ts';
 import path from 'node:path';
+import { createBrowserWindow, __dirname, isProd } from '/electron/utils';
+import { RENDERER_DIST } from '/electron/main.ts';
 
 export function createLoadWindow(loadingWin: Electron.BrowserWindow | null) {
   // 获取屏幕的尺寸
@@ -23,7 +23,7 @@ export function createLoadWindow(loadingWin: Electron.BrowserWindow | null) {
     y: (height - 300) / 2,
   });
 
-  loadingWin.loadFile(isProd ? './dist/loading.html' : 'public/loading.html');
+  loadingWin.loadFile(isProd ? path.join(RENDERER_DIST, 'loading.html') : 'public/loading.html');
 
   return loadingWin;
 }

@@ -23,9 +23,6 @@ export default defineConfig({
       // If you want use Node.js in Renderer process, the `nodeIntegration` needs to be enabled in the Main process.
       // See 👉 https://github.com/electron-vite/vite-plugin-electron-renderer
       renderer: {
-        resolve: {
-          "koffi": { type: 'cjs'}
-        }
       }
     }),
   ],
@@ -50,7 +47,6 @@ export default defineConfig({
           }
         },
       },
-      external: ['koffi'],
     },
   },
 });

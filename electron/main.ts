@@ -3,10 +3,7 @@ import path from 'node:path';
 import { isProd, createLoadWindow, createBrowserWindow, createTray, isMac, __dirname } from './utils';
 import Store from 'electron-store';
 import schema from './config/electron-store-schema.json';
-import createListener from '/electron/listener.ts';
-
-
-
+import createListener from '/electron/listener';
 
 process.env.APP_ROOT = path.join(__dirname, '..');
 
@@ -17,11 +14,9 @@ export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist');
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST;
 
 // 初始化electron-store
-const store = new Store({ defaults: schema });
+export const store = new Store({ defaults: schema });
 let mainWin: BrowserWindow | null = null;
 let loadingWin: Electron.BrowserWindow | null = null;
-// console.log('createMainWindow');
-
 
 function createMainWindow() {
   // 获取屏幕的尺寸
@@ -44,7 +39,7 @@ function createMainWindow() {
     mainWin.loadURL(VITE_DEV_SERVER_URL);
   } else {
     // win.loadFile('dist/index.html')
-    mainWin.loadFile('./dist/index.html');
+    mainWin.loadFile(path.join(RENDERER_DIST, 'index.html'));
   }
 
   // 创建托盘图标

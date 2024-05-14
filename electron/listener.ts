@@ -1,19 +1,16 @@
 import { BrowserWindow, dialog, ipcMain, app } from 'electron';
 import type Store from 'electron-store';
-import share from './utils/share';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
 import * as process from 'node:process';
-import { fileURLToPath } from 'node:url';
-import { isMac, getWindowRect, getScrcpyCwd, killProcessWithWindows, task, checkWindowExists } from '/electron/utils';
+import { isMac, getWindowRect, getScrcpyCwd, killProcessWithWindows, task, checkWindowExists, createBrowserWindow, __dirname } from '/electron/utils';
+import { VITE_DEV_SERVER_URL } from '/electron/main.ts';
 
 interface CreateListenerOptions {
   store: Store<typeof import('./config/electron-store-schema.json')>;
 }
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 const scrcpyProcessObj: Record<string, ChildProcessWithoutNullStreams> = {};
 export default function createListener(options: CreateListenerOptions) {
   const { store } = options;
@@ -69,18 +66,18 @@ export default function createListener(options: CreateListenerOptions) {
     }
     return window?.isMaximized();
   });
-  ipcMain.handle('lang:i18n', async () => {
-    const [get, set] = share('i81n');
-    const value = await get();
-    set('en');
-
-    // 模拟异步加载静态数据
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(value);
-      }, 120);
-    });
-  });
+  // ipcMain.handle('lang:i18n', async () => {
+  //   const [get, set] = share('i81n');
+  //   const value = await get();
+  //   set('en');
+  //
+  //   // 模拟异步加载静态数据
+  //   return new Promise((resolve) => {
+  //     setTimeout(() => {
+  //       resolve(value);
+  //     }, 120);
+  //   });
+  // });
   /** 启动scrcpy **/
   ipcMain.on('scrcpy:start', async (event, deviceId: string, winName: string = 'Test') => {
     const scrcpyCwd = getScrcpyCwd();
@@ -106,22 +103,46 @@ export default function createListener(options: CreateListenerOptions) {
       if (strData.includes('ERROR')) {
         event.reply('error', strData);
       } else {
-        console.log('Task failed3');
-        /**
-         * 执行一个定时任务，检查窗口是否存在
-         * 如果窗口存在，则打开scrcpy的taskbar窗口
-         * 如果窗口不存在，则尝试重新打开窗口
-         */
-        task(() => checkWindowExists(winName), {
-          type: 'check',
-          attempts: 0,
-          maxAttempts: 5,
-          timeout: 1000,
-          onSuccess: () => {
-            const rect = getWindowRect(winName)!;
-            console.log('rect', rect);
-          },
-        });
+        // 确保它渲染完成
+        if (strData.includes('Renderer')) {
+          /**
+           * 执行一个定时任务，检查窗口是否存在
+           * 如果窗口存在，则打开scrcpy的taskbar窗口
+           * 如果窗口不存在，则尝试重新打开窗口
+           */
+          task(() => checkWindowExists(winName), {
+            type: 'check',
+            attempts: 0,
+            maxAttempts: 5,
+            timeout: 1000,
+            onSuccess: () => {
+              const rect = getWindowRect(winName)!;
+              const { top, bottom, right } = rect;
+              const scrcpyTaskbarWindow = createBrowserWindow({
+                x: right - 7,
+                y: top + 1,
+                width: 40,
+                height: bottom - top - 10,
+                frame: false,
+                webPreferences: {
+                  nodeIntegration: true,
+                  contextIsolation: true,
+                  preload: path.join(__dirname, 'preload.mjs'),
+                },
+              });
+              setInterval(() => {
+                const rect = getWindowRect(winName)!;
+                const { top, right } = rect;
+                scrcpyTaskbarWindow.setPosition(right - 7, top + 1);
+              }, 0);
+              scrcpyTaskbarWindow.on('minimize', (event) => {
+                event.preventDefault(); // 阻止子窗口最小化
+                scrcpyTaskbarWindow.restore(); // 立即恢复子窗口
+              });
+              scrcpyTaskbarWindow.loadURL(`${VITE_DEV_SERVER_URL}/scrcpy`);
+            },
+          });
+        }
       }
     });
 
@@ -131,7 +152,6 @@ export default function createListener(options: CreateListenerOptions) {
 
       if (strData.includes('ERROR')) {
         event.reply('error', strData);
-      } else {
       }
     });
 
@@ -169,40 +189,40 @@ export default function createListener(options: CreateListenerOptions) {
     return res.filePaths;
   });
 
-  /** 保存文件 **/
-  ipcMain.on('file:operation', (event, outputPath, type) => {
-    if (type === 'save') {
-      console.log(outputPath);
-      console.log(path.join(__dirname, outputPath));
-      // fs.writeFile(
-      //   path.join(__dirname, outputPath),
-      //   Buffer.from(data),
-      //   (err) => {
-      //     if (err) {
-      //       console.error('Error saving file:', err);
-      //       event.reply(err.message);
-      //       return;
-      //     }
-      //   },
-      // );
-    } else {
-      fs.unlink(outputPath, (err) => {
-        if (err) {
-          console.error('Failed to delete file:', err);
-          event.reply(err.message);
-          return;
-        }
-      });
-    }
-  });
-  /** 下载文件 **/
-  ipcMain.on('download-file-progress', (event) => {
-    event.reply('download-file-progress', {
-      // progress:
-    });
-  });
-  ipcMain.on('window:scrcpy-listen', (_, winName: string) => {
-    const rect = getWindowRect(winName);
-    console.log('rect', rect);
-  });
+  // /** 保存文件 **/
+  // ipcMain.on('file:operation', (event, outputPath, type) => {
+  //   if (type === 'save') {
+  //     console.log(outputPath);
+  //     console.log(path.join(__dirname, outputPath));
+  //     // fs.writeFile(
+  //     //   path.join(__dirname, outputPath),
+  //     //   Buffer.from(data),
+  //     //   (err) => {
+  //     //     if (err) {
+  //     //       console.error('Error saving file:', err);
+  //     //       event.reply(err.message);
+  //     //       return;
+  //     //     }
+  //     //   },
+  //     // );
+  //   } else {
+  //     fs.unlink(outputPath, (err) => {
+  //       if (err) {
+  //         console.error('Failed to delete file:', err);
+  //         event.reply(err.message);
+  //         return;
+  //       }
+  //     });
+  //   }
+  // });
+  // /** 下载文件 **/
+  // ipcMain.on('download-file-progress', (event) => {
+  //   event.reply('download-file-progress', {
+  //     // progress:
+  //   });
+  // });
+  // ipcMain.on('window:scrcpy-listen', (_, winName: string) => {
+  //   const rect = getWindowRect(winName);
+  //   console.log('rect', rect);
+  // });
 }

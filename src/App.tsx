@@ -6,6 +6,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { isMacFunc, useI18nConfig, Wrapper } from '@common';
 
 const App = (props: PropsWithChildren<object>) => {
+  const { href } = window.location;
+  const isScrcpy = href.includes('scrcpy');
   // const { message } = AntdApp.useApp();
   const [, setLang] = useI18nConfig();
   const isMac = isMacFunc();
@@ -21,18 +23,12 @@ const App = (props: PropsWithChildren<object>) => {
     setLang((prev) => (prev === 'zh' ? 'en' : 'zh'));
   };
 
-  const Component = isMac ? Fragment : Wrapper;
+  const Component = isMac || isScrcpy ? Fragment : Wrapper;
   return (
     <>
-      {window.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-      {window.env.DEV && <TanStackRouterDevtools />}
-      {window.env.DEV && (
-        <FloatButton
-          icon={<GlobalIcon />}
-          onClick={handleLanguageChange}
-          style={{ top: 24 }}
-        />
-      )}
+      {window.env.DEV && !isScrcpy && <ReactQueryDevtools initialIsOpen={false} />}
+      {window.env.DEV && !isScrcpy && <TanStackRouterDevtools />}
+      {window.env.DEV && !isScrcpy && <FloatButton icon={<GlobalIcon />} onClick={handleLanguageChange} style={{ top: 24 }} />}
       <Component>
         {/* 主要是为了去除antd的错误message提示， */}
         <AntdApp>{props.children}</AntdApp>

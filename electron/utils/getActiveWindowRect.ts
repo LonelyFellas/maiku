@@ -1,13 +1,13 @@
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
-const cwp = require('captures-win-position/lib/main.js');
+const cwp = require('@darwish/captures-win32-position/lib/main.js');
 
 interface RECT {
   left: number;
   top: number;
-  width: number;
-  height: number;
+  bottom: number;
+  right: number;
 }
 
 /**
