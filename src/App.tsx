@@ -4,7 +4,6 @@ import { GlobalOutlined as GlobalIcon } from '@ant-design/icons/lib/icons';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { isMacFunc, useI18nConfig, Wrapper } from '@common';
-import 'mac-scrollbar/dist/mac-scrollbar.css';
 
 const App = (props: PropsWithChildren<object>) => {
   // const { message } = AntdApp.useApp();

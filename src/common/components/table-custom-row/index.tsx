@@ -1,5 +1,6 @@
 import { Checkbox, Modal, type ModalProps } from 'antd';
-import { MacScrollbar } from 'mac-scrollbar';
+// import { MacScrollbar } from 'mac-scrollbar';
+import { Scrollbar} from "@darwish/scrollbar-react";
 import {
   DndContext,
   type DragEndEvent,
@@ -88,7 +89,7 @@ export default function TableCustomRow(props: TableCustomRowProps) {
             onDragEnd={handleDragEnd}
             autoScroll={false}
           >
-            <MacScrollbar className="px-4 h-full">
+            <Scrollbar className="px-4 h-full">
               <SortableContext
                 items={items.map((col) => ({ id: col.key }))}
                 strategy={verticalListSortingStrategy}
@@ -102,7 +103,7 @@ export default function TableCustomRow(props: TableCustomRowProps) {
                   </Fragment>
                 ))}
               </SortableContext>
-            </MacScrollbar>
+            </Scrollbar>
           </DndContext>
         </div>
       </div>
