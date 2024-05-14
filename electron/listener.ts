@@ -10,12 +10,14 @@ interface CreateListenerOptions {
   store: Store<typeof import('./config/electron-store-schema.json')>;
 }
 
+const im = ipcMain as unknown as Electron.IM;
 const scrcpyProcessObj: Record<string, ChildProcessWithoutNullStreams> = {};
 export default function createListener(options: CreateListenerOptions) {
   const { store } = options;
 
   /** 处理windows的窗口的状态按钮 */
-  ipcMain.handle('window:state', async (event, channel, windowClose) => {
+  im.handle('window:state', async (...args) => {
+    const [event, channel, windowClose] = args;
     const window = BrowserWindow.getFocusedWindow();
     if (channel === 'minimize') {
       window?.minimize();
@@ -65,20 +67,9 @@ export default function createListener(options: CreateListenerOptions) {
     }
     return window?.isMaximized();
   });
-  // ipcMain.handle('lang:i18n', async () => {
-  //   const [get, set] = share('i81n');
-  //   const value = await get();
-  //   set('en');
-  //
-  //   // 模拟异步加载静态数据
-  //   return new Promise((resolve) => {
-  //     setTimeout(() => {
-  //       resolve(value);
-  //     }, 120);
-  //   });
-  // });
+
   /** 启动scrcpy **/
-  ipcMain.on('scrcpy:start', async (event, deviceId: string, winName: string = 'Test') => {
+  im.on('scrcpy:start', async (event, deviceId, winName = 'Test') => {
     const scrcpyCwd = getScrcpyCwd();
     if (Object.prototype.hasOwnProperty.call(scrcpyProcessObj, deviceId)) {
       if (isMac) {
@@ -165,7 +156,7 @@ export default function createListener(options: CreateListenerOptions) {
   });
 
   /** 关闭和重启 */
-  ipcMain.on('app:operate', (_, operation) => {
+  im.on('app:operate', (_, operation) => {
     if (operation === 'close') {
       app.quit();
     } else if (operation === 'restart') {
@@ -176,7 +167,8 @@ export default function createListener(options: CreateListenerOptions) {
     }
   });
   /** 打开文件框，选择文件，处理文件，拿到文件名和文件大小，返回给renderer **/
-  ipcMain.handle('dialog:open', async (_, option) => {
+  im.handle('dialog:open', async (...args) => {
+    const [, option] = args;
     const res = await dialog.showOpenDialog(option);
     if (!res.canceled && res.filePaths.length > 0) {
       const files = await Promise.all(

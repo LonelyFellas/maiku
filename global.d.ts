@@ -1,9 +1,26 @@
 import type React from 'react';
+import type { Electron, IpcRenderer, OpenDialogOptions, MessageBoxReturnValue } from 'electron';
 import type { Client } from '@devicefarmer/adbkit';
 import type { ColumnsType } from 'antd/es/table';
-import { ModalProps } from 'antd';
+import type { ModalProps } from 'antd';
 
 declare global {
+  type WindowState = 'close' | 'minimize' | 'maximize';
+  type RememberState = '' | 'close' | 'minimizeToTray';
+  type InvokeChannelMap = {
+    'window:state': [[WindowState, RememberState] | [WindowState], boolean | MessageBoxReturnValue | undefined];
+    'dialog:open': [OpenDialogOptions, string[] | { url: string; name: string; size: number }[]];
+  };
+  type SendChannelMap = {
+    'scrcpy:start': [string, string];
+    'app:operate': ['close' | 'restart'];
+  };
+
+  interface IpcRenderer extends Omit<IpcRenderer, 'invoke' | 'send'> {
+    invoke: <T extends keyof InvokeChannelMapChannelMap>(channel: T, ...args: InvokeChannelMap[T][0]) => Promise<InvokeChannelMap[T][1]>;
+    send: <T extends keyof SendChannelMap>(channel: T, ...args: SendChannelMap[T]) => Promise<any>;
+  }
+
   type I18nConfig = {
     lang: '简体中文' | 'English';
     config: typeof import('@/assets/messages/en.json');
@@ -17,20 +34,17 @@ declare global {
    *  type B = PathValue<A, 'a.b'>; // string
    *  type C = PathValue<A, 'a.c'>; // never
    */
-  type PathValue<T, P extends string | null = null> = P extends null
-    ? T
-    : P extends `${infer K}.${infer Rest}`
-      ? K extends keyof T
-        ? PathValue<T[K], Rest>
-        : never
-      : P extends keyof T
-        ? T[P]
-        : never;
+  type PathValue<T, P extends string | null = null> = P extends null ? T : P extends `${infer K}.${infer Rest}` ? (K extends keyof T ? PathValue<T[K], Rest> : never) : P extends keyof T ? T[P] : never;
+  type UnionToTuple<T, L = LastOf<T>, N = [T] extends [never] ? true : false> = true extends N ? [] : Push<UnionToTuple<Exclude<T, L>>, L>;
+  type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
+  type LastOf<T> = UnionToIntersection<T extends any ? () => T : never> extends () => infer R ? R : never;
+
+  type Push<T extends any[], V> = [...T, V];
 
   // Used in Renderer process, expose in `preload.ts`
   interface Window {
     env: ImportMeta['env'];
-    ipcRenderer: import('electron').IpcRenderer;
+    ipcRenderer: IpcRenderer;
     adbApi: {
       connect: Client['connect'];
       disconnect: Client['disconnect'];
@@ -53,17 +67,17 @@ declare global {
     toggleDevtools: () => void;
   }
 
-  interface SelectedFiles {
-    url: string;
-    name: string;
-    size: number;
-    status?: number;
-  }
-
-  interface GetAdbFile {
-    name: string;
-    size: number;
-  }
+  // interface SelectedFiles {
+  //   url: string;
+  //   name: string;
+  //   size: number;
+  //   status?: number;
+  // }
+  //
+  // interface GetAdbFile {
+  //   name: string;
+  //   size: number;
+  // }
 
   type ReactAction<T> = React.Dispatch<React.SetStateAction<T>>;
   type ReactFCWithChildren<T> = React.FC<React.PropsWithChildren<T>>;
@@ -81,10 +95,7 @@ declare global {
   /**
    * React.MouseEvent 的类型定义
    */
-  type ReactMouseEvent<
-    T extends Element,
-    E = React.MouseEvent<T, MouseEvent>,
-  > = E;
+  type ReactMouseEvent<T extends Element, E = React.MouseEvent<T, MouseEvent>> = E;
 
   /**
    * Antd Modal 的类型定义
@@ -101,12 +112,15 @@ declare global {
   type AnyObj = Darwish.AnyObj;
   type EmptyObj = Darwish.EmptyObj;
   type MergeObj<T extends AnyObj, U extends AnyObj, Merge extends AnyObj = U extends EmptyObj ? T : T extends EmptyObj ? U : T & U> = {
-    [K in keyof Merge]: Merge[K]
-  }
-  type AddEditType<Obj extends AnyObj, IsEdit extends boolean = false, ExcludeParams extends AnyObj = {
-    id: number
-  }> = MergeObj<Obj, IsEdit extends true ? ExcludeParams : {}>
-
+    [K in keyof Merge]: Merge[K];
+  };
+  type AddEditType<
+    Obj extends AnyObj,
+    IsEdit extends boolean = false,
+    ExcludeParams extends AnyObj = {
+      id: number;
+    },
+  > = MergeObj<Obj, IsEdit extends true ? ExcludeParams : {}>;
 }
 
 export {};
