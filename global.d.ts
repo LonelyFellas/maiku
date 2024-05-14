@@ -14,11 +14,16 @@ declare global {
   type SendChannelMap = {
     'scrcpy:start': [string, string];
     'app:operate': ['close' | 'restart'];
+    'loading:done': ['main' | 'loading'];
+  };
+  type OnChannelMap = {
+    error: Darwish.AnyFunc;
   };
 
   interface IpcRenderer extends Omit<IpcRenderer, 'invoke' | 'send'> {
     invoke: <T extends keyof InvokeChannelMapChannelMap>(channel: T, ...args: InvokeChannelMap[T][0]) => Promise<InvokeChannelMap[T][1]>;
     send: <T extends keyof SendChannelMap>(channel: T, ...args: SendChannelMap[T]) => Promise<any>;
+    on: <T extends keyof OnChannelMap>(channel: T, listener: OnChannelMap[T]) => void;
   }
 
   type I18nConfig = {
