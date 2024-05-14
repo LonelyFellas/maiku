@@ -22,8 +22,7 @@ export default defineConfig({
       // Ployfill the Electron and Node.js API for Renderer process.
       // If you want use Node.js in Renderer process, the `nodeIntegration` needs to be enabled in the Main process.
       // See 👉 https://github.com/electron-vite/vite-plugin-electron-renderer
-      renderer: {
-      }
+      renderer: {},
     }),
   ],
   resolve: {
@@ -43,7 +42,7 @@ export default defineConfig({
         sourcemap: false,
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            return id.toString().split('node_modules')[1].split('/')[0].toString();
+            return id.toString().split('node_modules/')[1].split('/')[0].toString();
           }
         },
       },
