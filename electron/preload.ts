@@ -28,7 +28,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
     if (whitelist.includes(channel as any)) {
       return ipcRenderer.send(channel, ...omit);
     }
-    return Promise.reject(new Error(`Channel ${channel} is not supported`));
+    return Promise.reject(new Error(`Channel ${channel} is not allowed`));
   },
   invoke(...args: Parameters<typeof ipcRenderer.invoke>) {
     const [channel, ...omit] = args;
