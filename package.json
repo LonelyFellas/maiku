@@ -29,7 +29,6 @@
     "captures-win-position": "^0.0.7",
     "clsx": "^2.1.1",
     "electron-store": "^8.2.0",
-    "ffi-napi": "^4.0.3",
     "koffi": "^2.8.8",
     "mac-scrollbar": "^0.13.6",
     "pretty-bytes": "^6.1.1",
