@@ -4,8 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
 import * as process from 'node:process';
-import { isMac, getWindowRect, getScrcpyCwd, killProcessWithWindows, task, checkWindowExists, createBrowserWindow, __dirname } from '/electron/utils';
-import { VITE_DEV_SERVER_URL } from '/electron/main.ts';
+import { isMac, getScrcpyCwd, killProcessWithWindows } from '/electron/utils';
 
 interface CreateListenerOptions {
   store: Store<typeof import('./config/electron-store-schema.json')>;
@@ -110,38 +109,43 @@ export default function createListener(options: CreateListenerOptions) {
            * 如果窗口存在，则打开scrcpy的taskbar窗口
            * 如果窗口不存在，则尝试重新打开窗口
            */
-          task(() => checkWindowExists(winName), {
-            type: 'check',
-            attempts: 0,
-            maxAttempts: 5,
-            timeout: 1000,
-            onSuccess: () => {
-              const rect = getWindowRect(winName)!;
-              const { top, bottom, right } = rect;
-              const scrcpyTaskbarWindow = createBrowserWindow({
-                x: right - 7,
-                y: top + 1,
-                width: 40,
-                height: bottom - top - 10,
-                frame: false,
-                webPreferences: {
-                  nodeIntegration: true,
-                  contextIsolation: true,
-                  preload: path.join(__dirname, 'preload.mjs'),
-                },
-              });
-              setInterval(() => {
-                const rect = getWindowRect(winName)!;
-                const { top, right } = rect;
-                scrcpyTaskbarWindow.setPosition(right - 7, top + 1);
-              }, 0);
-              scrcpyTaskbarWindow.on('minimize', (event) => {
-                event.preventDefault(); // 阻止子窗口最小化
-                scrcpyTaskbarWindow.restore(); // 立即恢复子窗口
-              });
-              scrcpyTaskbarWindow.loadURL(`${VITE_DEV_SERVER_URL}/scrcpy`);
-            },
-          });
+          // task(() => checkWindowExists(winName), {
+          //   type: 'check',
+          //   attempts: 0,
+          //   maxAttempts: 5,
+          //   timeout: 1000,
+          //   onSuccess: () => {
+          //     const rect = getWindowRect(winName)!;
+          //     const { top, bottom, right } = rect;
+          //     const scrcpyTaskbarWindow = createBrowserWindow({
+          //       x: right - 7,
+          //       y: top + 1,
+          //       width: 40,
+          //       height: bottom - top - 10,
+          //       frame: false,
+          //       webPreferences: {
+          //         nodeIntegration: true,
+          //         contextIsolation: true,
+          //         preload: path.join(__dirname, 'preload.mjs'),
+          //       },
+          //     });
+          //     setInterval(() => {
+          //       const rect = getWindowRect(winName)!;
+          //       const { top, right } = rect;
+          //       scrcpyTaskbarWindow.setPosition(right - 7, top + 1);
+          //     }, 0);
+          //     scrcpyTaskbarWindow.on('blur', (event) => {
+          //       event.preventDefault(); // 阻止子窗口最小化
+          //     });
+          //     scrcpyTaskbarWindow.on('minimize', (event) => {
+          //       event.preventDefault(); // 阻止子窗口最小化
+          //       if (scrcpyTaskbarWindow.isMinimized()) {
+          //         scrcpyTaskbarWindow.restore(); // 立即恢复子窗口
+          //       }
+          //     });
+          //     scrcpyTaskbarWindow.loadURL(`${VITE_DEV_SERVER_URL}/scrcpy`);
+          //   },
+          // });
         }
       }
     });
