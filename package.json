@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@darwish/captures-win32-position": "^0.0.1",
-    "@darwish/hooks-core": "^0.0.14",
+    "@darwish/hooks-core": "^0.0.16",
     "@darwish/scrollbar-react": "^0.1.3",
     "@darwish/utils-dlv": "^1.0.1",
     "@darwish/utils-is": "^0.0.3",

@@ -1,14 +1,10 @@
-import React, { createContext, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Button, Dropdown, Space, Popconfirm } from 'antd';
 import { Table } from '@common';
 import { operationItems, columns as configColumns } from '../config';
 import { useQuery } from '@tanstack/react-query';
 import { getBackupListByEnvIdService } from '@api/primary/backup.ts';
 import { useUpdateEffect } from '@darwish/hooks-core';
-
-export const TableContext = createContext<{ deviceId: string }>({
-  deviceId: '-1',
-});
 
 interface TableMainProps {
   deviceId: string;
