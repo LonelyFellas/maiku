@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { Button, Collapse, Flex } from 'antd';
+import { Button, Collapse, Flex, Image } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { isArray } from '@darwish/utils-is';
 import { Scrollbar } from '@darwish/scrollbar-react';
 import { GetAllEnvListResult, getEnvByIdService } from '@api';
 import { LeftOutlined } from '@ant-design/icons';
-import phone from '@img/phone-test.png';
 import '../index.css';
 import { cn, ContainerWithEmpty, toNumber } from '@common';
 
@@ -28,7 +27,6 @@ const Slider = (props: SliderProps) => {
     refetchInterval: 1000 * 5,
     enabled: envList.length > 0 && collapse.length > 0,
   });
-  console.log(data);
 
   const handleChange = (indexStr: string | string[]) => {
     if (isArray(indexStr)) {
@@ -61,8 +59,8 @@ const Slider = (props: SliderProps) => {
               </div>
             ),
             children: (
-              <div className="flex flex-col items-center">
-                <img src={phone} className="rounded-[32px] h-[400px]" />
+              <div className="flex flex-col items-center p-2">
+                <Image preview={!!data?.screenShot} src={data?.screenShot} className="rounded h-[400px]" height={400} alt="screen shot" />
                 <Flex className="my-2" gap={10}>
                   <Button size="small" onClick={() => handleGoToEdit(item.id)}>
                     修改

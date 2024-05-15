@@ -19,7 +19,6 @@ export default function adbkit(): Partial<Window['adbApi']> {
         savePath: window.env.VITE_UPLOAD_FILE,
       },
     ) => {
-      console.log('savePath', savePath);
       await client.getDevice(id).shell('su');
       const res = await client.getDevice(id).push(filePath, savePath);
 
@@ -38,7 +37,6 @@ export default function adbkit(): Partial<Window['adbApi']> {
       });
     },
     readdir: async (id, filePath) => {
-      console.log('filePath adb', filePath);
       const files = await client.getDevice(id).readdir(filePath);
       return files;
     },

@@ -17,7 +17,6 @@ export function task(callback: () => boolean | void, options: TaskOptions<'check
     if (type === 'check') {
       const result = callback() as boolean;
       if (result) {
-        console.log('result', result);
         clearInterval(intervalId);
         onSuccess?.();
         return;

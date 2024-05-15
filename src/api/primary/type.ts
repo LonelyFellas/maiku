@@ -11,6 +11,7 @@ export interface GetAllEnvListResult {
   port: number;
   username: string;
   password: string;
+  screenShot: string;
 }
 
 export type PostAddEnvParams<IsEdit extends boolean = false> = AddEditType<

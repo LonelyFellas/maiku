@@ -31,7 +31,6 @@ const TableMain = (props: TableMainProps) => {
     }
   }, [props.isRefetching]);
   const handleGetWindowRect = () => {
-    console.log('111');
     // window.ipcRenderer.send('window:scrcpy-listen', 'SM-F711N');
   };
 

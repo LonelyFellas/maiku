@@ -202,7 +202,6 @@ export const SliderFooterCollapse = () => {
   const [lang] = useI18nConfig('config.layout.slider');
   const navigate = useNavigate();
   const handleGoToUpgrade = () => {
-    console.log('handleGoToUpgrade');
     navigate({ to: '/layout/upgrade_pkg' });
   };
   return (
