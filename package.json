@@ -3,6 +3,8 @@
   "private": true,
   "version": "0.0.2",
   "type": "module",
+  "author": "darwish",
+  "description": "maiku app",
   "scripts": {
     "dev": "vite",
     "redev": "npm run dev",

@@ -6,7 +6,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   on(...args: Parameters<typeof ipcRenderer.on>) {
     const [channel, listener] = args;
     // 设置白名单，限制可以访问的channel
-    const whitelist = ['error'] as UnionToTuple<keyof OnChannelMap>;
+    const whitelist: UnionToTuple<keyof OnChannelMap> = ['error'];
     if (whitelist.includes(channel as any)) {
       return ipcRenderer.on(channel, (event, ...args) => listener(event, ...args));
     }
@@ -24,7 +24,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   send(...args: Parameters<typeof ipcRenderer.send>) {
     const [channel, ...omit] = args;
     // 同上
-    const whitelist = ['scrcpy:start', 'app:operate', 'loading:done'] as UnionToTuple<keyof SendChannelMap>;
+    const whitelist = ['scrcpy:start', 'app:operate', 'loading:done'] as unknown as UnionToTuple<keyof SendChannelMap>;
     if (whitelist.includes(channel as any)) {
       return ipcRenderer.send(channel, ...omit);
     }
@@ -33,7 +33,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   invoke(...args: Parameters<typeof ipcRenderer.invoke>) {
     const [channel, ...omit] = args;
     // 同上
-    const whitelist = ['window:state', 'dialog:open'] as UnionToTuple<keyof InvokeChannelMap>;
+    const whitelist: UnionToTuple<keyof InvokeChannelMap> = ['window:state', 'dialog:open'];
     if (whitelist.includes(channel as any)) {
       return ipcRenderer.invoke(channel, ...omit);
     }
