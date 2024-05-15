@@ -1,4 +1,5 @@
 import { Form, Input, InputNumber, Select, Space } from 'antd';
+import { useI18nConfig } from '/src/common';
 
 const { Item } = Form;
 
@@ -8,14 +9,10 @@ const { Item } = Form;
  * @constructor
  */
 export function AddProxyFormItems() {
+  const [lang] = useI18nConfig('config.new_profiles');
   return (
     <>
-      <Item
-        label="代理类型"
-        name="type"
-        required
-        rules={[{ required: true, message: '请输入代理类型' }]}
-      >
+      <Item label={lang.form_title3_item2Ty} name="type" required rules={[{ required: true, message: lang.form_title3_item2Ty_placeholder }]}>
         <Select
           className="!w-[240px]"
           options={[
@@ -23,7 +20,7 @@ export function AddProxyFormItems() {
             { label: 'Http', value: '2', disabled: true },
             { label: 'Https', value: '3', disabled: true },
           ]}
-          placeholder="请选择代理类型"
+          placeholder={lang.form_title3_item2Ty_placeholder}
         />
       </Item>
       {/*<Item label="代理查询渠道" name="queryChannel">*/}
@@ -35,36 +32,24 @@ export function AddProxyFormItems() {
       {/*    placeholder="请选择代理查询渠道"*/}
       {/*  />*/}
       {/*</Item>*/}
-      <Item label="主机 : 端口" style={{ height: '32px' }} required>
+      <Item label={lang.form_title3_item3AddPort} style={{ height: '32px' }} required>
         <Space.Compact className="w-[240px]">
-          <Item
-            name="address"
-            required
-            rules={[{ required: true, message: '请输入主机' }]}
-          >
-            <Input name="port" placeholder="请输入主机" />
+          <Item name="address" required rules={[{ required: true, message: lang.form_title3_item3Add_placeholder }]}>
+            <Input name="port" placeholder={lang.form_title3_item3Add_placeholder} />
           </Item>
-          <Item
-            name="port"
-            required
-            rules={[{ required: true, message: '请输入端口' }]}
-          >
-            <InputNumber addonBefore=":" placeholder="请输入端口" />
+          <Item name="port" required rules={[{ required: true, message: lang.form_title3_item3Port_placeholder }]}>
+            <InputNumber addonBefore=":" placeholder={lang.form_title3_item3Port_placeholder} />
           </Item>
         </Space.Compact>
       </Item>
-      <Item label="代理账号" name="username">
-        <Input className="w-[240px]" placeholder="请输入代理账号" />
+      <Item label={lang.form_title3_item4Account} name="username">
+        <Input className="w-[240px]" placeholder={lang.form_title3_item4Account_placeholder} />
       </Item>
-      <Item label="代理密码" name="password">
-        <Input.Password className="w-[240px]" placeholder="请输入代理密码" />
+      <Item label={lang.form_title3_item4Psw} name="password">
+        <Input.Password className="w-[240px]" placeholder={lang.form_title3_item4Psw_placeholder} />
       </Item>
-      <Item label="备注" name="detail">
-        <Input.TextArea
-          className="!w-[240px]"
-          placeholder="请输入备注"
-          style={{ resize: 'none' }}
-        />
+      <Item label={lang.form_title3_itemRemark} name="detail">
+        <Input.TextArea className="!w-[240px]" placeholder={lang.form_title3_itemRemark_placeholder} style={{ resize: 'none' }} />
       </Item>
     </>
   );

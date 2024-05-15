@@ -1,6 +1,6 @@
 import { Form, Select } from 'antd';
 import { isBlanks } from '@darwish/utils-is';
-import { PROXY_TYPE } from '@common';
+import { PROXY_TYPE, useI18nConfig } from '@common';
 import type { UseMutationResult } from '@tanstack/react-query';
 import type { GetProxyListResult } from '@api';
 
@@ -9,6 +9,7 @@ interface GetProxyViewProps {
 }
 
 const GetProxyView = (props: GetProxyViewProps) => {
+  const [lang] = useI18nConfig('config.new_profiles');
   const { proxyMutation } = props;
   const handleDropdownVisibleChange = (visible: boolean) => {
     if (visible && isBlanks(proxyMutation.data)) {
@@ -20,8 +21,8 @@ const GetProxyView = (props: GetProxyViewProps) => {
     label: `${PROXY_TYPE[item.type]}://${item.address}:${item.port} ${item.username ? `(${item.username})` : ''}`,
   }));
   return (
-    <Form.Item label="选择代理" name="vpc_id">
-      <Select loading={proxyMutation.isPending} onDropdownVisibleChange={handleDropdownVisibleChange} className="!w-[240px]" placeholder="请选择代理类型" options={filterSelectData} />
+    <Form.Item label={lang.form_title3_item2Ty} name="vpc_id">
+      <Select loading={proxyMutation.isPending} onDropdownVisibleChange={handleDropdownVisibleChange} className="!w-[240px]" placeholder={lang.form_title3_item2Ty_placeholder} options={filterSelectData} />
     </Form.Item>
   );
 };

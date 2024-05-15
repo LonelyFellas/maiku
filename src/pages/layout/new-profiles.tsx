@@ -5,7 +5,7 @@ import { isBlanks, isObject, isUndef } from '@darwish/utils-is';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useParams, useRouter } from '@tanstack/react-router';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { ContainerWithEmpty, DetailCollapse, onlyTrueObj, PROXY_TYPE, toNumber } from '@common';
+import { ContainerWithEmpty, DetailCollapse, onlyTrueObj, PROXY_TYPE, toNumber, useI18nConfig } from '@common';
 import { AddProxyFormItems } from '@/pages/discover/proxy/modules/add-proxy-common-formitem.tsx';
 import { getEnvByIdService, postAddEnvService, getProxyListService, type GetAllEnvListResult, type PostAddEnvParams, postUpdateEnvService } from '@api';
 import GetProxyView from './modules/get-proxy-view';
@@ -23,6 +23,7 @@ export type PXType = GetAllEnvListResult['px_type'];
 type IForm = PostAddEnvParams & { formProxyType: ProxyType; px_type: PXType; px_type_super: string };
 const inputStyle = { width: '240px' };
 export default function NewProfiles() {
+  const [lang] = useI18nConfig('config.new_profiles');
   const { modal } = App.useApp();
   const { id } = useParams({ from: `/layout/new_profiles/$id` });
   const isEdit = id !== '-1';
@@ -69,10 +70,10 @@ export default function NewProfiles() {
     mutationKey: ['add-env'],
     onSuccess: () => {
       modal.confirm({
-        title: '新建环境成功',
-        content: '新建环境成功, 是否继续添加环境？',
-        okText: '继续添加',
-        cancelText: '返回',
+        title: lang.add_confirm_title,
+        content: lang.add_confirm_content,
+        okText: lang.add_confirm_okText,
+        cancelText: lang.add_confirm_cancelText,
         onOk: () => {
           form.resetFields();
         },
@@ -90,10 +91,10 @@ export default function NewProfiles() {
     mutationKey: ['add-edit-env', id],
     onSuccess: () => {
       modal.confirm({
-        title: '编辑环境成功',
-        content: '编辑环境成功, 是否继续编辑环境？',
-        okText: '继续编辑',
-        cancelText: '返回',
+        title: lang.edit_confirm_title,
+        content: lang.edit_confirm_content,
+        okText: lang.edit_confirm_okText,
+        cancelText: lang.edit_confirm_cancelText,
         onCancel: () => {
           history.go(-1);
           form.resetFields();
@@ -117,11 +118,11 @@ export default function NewProfiles() {
 
   const handleCancel = () => {
     modal.confirm({
-      title: '取消确认框',
+      title: lang.cancel_confirm_title,
       icon: <ExclamationCircleOutlined />,
-      content: '确认要退出新建环境吗？取消后将不会保存已编辑内容',
-      okText: '确认',
-      cancelText: '取消',
+      content: lang.cancel_confirm_content,
+      okText: lang.cancel_confirm_okText,
+      cancelText: lang.cancel_confirm_cancelText,
       onOk: () => {
         history.go(-1);
       },
@@ -167,9 +168,9 @@ export default function NewProfiles() {
               px_type: 1,
             }}
           >
-            <h1 className="font-bold border-b-[1px] pl-3 py-1 rounded-sm mb-6 pb-3">基础信息:</h1>
-            <Form.Item label="环境名称" name="name" className="mb-4" required rules={[{ required: true, message: '请输入环境名称' }]}>
-              <Input placeholder="请输入环境名称" style={inputStyle} />
+            <h1 className="font-bold border-b-[1px] pl-3 py-1 rounded-sm mb-6 pb-3">{lang.form_title1}</h1>
+            <Form.Item label={lang.form_title1_item1Env} name="name" className="mb-4" required rules={[{ required: true, message: lang.form_title1_item1Env_placeholder }]}>
+              <Input placeholder={lang.form_title1_item1Env_placeholder} style={inputStyle} />
             </Form.Item>
             {/*<h1 className={titleStyle}>云手机信息:</h1>*/}
 
@@ -177,17 +178,17 @@ export default function NewProfiles() {
               defaultActiveKey={['1']}
               items={[
                 {
-                  label: '云手机信息:',
+                  label: lang.form_title2,
                   key: '1',
                   children: (
                     <>
-                      <Form.Item label="存储空间大小" name="disk" className="mt-4">
-                        <InputNumber placeholder="请输入存储空间大小" style={inputStyle} />
+                      <Form.Item label={lang.form_title2_item1Disk} name="disk" className="mt-4">
+                        <InputNumber placeholder={lang.form_title2_item1Disk_placeholder} style={inputStyle} />
                       </Form.Item>
-                      <Form.Item label="内存大小" name="memory">
-                        <InputNumber placeholder="请输入内存大小" style={inputStyle} />
+                      <Form.Item label={lang.form_title2_item2Memory} name="memory">
+                        <InputNumber placeholder={lang.form_title2_item2Memory_placeholder} style={inputStyle} />
                       </Form.Item>
-                      <Form.Item label="分辨率" className="new_profiles_compact h-[32px] mb-0" required>
+                      <Form.Item label={lang.form_title2_item3DPI} className="new_profiles_compact h-[32px] mb-0" required>
                         <Resolution pxType={pxType} />
                       </Form.Item>
                     </>
@@ -199,15 +200,15 @@ export default function NewProfiles() {
               defaultActiveKey={['1']}
               items={[
                 {
-                  label: 'VPC代理:',
+                  label: lang.form_title3,
                   key: '1',
                   children: (
                     <>
                       {!isEdit ? (
-                        <Form.Item label="代理方式" className="mt-4" name="formProxyType">
+                        <Form.Item label={lang.form_title3_item1Type} className="mt-4" name="formProxyType">
                           <Radio.Group value={proxyType}>
-                            <Radio.Button value="custom">自定义</Radio.Button>
-                            <Radio.Button value="list">已添加的代理</Radio.Button>
+                            <Radio.Button value="custom">{lang.form_title3_item1Type_custom}</Radio.Button>
+                            <Radio.Button value="list">{lang.form_title3_item1Type_list}</Radio.Button>
                           </Radio.Group>
                         </Form.Item>
                       ) : null}
@@ -224,9 +225,9 @@ export default function NewProfiles() {
         </Scrollbar>
         <Divider className="mt-0 my-4" />
         <Space>
-          <Button onClick={handleCancel}>取消</Button>
+          <Button onClick={handleCancel}>{lang.form_cancel_btn}</Button>
           <Button type="primary" onClick={handleSubmit} loading={addMutation.isPending || editMutation.isPending}>
-            确定
+            {lang.form_submit_btn}
           </Button>
         </Space>
       </div>
