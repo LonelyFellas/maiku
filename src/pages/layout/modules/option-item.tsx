@@ -1,11 +1,7 @@
 import type React from 'react';
 import type { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
 
-const OptionItem = (props: {
-  icon: React.ForwardRefExoticComponent<
-    Omit<AntdIconProps, 'ref'> & React.RefAttributes<HTMLSpanElement>
-  >;
-}) => {
+const OptionItem = (props: { icon: React.ForwardRefExoticComponent<Omit<AntdIconProps, 'ref'> & React.RefAttributes<HTMLSpanElement>> }) => {
   return (
     <div
       className="all_flex w-9 h-9 bg-bg_secondary/20

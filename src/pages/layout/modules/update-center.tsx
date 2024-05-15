@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button, Empty, Popover, Space } from 'antd';
 import { ArrowUpOutlined } from '@ant-design/icons';
 import { useI18nConfig } from '@common';
@@ -8,13 +9,30 @@ import '../style.css';
 interface UpdateCenterProps {
   newVersionData: GetReleaseResult[] | never[];
   isNewVersion: boolean;
+  handleSkipVersion: (version: string) => void;
 }
 const UpdateCenter = (props: UpdateCenterProps) => {
-  const { isNewVersion, newVersionData } = props;
+  const [open, setOpen] = useState(false);
+  const { isNewVersion, newVersionData, handleSkipVersion } = props;
   const [lang] = useI18nConfig('config.layout.header.update');
+  const handleSkip = () => {
+    handleSkipVersion(newVersionData[0].version);
+    setOpen(false);
+  };
+  const handOpenChange = (status: boolean) => {
+    setOpen(status);
+  };
 
   return (
-    <Popover overlayClassName="header_btn" placement="bottomRight" title={lang.title} content={isNewVersion ? <ContentView data={newVersionData[0]} /> : <NoReleseView emptyTitle={lang.empty_title} />} trigger="click">
+    <Popover
+      open={open}
+      overlayClassName="header_btn"
+      placement="bottomRight"
+      title={lang.title}
+      content={isNewVersion ? <ContentView data={newVersionData[0]} handleSkipVersion={handleSkip} /> : <NoReleseView emptyTitle={lang.empty_title} />}
+      trigger="click"
+      onOpenChange={handOpenChange}
+    >
       <>
         <OptionItem icon={ArrowUpOutlined} />
       </>
@@ -25,7 +43,11 @@ export default UpdateCenter;
 
 const NoReleseView = ({ emptyTitle = '' }: { emptyTitle: string }) => <Empty className="w-[400px] h-[120px] m-2 2xl:m-4" description={emptyTitle} />;
 
-function ContentView({ data }: { data: GetReleaseResult }) {
+interface ContentViewProps {
+  data: GetReleaseResult;
+  handleSkipVersion: (version: string) => void;
+}
+function ContentView({ data, handleSkipVersion }: ContentViewProps) {
   return (
     <div className="w-[400px] min-h-[120px]">
       <div className="w-full bg-bg_primary/70 min-h-[120px] rounded-md p-2">
@@ -39,7 +61,7 @@ function ContentView({ data }: { data: GetReleaseResult }) {
         </div>
         <div className="flex justify-end mt-4">
           <Space>
-            <Button size="small" className="text-12sm">
+            <Button size="small" className="text-12sm" onClick={() => handleSkipVersion(data.version)}>
               跳过
             </Button>
             <Button type="primary" size="small" className="text-12sm">

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { App, Badge, Space } from 'antd';
 import { useQuery } from '@tanstack/react-query';
-import { useLocalStorage } from '@darwish/hooks-core';
+import { useLocalStorage, useSessionStorage } from '@darwish/hooks-core';
 import semverCompare from 'semver/functions/compare';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import ProfileCenter from './profile-center';
@@ -14,6 +14,13 @@ import { isBlanks } from '@darwish/utils-is';
 
 const Header = () => {
   const [currentVersion, setCurrentVersion] = useLocalStorage(Constants.LOCAL_CURRENT_VERSION, pkg.version);
+  const [skipVersion, setSkipVersion] = useSessionStorage(Constants.SESSION_SKIP_VERSION, {
+    version: pkg.version,
+    isSkip: false,
+  });
+  const { modal } = App.useApp();
+  const { title, isBack, history } = useRouteMeta();
+
   const { data = [] } = useQuery({
     queryKey: ['get_release'],
     queryFn: getReleaseService,
@@ -23,12 +30,15 @@ const Header = () => {
   const isNewVersion = useMemo(() => {
     if (!isBlanks(data)) {
       const latestVersion = data[0].version;
+      // 判断是否版本被跳过
+      if (skipVersion.isSkip) {
+        // 跳过的版本是否和新版本是一致，有可能有更新的版本
+        return !(semverCompare(skipVersion.version, latestVersion) === 0);
+      }
       return semverCompare(latestVersion, currentVersion) === 1;
     }
     return false;
-  }, [data, currentVersion]);
-  const { modal } = App.useApp();
-  const { title, isBack, history } = useRouteMeta();
+  }, [data, currentVersion, skipVersion]);
 
   const handleBackClick = () => {
     modal.confirm({
@@ -41,6 +51,10 @@ const Header = () => {
         history.go(-1);
       },
     });
+  };
+
+  const handleSkipVersion = (version: string) => {
+    setSkipVersion({ version, isSkip: true });
   };
   return (
     <div className="flex justify-between h-30px ">
@@ -58,7 +72,7 @@ const Header = () => {
       <div>
         <Space size="large">
           <Badge count={isNewVersion ? '1' : ''} size="small">
-            <UpdateCenter newVersionData={isBlanks(data) ? [] : data} isNewVersion={isNewVersion} />
+            <UpdateCenter newVersionData={isBlanks(data) ? [] : data} isNewVersion={isNewVersion} handleSkipVersion={handleSkipVersion} />
           </Badge>
           <NotificationCenter />
           <ProfileCenter />
