@@ -81,7 +81,12 @@ export default function createListener(options: CreateListenerOptions) {
       }
     }
 
-    scrcpyProcessObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', winName], {
+    /**
+     * `--window-title`: 设置窗口的标题
+     * `--window-width`：设置窗口的宽度
+     * `--window-height`: 设置窗口的高度
+     */
+    scrcpyProcessObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', winName, '--window-width', '381', '--window-height', '675'], {
       cwd: scrcpyCwd,
       shell: true,
     });
