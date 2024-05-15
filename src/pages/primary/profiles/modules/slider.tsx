@@ -49,7 +49,7 @@ const Slider = (props: SliderProps) => {
           accordion
           expandIcon={() => <></>}
           bordered={false}
-          defaultActiveKey={[envList[0].id]}
+          defaultActiveKey={[envList[0]?.id]}
           onChange={handleChange}
           items={envList.map((item) => ({
             key: item.id,

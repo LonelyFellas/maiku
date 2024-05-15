@@ -15,7 +15,7 @@ interface TableMainProps {
 const TableMain = (props: TableMainProps) => {
   const { deviceId, envId } = props;
   const scrollRef = useRef<React.ElementRef<'div'>>(null);
-  const { data, isFetching, isRefetching, isFetched, refetch } = useQuery({
+  const { data, isFetching, isRefetching, isLoading, refetch } = useQuery({
     queryKey: ['backupList', envId],
     queryFn: () => getBackupListByEnvIdService({ envId: envId + '' }),
     enabled: !!envId,
@@ -75,7 +75,7 @@ const TableMain = (props: TableMainProps) => {
       <Table
         isFetching={isFetching}
         isRefetching={isRefetching}
-        isSuccess={isFetched}
+        isSuccess={!isLoading}
         columns={columns
           .filter((col) => col.isVisible)
           .map((col) => ({

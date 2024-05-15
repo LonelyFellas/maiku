@@ -6,6 +6,6 @@ export * from './getScrcpyPath';
 export * from './helper';
 export * from './share';
 export * from './tray';
-export * from './getActiveWindowRect';
+// export * from './getActiveWindowRect';
 export * from './killProcessWithWindows';
 export * from './task';
