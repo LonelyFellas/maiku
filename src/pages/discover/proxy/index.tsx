@@ -1,7 +1,7 @@
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { Button, Space, Popconfirm } from 'antd';
 import { useNavigate } from '@tanstack/react-router';
-import { Table, TriggerModal, useI18nConfig } from '@common';
+import { PROXY_TYPE, Table, TriggerModal, useI18nConfig } from '@common';
 import { type GetProxyListResult, postDeleteProxyService } from '@api';
 import { postsProxyQueryOptions } from '@/routes/data';
 import AddEditModal from './modules/add-edit';
@@ -27,10 +27,9 @@ export default function Proxy() {
       key: 'proxyInfo',
       width: 200,
       render: (_: unknown, record: GetProxyListResult) => {
-        const proxyType = record.type === '1' ? 'socks5' : 'https';
         return (
           <span>
-            {proxyType}://{record.address}:{record.port}
+            {PROXY_TYPE[record.type]}://{record.address}:{record.port}
           </span>
         );
       },
@@ -40,7 +39,7 @@ export default function Proxy() {
       dataIndex: 'type',
       key: 'type',
       width: 150,
-      render: (text: string) => (text === '1' ? 'socks5' : 'https'),
+      render: (text: keyof typeof PROXY_TYPE) => PROXY_TYPE[text],
     },
     {
       title: lang.column_address_title,
