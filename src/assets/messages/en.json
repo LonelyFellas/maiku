@@ -146,5 +146,21 @@
     "form_title3_itemRemark_placeholder": "Please enter remarks",
     "form_cancel_btn": "Cancel",
     "form_submit_btn": "Submit"
+  },
+  "proxy": {
+    "tb_operation": "Operation",
+    "tb_operation_edit": "Edit",
+    "tb_operation_delete": "Delete",
+    "tb_operation_delete_title": "Confirm Deletion",
+    "tb_operation_delete_okText": "Confirm",
+    "tb_operation_delete_cancelText": "Cancel",
+    "modal_edit_title": "Edit Proxy",
+    "modal_add_title": "Add Proxy",
+    "modal_batch_add_title": "Batch Import",
+    "column_info_title": "Proxy Information",
+    "column_type_title": "Proxy Type",
+    "column_address_title": "Proxy Address",
+    "column_order_title": "Order",
+    "column_remark_title": "Remarks"
   }
 }
