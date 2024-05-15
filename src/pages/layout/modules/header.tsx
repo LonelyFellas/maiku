@@ -1,11 +1,32 @@
-import { App, Space } from 'antd';
+import { useMemo } from 'react';
+import { App, Badge, Space } from 'antd';
+import { useQuery } from '@tanstack/react-query';
+import { useLocalStorage } from '@darwish/hooks-core';
+import semverCompare from 'semver/functions/compare';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 import ProfileCenter from './profile-center';
 import UpdateCenter from './update-center';
 import NotificationCenter from './notification-center';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { useRouteMeta } from '@common';
+import { Constants, useRouteMeta } from '@common';
+import { getReleaseService } from '@api';
+import pkg from '/package.json';
+import { isBlanks } from '@darwish/utils-is';
 
 const Header = () => {
+  const [currentVersion, setCurrentVersion] = useLocalStorage(Constants.LOCAL_CURRENT_VERSION, pkg.version);
+  const { data = [] } = useQuery({
+    queryKey: ['get_release'],
+    queryFn: getReleaseService,
+    refetchInterval: 60 * 1000,
+  });
+
+  const isNewVersion = useMemo(() => {
+    if (!isBlanks(data)) {
+      const latestVersion = data[0].version;
+      return semverCompare(latestVersion, currentVersion) === 1;
+    }
+    return false;
+  }, [data, currentVersion]);
   const { modal } = App.useApp();
   const { title, isBack, history } = useRouteMeta();
 
@@ -26,10 +47,7 @@ const Header = () => {
       <h1 className="text-xl font-bold">
         {isBack && (
           <span>
-            <span
-              onClick={handleBackClick}
-              className="text-sm font-normal text-text_secondary/80 underline underline-offset-4 cursor-pointer hover:text-text_secondary"
-            >
+            <span onClick={handleBackClick} className="text-sm font-normal text-text_secondary/80 underline underline-offset-4 cursor-pointer hover:text-text_secondary">
               返回
             </span>{' '}
             /{' '}
@@ -39,7 +57,9 @@ const Header = () => {
       </h1>
       <div>
         <Space size="large">
-          <UpdateCenter />
+          <Badge count={isNewVersion ? '1' : ''} size="small">
+            <UpdateCenter newVersionData={isBlanks(data) ? [] : data} isNewVersion={isNewVersion} />
+          </Badge>
           <NotificationCenter />
           <ProfileCenter />
         </Space>

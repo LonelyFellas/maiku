@@ -36,7 +36,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwind-merge": "^2.3.0",
-    "zustand": "^4.5.2"
+    "zustand": "^4.5.2",
+    "semver": "^7.6.2"
   },
   "devDependencies": {
     "@darwish/types": "^0.0.10",
@@ -54,7 +55,6 @@
     "less": "^4.2.0",
     "postcss": "^8.4.38",
     "prettier": "^3.2.5",
-    "semver": "^7.6.1",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.2.2",
     "vite": "^5.1.6",

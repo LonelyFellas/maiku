@@ -34,6 +34,9 @@ module.exports = {
         border_secondary: '#1e4dff',
         border_info: '#adbeff',
       },
+      fontSize: {
+        '12sm': '12px'
+      }
     },
   },
   variants: {
