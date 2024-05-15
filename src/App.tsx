@@ -24,11 +24,12 @@ const App = (props: PropsWithChildren<object>) => {
   };
 
   const Component = isMac || isScrcpy ? Fragment : Wrapper;
+  const isPurePages = window.env.DEV && !isScrcpy;
   return (
     <>
-      {window.env.DEV && !isScrcpy && <ReactQueryDevtools initialIsOpen={false} />}
-      {window.env.DEV && !isScrcpy && <TanStackRouterDevtools />}
-      {window.env.DEV && !isScrcpy && <FloatButton icon={<GlobalIcon />} onClick={handleLanguageChange} style={{ top: 24 }} />}
+      {isPurePages && <ReactQueryDevtools initialIsOpen={false} />}
+      {isPurePages && <TanStackRouterDevtools />}
+      {isPurePages && <FloatButton icon={<GlobalIcon />} onClick={handleLanguageChange} style={{ top: 24 }} />}
       <Component>
         {/* 主要是为了去除antd的错误message提示， */}
         <AntdApp>{props.children}</AntdApp>
