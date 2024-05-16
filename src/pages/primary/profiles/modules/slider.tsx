@@ -7,6 +7,7 @@ import { Scrollbar } from '@darwish/scrollbar-react';
 import { GetAllEnvListResult, getEnvByIdService } from '@api';
 import { LeftOutlined } from '@ant-design/icons';
 import '../index.css';
+import emptyImg from '@img/phone-test.png';
 import { cn, ContainerWithEmpty, toNumber, useScreens } from '@common';
 
 interface SliderProps {
@@ -63,7 +64,7 @@ const Slider = (props: SliderProps) => {
               <div className="flex flex-col items-center p-2">
                 <img
                   // preview={!!data?.screenShot}
-                  src={data?.screenShot}
+                  src={data?.screenShot ? data.screenShot : emptyImg}
                   className="rounded h-[300px] 2xl:h-[400px]"
                   alt="screen shot"
                 />
