@@ -8,19 +8,32 @@
     output: 'release/${version}',
   },
   forceCodeSigning: false,
-  files: ['dist', 'dist-electron'],
+  files: [
+    'dist',
+    'dist-electron'
+  ],
+  publish: [
+    {
+      provider: 'generic',
+      url: 'http://maiku.npaas.cn/app/',
+    }
+  ],
   mac: {
-    target: ['dmg'],
-    artifactName: '${productName}-Mac-${version}-Installer.${ext}',
+    target: [
+      'dmg'
+    ],
+    artifactName: '${productName}-Mac-${version}.${ext}',
   },
   win: {
     target: [
       {
         target: 'nsis',
-        arch: ['x64'],
+        arch: [
+          'x64'
+        ],
       },
     ],
-    artifactName: '${productName}-Windows-${version}-Setup.${ext}',
+    artifactName: '${productName}-Windows-${version}.${ext}',
   },
   extraFiles: [
     {
@@ -37,7 +50,9 @@
     uninstallerIcon: 'public/favicon.ico',
   },
   linux: {
-    target: ['AppImage'],
+    target: [
+      'AppImage'
+    ],
     artifactName: '${productName}-Linux-${version}.${ext}',
   },
 }

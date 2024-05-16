@@ -13,9 +13,13 @@ const App = (props: PropsWithChildren<object>) => {
   const isMac = isMacFunc();
 
   useEffect(() => {
+    console.log('isMac:', isMac);
     window.ipcRenderer.on('error', (_, error) => {
       console.error(error);
       message.error(error);
+    });
+    window.ipcRenderer.on('update-available', (args: any) => {
+      console.info('args: ', args);
     });
   }, [message]);
 

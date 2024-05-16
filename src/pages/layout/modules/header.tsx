@@ -13,7 +13,7 @@ import pkg from '/package.json';
 import { isBlanks } from '@darwish/utils-is';
 
 const Header = () => {
-  const [currentVersion, setCurrentVersion] = useLocalStorage(Constants.LOCAL_CURRENT_VERSION, pkg.version);
+  const [currentVersion] = useLocalStorage(Constants.LOCAL_CURRENT_VERSION, pkg.version);
   const [skipVersion, setSkipVersion] = useSessionStorage(Constants.SESSION_SKIP_VERSION, {
     version: pkg.version,
     isSkip: false,

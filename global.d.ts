@@ -18,6 +18,7 @@ declare global {
   };
   type OnChannelMap = {
     error: Darwish.AnyFunc;
+    'update-available': Darwish.AnyFunc;
   };
 
   interface IpcRenderer extends Omit<IpcRenderer, 'invoke' | 'send'> {
