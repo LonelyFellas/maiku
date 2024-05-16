@@ -99,7 +99,14 @@ export default function createListener(options: CreateListenerOptions) {
         event.reply('error', strData);
       } else {
         // 确保它渲染完成
-        if (strData.includes('Renderer')) {
+        if (strData.includes('INFO: Device:')) {
+          // 你可以在这里执行其他操作，例如通知用户 scrcpy 已启动成功
+          console.log('Renderer ready');
+          event.reply('open-scrcpy-window', () => ({
+            bb: 1,
+            cc: 2,
+            ee: 3,
+          }));
           /**
            * 执行一个定时任务，检查窗口是否存在
            * 如果窗口存在，则打开scrcpy的taskbar窗口
