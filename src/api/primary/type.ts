@@ -52,3 +52,6 @@ export interface GetBackupParams {
   envId: string;
   containerName: string;
 }
+export interface GetBackupToBackupParams extends GetBackupParams {
+  newName: string;
+}

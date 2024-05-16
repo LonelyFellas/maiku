@@ -1,5 +1,5 @@
 import { fetchData } from '@api/fetch-data.ts';
-import type { GetBackupListByIdParams, GetBackupListByIdResult, GetAllEnvListResult, PostAddEnvParams, GetBackupParams } from '@api';
+import type { GetBackupListByIdParams, GetBackupListByIdResult, GetAllEnvListResult, PostAddEnvParams, GetBackupParams, GetBackupToBackupParams } from '@api';
 
 /** 获取环境列表 */
 export const getEnvListService: Api.IFetch<GetAllEnvListResult[]> = () =>
@@ -52,8 +52,8 @@ export const postDeleteBackService: Api.IFetch<boolean, GetBackupParams> = (data
     data,
   });
 /** 增加备份 */
-export const postAddBackupService: Api.IFetch<boolean, Pick<GetBackupListByIdResult, 'id'>> = (data) =>
-  fetchData('env/createBaseBak', {
+export const postAddBackupService: Api.IFetch<boolean, GetBackupToBackupParams> = (data) =>
+  fetchData('env/createBak', {
     method: 'POST',
     data,
   });
