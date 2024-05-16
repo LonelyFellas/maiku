@@ -7,8 +7,8 @@ import { BrowserWindow, type BrowserWindowConstructorOptions } from 'electron';
  */
 export function createBrowserWindow(options: BrowserWindowConstructorOptions) {
   const defaultOptions = {
-    width: 1200,
-    height: 780,
+    width: 972,
+    height: 722,
     frame: false,
     webPreferences: {
       nodeIntegration: true,

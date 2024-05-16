@@ -35,8 +35,8 @@ function createMainWindow() {
       preload: path.join(__dirname, 'preload.mjs'),
       // devTools: !app.isPackaged,
     },
-    x: (width - 1200) / 2,
-    y: (height - 780) / 2,
+    x: (width - 972) / 2,
+    y: (height - 722) / 2,
   });
 
   if (VITE_DEV_SERVER_URL) {
