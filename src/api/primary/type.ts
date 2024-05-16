@@ -48,7 +48,7 @@ export interface GetBackupListByIdResult {
   index: number;
 }
 
-export interface GetRunBackupParams {
+export interface GetBackupParams {
   envId: string;
-  backupName: string;
+  containerName: string;
 }

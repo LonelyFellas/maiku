@@ -1,11 +1,12 @@
 import React, { useRef, useState } from 'react';
-import { Button, Dropdown, Space, Popconfirm } from 'antd';
+import { Button, Dropdown, Space, Popconfirm, App } from 'antd';
 import { useUpdateEffect } from '@darwish/hooks-core';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Table, TriggerModal } from '@common';
-import { getBackupListByEnvIdService } from '@api';
+import { getBackupListByEnvIdService, postDeleteBackService, type GetBackupParams } from '@api';
 import BackupProxy from './bakup-proxy';
 import { operationItems, columns as configColumns } from '../config';
+import { DataType } from '../type';
 
 interface TableMainProps {
   deviceId: string;
@@ -14,6 +15,7 @@ interface TableMainProps {
 }
 
 const TableMain = (props: TableMainProps) => {
+  const { message } = App.useApp();
   const { deviceId, envId } = props;
   const scrollRef = useRef<React.ElementRef<'div'>>(null);
   const { data, isFetching, isRefetching, isLoading, refetch } = useQuery({
@@ -21,7 +23,14 @@ const TableMain = (props: TableMainProps) => {
     queryFn: () => getBackupListByEnvIdService({ envId: envId + '' }),
     enabled: !!envId,
   });
-
+  const deleteMutation = useMutation({
+    mutationKey: ['deleteBackup', envId],
+    mutationFn: postDeleteBackService,
+    onSuccess: () => {
+      message.success('删除成功');
+      refetch();
+    },
+  });
   useUpdateEffect(() => {
     if (props.isRefetching) {
       refetch();
@@ -29,6 +38,9 @@ const TableMain = (props: TableMainProps) => {
   }, [props.isRefetching]);
   const handleGetWindowRect = () => {
     // window.ipcRenderer.send('window:scrcpy-listen', 'SM-F711N');
+  };
+  const handleDeleteBackup = (props: GetBackupParams) => {
+    deleteMutation.mutate(props);
   };
 
   const [columns] = useState(() => {
@@ -43,7 +55,7 @@ const TableMain = (props: TableMainProps) => {
         fixed: 'right',
         width: 235,
         key: 'operation',
-        render: (id: string) => (
+        render: (id: string, record: DataType) => (
           <Space>
             <Button size="small" type="primary" onClick={() => handleStartScrcpy(id)}>
               启动
@@ -54,7 +66,16 @@ const TableMain = (props: TableMainProps) => {
             <Button type="text" size="small">
               备份
             </Button>
-            <Popconfirm title="删除备份" description="您确定删除此备份">
+            <Popconfirm
+              title="删除备份"
+              description="您确定删除此备份"
+              onConfirm={() =>
+                handleDeleteBackup({
+                  envId: record.envId,
+                  containerName: record.Names,
+                })
+              }
+            >
               <Button type="text" size="small">
                 删除
               </Button>
@@ -88,7 +109,7 @@ const TableMain = (props: TableMainProps) => {
             ellipsis: true,
           }))}
         rowKey="Names"
-        dataSource={data?.map((item) => ({ ...item, operation: deviceId })) || []}
+        dataSource={data?.map((item) => ({ ...item, operation: deviceId, envId })) || []}
       />
     </div>
   );
