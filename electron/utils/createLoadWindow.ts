@@ -3,6 +3,11 @@ import path from 'node:path';
 import { createBrowserWindow, __dirname, isProd } from '/electron/utils';
 import { RENDERER_DIST } from '/electron/main.ts';
 
+/**
+ * 窗口一个用于加载的窗口
+ * @param loadingWin 窗口实例
+ * @returns
+ */
 export function createLoadWindow(loadingWin: Electron.BrowserWindow | null) {
   // 获取屏幕的尺寸
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;

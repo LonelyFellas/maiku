@@ -1,8 +1,10 @@
-import {
-  BrowserWindow,
-  type BrowserWindowConstructorOptions,
-} from 'electron';
+import { BrowserWindow, type BrowserWindowConstructorOptions } from 'electron';
 
+/**
+ * 创建一个通用窗口的模版
+ * @param options BrowserWindowConstructorOptions
+ * @returns
+ */
 export function createBrowserWindow(options: BrowserWindowConstructorOptions) {
   const defaultOptions = {
     width: 1200,

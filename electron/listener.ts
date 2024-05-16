@@ -2,16 +2,16 @@ import { BrowserWindow, dialog, ipcMain, app } from 'electron';
 import type Store from 'electron-store';
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import * as process from 'node:process';
 import { isMac, getScrcpyCwd, killProcessWithWindows } from '/electron/utils';
+import { scrcpyProcessObj } from './main';
 
 interface CreateListenerOptions {
   store: Store<typeof import('./config/electron-store-schema.json')>;
 }
 
 const im = ipcMain as unknown as Electron.IM;
-const scrcpyProcessObj: Record<string, ChildProcessWithoutNullStreams> = {};
 export default function createListener(options: CreateListenerOptions) {
   const { store } = options;
 

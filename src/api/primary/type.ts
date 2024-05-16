@@ -39,11 +39,16 @@ export type PostAddEnvParams<IsEdit extends boolean = false> = AddEditType<
   IsEdit
 >;
 
-export type GetBackupListByIdParams = {
+export interface GetBackupListByIdParams {
   envId: string;
-};
-export type GetBackupListByIdResult = {
+}
+export interface GetBackupListByIdResult {
   Names: string;
   state: string;
   index: number;
-};
+}
+
+export interface GetRunBackupParams {
+  envId: string;
+  backupName: string;
+}

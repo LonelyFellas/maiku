@@ -1,6 +1,9 @@
 import { BrowserWindow, dialog } from 'electron';
 import { autoUpdater } from 'electron-updater';
 
+/**
+ * 更新器
+ */
 export default class Updater {
   constructor() {
     autoUpdater.setFeedURL({
