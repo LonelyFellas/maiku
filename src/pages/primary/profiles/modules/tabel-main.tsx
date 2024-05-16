@@ -71,7 +71,7 @@ const TableMain = (props: TableMainProps) => {
               description="您确定删除此备份"
               onConfirm={() =>
                 handleDeleteBackup({
-                  envId: record.envId,
+                  envId: record.envId ?? '',
                   containerName: record.Names,
                 })
               }

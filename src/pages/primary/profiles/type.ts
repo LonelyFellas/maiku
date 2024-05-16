@@ -15,4 +15,5 @@ export interface DataType {
   // createTime: string;
   isVisible?: boolean;
   operation: string;
+  envId?: string;
 }
