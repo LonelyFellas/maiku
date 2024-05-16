@@ -1,5 +1,5 @@
 import { fetchData } from '@api/fetch-data.ts';
-import type { GetAllEnvListResult, PostAddEnvParams } from '@api/primary/type.ts';
+import type { GetBackupListByIdParams, GetBackupListByIdResult, GetAllEnvListResult, PostAddEnvParams } from '@api';
 
 /** 获取环境列表 */
 export const getEnvListService: Api.IFetch<GetAllEnvListResult[]> = () =>
@@ -27,6 +27,20 @@ export const postDeleteEnvService: Api.IFetch<boolean, Pick<GetAllEnvListResult,
 /** 按照ID获取环境信息 */
 export const getEnvByIdService: Api.IFetch<GetAllEnvListResult, Pick<GetAllEnvListResult, 'id'>> = (data) =>
   fetchData(`env/getById`, {
+    method: 'GET',
+    data,
+  });
+
+/** 获取备份列表 */
+export const getBackupListByEnvIdService: Api.IFetch<GetBackupListByIdResult[], GetBackupListByIdParams> = (data) =>
+  fetchData('env/getBakList', {
+    method: 'GET',
+    data,
+  });
+
+/** 查看备份代理 */
+export const getBackupProxyService: Api.IFetch<GetBackupListByIdResult[], GetBackupListByIdParams> = (data) =>
+  fetchData('env/getCurrenctVpc', {
     method: 'GET',
     data,
   });

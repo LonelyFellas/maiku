@@ -1,10 +1,11 @@
 import React, { useRef, useState } from 'react';
 import { Button, Dropdown, Space, Popconfirm } from 'antd';
-import { Table } from '@common';
-import { operationItems, columns as configColumns } from '../config';
-import { useQuery } from '@tanstack/react-query';
-import { getBackupListByEnvIdService } from '@api/primary/backup.ts';
 import { useUpdateEffect } from '@darwish/hooks-core';
+import { useQuery } from '@tanstack/react-query';
+import { Table, TriggerModal } from '@common';
+import { getBackupListByEnvIdService } from '@api';
+import BackupProxy from './bakup-proxy';
+import { operationItems, columns as configColumns } from '../config';
 
 interface TableMainProps {
   deviceId: string;
@@ -40,7 +41,7 @@ const TableMain = (props: TableMainProps) => {
         ),
         dataIndex: 'operation',
         fixed: 'right',
-        width: 215,
+        width: 235,
         key: 'operation',
         render: (id: string) => (
           <Space>
@@ -50,7 +51,6 @@ const TableMain = (props: TableMainProps) => {
             <Button type="text" size="small" onClick={handleGetWindowRect}>
               编辑
             </Button>
-
             <Button type="text" size="small">
               备份
             </Button>
@@ -59,6 +59,11 @@ const TableMain = (props: TableMainProps) => {
                 删除
               </Button>
             </Popconfirm>
+            <TriggerModal title="编辑代理" renderModal={(renderProps) => <BackupProxy {...renderProps} />}>
+              <Button type="text" size="small">
+                代理
+              </Button>
+            </TriggerModal>
           </Space>
         ),
       },

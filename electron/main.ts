@@ -1,10 +1,10 @@
-import { autoUpdater } from 'electron-updater';
-import { app, BrowserWindow, ipcMain, screen, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain, screen } from 'electron';
 import path from 'node:path';
 import { isProd, createLoadWindow, createBrowserWindow, createTray, isMac, __dirname } from './utils';
 import Store from 'electron-store';
 import schema from './config/electron-store-schema.json';
 import createListener from '/electron/listener';
+import Updater from './updater';
 
 process.env.APP_ROOT = path.join(__dirname, '..');
 
@@ -18,11 +18,7 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 
 export const store = new Store({ defaults: schema });
 let mainWin: BrowserWindow | null = null;
 let loadingWin: Electron.BrowserWindow | null = null;
-
-autoUpdater.setFeedURL({
-  provider: 'generic',
-  url: 'http://maiku.npaas.cn/app/',
-});
+const updater = new Updater();
 
 function createMainWindow() {
   // 获取屏幕的尺寸
@@ -47,7 +43,7 @@ function createMainWindow() {
     // win.loadFile('dist/index.html')
     mainWin.loadFile(path.join(RENDERER_DIST, 'index.html'));
   }
-
+  updater.checkForUpdates();
   // 创建托盘图标
   createTray(mainWin, app);
 
@@ -82,42 +78,9 @@ function createMainWindow() {
       }
     }
   });
-  autoUpdater.autoDownload = false;
-  autoUpdater.checkForUpdates();
 
-  autoUpdater.on('update-available', () => {
-    if (mainWin) {
-      dialog
-        .showMessageBox({
-          type: 'info',
-          title: '有新版本可用',
-          message: '有新版本可用，是否更新？',
-          buttons: ['是', '否'],
-        })
-        .then((result) => {
-          if (result.response && result.response === 0) {
-            // autoUpdater.downloadUpdate();
-          }
-        });
-    }
-  });
-
-  autoUpdater.on('update-downloaded', () => {
-    if (mainWin) {
-      dialog
-        .showMessageBox({
-          type: 'info',
-          title: '下载完成',
-          message: '下载完成，是否重启应用？',
-          buttons: ['是', '否'],
-        })
-        .then((result) => {
-          if (result.response && result.response === 0) {
-            autoUpdater.quitAndInstall();
-          }
-        });
-    }
-  });
+  // 监听来自渲染器的消息
+  updater.autoUpdaerOn(mainWin);
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common
