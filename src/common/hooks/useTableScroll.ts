@@ -1,5 +1,5 @@
 import { useEffect, useState, type RefObject } from 'react';
-import { useWindowSize } from '@darwish/hooks-core';
+import { useSize } from '@darwish/hooks-core';
 import { toNumber } from '@common';
 
 interface TableScrollProps<T> {
@@ -13,7 +13,7 @@ interface TableScrollProps<T> {
  */
 const useTableScroll = <T>(props: TableScrollProps<T>) => {
   const { scrollRef, columns } = props;
-  const { height: windowHeight } = useWindowSize();
+  const { height: windowHeight } = useSize();
   const [scrollY, setScrollY] = useState(300);
 
   useEffect(() => {

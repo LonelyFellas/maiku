@@ -59,7 +59,6 @@ export default function NewProfiles() {
       const toStrPxType = (data.px_type ?? 1).toString() as PXType;
       form.setFieldsValue({ ...data, formProxyType: 'list', px_type: toStrPxType });
       setPxType(toStrPxType);
-      console.log('data', form.getFieldsValue());
       proxyMutation.mutate();
     }
   }, [data, isEdit]);

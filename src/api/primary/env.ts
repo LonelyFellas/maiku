@@ -1,5 +1,5 @@
 import { fetchData } from '@api/fetch-data.ts';
-import type { GetAllEnvListResult, PostAddEnvParams } from '@api/primary/type.ts';
+import type { GetBackupListByIdParams, GetBackupListByIdResult, GetAllEnvListResult, PostAddEnvParams, GetBackupParams, GetBackupToBackupParams } from '@api';
 
 /** 获取环境列表 */
 export const getEnvListService: Api.IFetch<GetAllEnvListResult[]> = () =>
@@ -27,6 +27,40 @@ export const postDeleteEnvService: Api.IFetch<boolean, Pick<GetAllEnvListResult,
 /** 按照ID获取环境信息 */
 export const getEnvByIdService: Api.IFetch<GetAllEnvListResult, Pick<GetAllEnvListResult, 'id'>> = (data) =>
   fetchData(`env/getById`, {
+    method: 'GET',
+    data,
+  });
+
+/** 获取备份列表 */
+export const getBackupListByEnvIdService: Api.IFetch<GetBackupListByIdResult[], GetBackupListByIdParams> = (data) =>
+  fetchData('env/getBakList', {
+    method: 'GET',
+    data,
+  });
+
+/** 启动备份 */
+// TODO 类型没有添加
+export const getRunBackupService: Api.IFetch<boolean, GetBackupParams> = (data) =>
+  fetchData('env/runBackup', {
+    method: 'GET',
+    data,
+  });
+/** 删除备份 */
+export const postDeleteBackService: Api.IFetch<boolean, GetBackupParams> = (data) =>
+  fetchData('env/deleteBak', {
+    method: 'POST',
+    data,
+  });
+/** 增加备份 */
+export const postAddBackupService: Api.IFetch<boolean, GetBackupToBackupParams> = (data) =>
+  fetchData('env/createBak', {
+    method: 'POST',
+    data,
+  });
+
+/** 查看备份代理 */
+export const getBackupProxyService: Api.IFetch<GetBackupListByIdResult[], GetBackupListByIdParams> = (data) =>
+  fetchData('env/getCurrenctVpc', {
     method: 'GET',
     data,
   });

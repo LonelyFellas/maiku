@@ -17,6 +17,13 @@ const App = (props: PropsWithChildren<object>) => {
       console.error(error);
       message.error(error);
     });
+    window.ipcRenderer.on('update-available', (args: any) => {
+      console.info('args: ', args);
+    });
+    // scrcpy窗口打开成功
+    window.ipcRenderer.on('open-scrcpy-window', (args: any) => {
+      console.info('open-scrcpy-window: ', args);
+    });
   }, [message]);
 
   const handleLanguageChange = () => {

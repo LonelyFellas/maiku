@@ -11,6 +11,7 @@ export interface GetAllEnvListResult {
   port: number;
   username: string;
   password: string;
+  screenShot: string;
 }
 
 export type PostAddEnvParams<IsEdit extends boolean = false> = AddEditType<
@@ -38,11 +39,19 @@ export type PostAddEnvParams<IsEdit extends boolean = false> = AddEditType<
   IsEdit
 >;
 
-export type GetBackupListByIdParams = {
+export interface GetBackupListByIdParams {
   envId: string;
-};
-export type GetBackupListByIdResult = {
+}
+export interface GetBackupListByIdResult {
   Names: string;
   state: string;
   index: number;
-};
+}
+
+export interface GetBackupParams {
+  envId: string;
+  containerName: string;
+}
+export interface GetBackupToBackupParams extends GetBackupParams {
+  newName: string;
+}

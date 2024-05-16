@@ -7,13 +7,11 @@ interface BgWrapperProps {
   style?: React.CSSProperties;
 }
 
-export default function BgWrapper(
-  props: React.PropsWithChildren<BgWrapperProps>,
-) {
+export default function BgWrapper(props: React.PropsWithChildren<BgWrapperProps>) {
   const isMac = isMacFunc();
   return (
     <div
-      className="w-full absolute inset-0 top-[30px] bottom-10 bg-bottom bg-no-repeat bg-slate-50 dark:bg-[#0B1120]"
+      className="bg-wrapper w-full absolute inset-0 top-[30px] bottom-10 bg-bottom bg-no-repeat bg-slate-50 dark:bg-[#0B1120]"
       style={{
         backgroundImage: `url(${BGLIGHTJPG})`,
         top: isMac ? '0px' : '30px',

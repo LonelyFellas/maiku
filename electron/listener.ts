@@ -2,16 +2,16 @@ import { BrowserWindow, dialog, ipcMain, app } from 'electron';
 import type Store from 'electron-store';
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import * as process from 'node:process';
 import { isMac, getScrcpyCwd, killProcessWithWindows } from '/electron/utils';
+import { scrcpyProcessObj } from './main';
 
 interface CreateListenerOptions {
   store: Store<typeof import('./config/electron-store-schema.json')>;
 }
 
 const im = ipcMain as unknown as Electron.IM;
-const scrcpyProcessObj: Record<string, ChildProcessWithoutNullStreams> = {};
 export default function createListener(options: CreateListenerOptions) {
   const { store } = options;
 
@@ -81,7 +81,12 @@ export default function createListener(options: CreateListenerOptions) {
       }
     }
 
-    scrcpyProcessObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', winName], {
+    /**
+     * `--window-title`: 设置窗口的标题
+     * `--window-width`：设置窗口的宽度
+     * `--window-height`: 设置窗口的高度
+     */
+    scrcpyProcessObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', winName, '--window-width', '381', '--window-height', '675'], {
       cwd: scrcpyCwd,
       shell: true,
     });
@@ -94,7 +99,14 @@ export default function createListener(options: CreateListenerOptions) {
         event.reply('error', strData);
       } else {
         // 确保它渲染完成
-        if (strData.includes('Renderer')) {
+        if (strData.includes('INFO: Device:')) {
+          // 你可以在这里执行其他操作，例如通知用户 scrcpy 已启动成功
+          console.log('Renderer ready');
+          event.reply('open-scrcpy-window', () => ({
+            bb: 1,
+            cc: 2,
+            ee: 3,
+          }));
           /**
            * 执行一个定时任务，检查窗口是否存在
            * 如果窗口存在，则打开scrcpy的taskbar窗口

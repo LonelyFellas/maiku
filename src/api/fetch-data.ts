@@ -10,7 +10,7 @@ export const fetchData = async <TData, TParams = null>(url: Api.Url, init: Api.I
     credentials: 'same-origin',
     headers: {
       'Content-type': 'application/json',
-      'X-Token': JSON.parse(window.localStorage.getItem(Constants.LOCAL_TOKEN) || 'null'),
+      'X-Token': window.localStorage.getItem(Constants.LOCAL_TOKEN) || 'null',
     },
     redirect: 'follow',
     referrerPolicy: 'no-referrer',

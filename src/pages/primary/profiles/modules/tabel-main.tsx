@@ -1,14 +1,13 @@
-import React, { createContext, useRef, useState } from 'react';
-import { Button, Dropdown, Space, Popconfirm } from 'antd';
-import { Table } from '@common';
-import { operationItems, columns as configColumns } from '../config';
-import { useQuery } from '@tanstack/react-query';
-import { getBackupListByEnvIdService } from '@api/primary/backup.ts';
+import React, { useRef, useState } from 'react';
+import { Button, Dropdown, Space, Popconfirm, App, Input, Form } from 'antd';
 import { useUpdateEffect } from '@darwish/hooks-core';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
-export const TableContext = createContext<{ deviceId: string }>({
-  deviceId: '-1',
-});
+import { Table, TriggerModal, useScreens } from '@common';
+import { getBackupListByEnvIdService, postAddBackupService, postDeleteBackService, type GetBackupParams } from '@api';
+import BackupProxy from './bakup-proxy';
+import { operationItems, columns as configColumns } from '../config';
+import { DataType } from '../type';
 
 interface TableMainProps {
   deviceId: string;
@@ -17,22 +16,53 @@ interface TableMainProps {
 }
 
 const TableMain = (props: TableMainProps) => {
+  const size = useScreens();
+  const { message } = App.useApp();
   const { deviceId, envId } = props;
+  const [form] = Form.useForm();
   const scrollRef = useRef<React.ElementRef<'div'>>(null);
-  const { data, isFetching, isRefetching, isFetched, refetch } = useQuery({
+  const { data, isFetching, isRefetching, isLoading, refetch } = useQuery({
     queryKey: ['backupList', envId],
     queryFn: () => getBackupListByEnvIdService({ envId: envId + '' }),
     enabled: !!envId,
   });
-
+  const deleteMutation = useMutation({
+    mutationKey: ['deleteBackup', envId],
+    mutationFn: postDeleteBackService,
+    onSuccess: () => {
+      message.success('删除成功');
+      refetch();
+    },
+  });
+  const addBackupMutation = useMutation({
+    mutationKey: ['addBackup', envId],
+    mutationFn: postAddBackupService,
+    onSuccess: () => {
+      message.success('备份成功');
+      refetch();
+    },
+  });
   useUpdateEffect(() => {
     if (props.isRefetching) {
       refetch();
     }
   }, [props.isRefetching]);
   const handleGetWindowRect = () => {
-    console.log('111');
     // window.ipcRenderer.send('window:scrcpy-listen', 'SM-F711N');
+  };
+  const handleDeleteBackup = (props: GetBackupParams) => {
+    deleteMutation.mutate(props);
+  };
+  const handleAddBackup = (props: GetBackupParams) => {
+    addBackupMutation.mutate({
+      ...props,
+      newName: form.getFieldValue('newName') || '',
+    });
+  };
+  const handleBackupPopconfirmOpenChange = (visible: boolean) => {
+    if (visible === false) {
+      form.resetFields();
+    }
   };
 
   const [columns] = useState(() => {
@@ -45,25 +75,57 @@ const TableMain = (props: TableMainProps) => {
         ),
         dataIndex: 'operation',
         fixed: 'right',
-        width: 215,
+        width: size === '2xl' ? 235 : 215,
         key: 'operation',
-        render: (id: string) => (
-          <Space>
+        render: (id: string, record: DataType) => (
+          <Space size={0}>
             <Button size="small" type="primary" onClick={() => handleStartScrcpy(id)}>
               启动
             </Button>
             <Button type="text" size="small" onClick={handleGetWindowRect}>
               编辑
             </Button>
-
-            <Button type="text" size="small">
-              备份
-            </Button>
-            <Popconfirm title="删除备份" description="您确定删除此备份">
+            <Popconfirm
+              onOpenChange={handleBackupPopconfirmOpenChange}
+              title="是否备份？"
+              description={
+                <Form form={form}>
+                  <Form.Item name="newName" style={{ height: 10 }}>
+                    <Input placeholder="新备份名字（可选）" />
+                  </Form.Item>
+                </Form>
+              }
+              onConfirm={() =>
+                handleAddBackup({
+                  envId: record.envId ?? '',
+                  containerName: record.Names,
+                })
+              }
+            >
               <Button type="text" size="small">
+                备份
+              </Button>
+            </Popconfirm>
+
+            <Popconfirm
+              title="删除备份"
+              description="您确定删除此备份"
+              onConfirm={() =>
+                handleDeleteBackup({
+                  envId: record.envId ?? '',
+                  containerName: record.Names,
+                })
+              }
+            >
+              <Button type="text" size="small" disabled={data && data?.length <= 1}>
                 删除
               </Button>
             </Popconfirm>
+            <TriggerModal title="编辑代理" renderModal={(renderProps) => <BackupProxy {...renderProps} />}>
+              <Button type="text" size="small">
+                代理
+              </Button>
+            </TriggerModal>
           </Space>
         ),
       },
@@ -78,9 +140,9 @@ const TableMain = (props: TableMainProps) => {
   return (
     <div ref={scrollRef} className="flex flex-col gap-2 flex-1 h-full bg-white rounded-md">
       <Table
-        isFetching={isFetching}
+        isFetching={isFetching || addBackupMutation.isPending}
         isRefetching={isRefetching}
-        isSuccess={isFetched}
+        isSuccess={!isLoading}
         columns={columns
           .filter((col) => col.isVisible)
           .map((col) => ({
@@ -88,7 +150,7 @@ const TableMain = (props: TableMainProps) => {
             ellipsis: true,
           }))}
         rowKey="Names"
-        dataSource={data?.map((item) => ({ ...item, operation: deviceId })) || []}
+        dataSource={data?.map((item) => ({ ...item, operation: deviceId, envId })) || []}
       />
     </div>
   );

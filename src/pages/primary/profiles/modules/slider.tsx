@@ -6,9 +6,9 @@ import { isArray } from '@darwish/utils-is';
 import { Scrollbar } from '@darwish/scrollbar-react';
 import { GetAllEnvListResult, getEnvByIdService } from '@api';
 import { LeftOutlined } from '@ant-design/icons';
-import phone from '@img/phone-test.png';
 import '../index.css';
-import { cn, ContainerWithEmpty, toNumber } from '@common';
+import emptyImg from '@img/phone-test.png';
+import { cn, ContainerWithEmpty, toNumber, useScreens } from '@common';
 
 interface SliderProps {
   isFetching: boolean;
@@ -20,6 +20,7 @@ interface SliderProps {
 
 const Slider = (props: SliderProps) => {
   const navigate = useNavigate();
+  const size = useScreens();
   const { isFetching, isRefetching, envList, currentKey, setCurrentKey } = props;
   const [collapse, setCollapse] = useState([`${currentKey}`]);
   const { data } = useQuery({
@@ -28,7 +29,6 @@ const Slider = (props: SliderProps) => {
     refetchInterval: 1000 * 5,
     enabled: envList.length > 0 && collapse.length > 0,
   });
-  console.log(data);
 
   const handleChange = (indexStr: string | string[]) => {
     if (isArray(indexStr)) {
@@ -44,14 +44,14 @@ const Slider = (props: SliderProps) => {
   };
 
   return (
-    <Scrollbar className="w-[230px] h-full bg-bg_primary/50 rounded-md">
+    <Scrollbar className="w-[180px] h-full bg-bg_primary/50 rounded-md 2xl:w-[230px]">
       <ContainerWithEmpty className="h-full" hasData={envList?.length > 0} isRefetching={isRefetching} isFetching={isFetching}>
         <Collapse
           className="profiles-slider-collapse flex flex-col items-center"
           accordion
           expandIcon={() => <></>}
           bordered={false}
-          defaultActiveKey={[envList[0].id]}
+          defaultActiveKey={[envList[0]?.id]}
           onChange={handleChange}
           items={envList.map((item) => ({
             key: item.id,
@@ -61,9 +61,14 @@ const Slider = (props: SliderProps) => {
               </div>
             ),
             children: (
-              <div className="flex flex-col items-center">
-                <img src={phone} className="rounded-[32px] h-[400px]" />
-                <Flex className="my-2" gap={10}>
+              <div className="flex flex-col items-center p-2">
+                <img
+                  // preview={!!data?.screenShot}
+                  src={data?.screenShot ? data.screenShot : emptyImg}
+                  className="rounded h-[300px] 2xl:h-[400px]"
+                  alt="screen shot"
+                />
+                <Flex className="my-2" gap={size === '2xl' ? 10 : 0}>
                   <Button size="small" onClick={() => handleGoToEdit(item.id)}>
                     修改
                   </Button>

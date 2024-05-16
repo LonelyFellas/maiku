@@ -1,9 +1,11 @@
 import { app, BrowserWindow, ipcMain, screen } from 'electron';
 import path from 'node:path';
-import { isProd, createLoadWindow, createBrowserWindow, createTray, isMac, __dirname } from './utils';
+import { isProd, createLoadWindow, createBrowserWindow, createTray, isMac, __dirname, closeAllScrcpyDevices } from './utils';
 import Store from 'electron-store';
+import type { ChildProcessWithoutNullStreams } from 'node:child_process';
 import schema from './config/electron-store-schema.json';
 import createListener from '/electron/listener';
+import Updater from './updater';
 
 process.env.APP_ROOT = path.join(__dirname, '..');
 
@@ -12,11 +14,13 @@ export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL'];
 export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron');
 export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist');
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST;
+export const scrcpyProcessObj: Record<string, ChildProcessWithoutNullStreams> = {};
 
 // 初始化electron-store
 export const store = new Store({ defaults: schema });
 let mainWin: BrowserWindow | null = null;
 let loadingWin: Electron.BrowserWindow | null = null;
+const updater = new Updater();
 
 function createMainWindow() {
   // 获取屏幕的尺寸
@@ -31,17 +35,17 @@ function createMainWindow() {
       preload: path.join(__dirname, 'preload.mjs'),
       // devTools: !app.isPackaged,
     },
-    x: (width - 1200) / 2,
-    y: (height - 780) / 2,
+    x: (width - 972) / 2,
+    y: (height - 722) / 2,
   });
 
   if (VITE_DEV_SERVER_URL) {
     mainWin.loadURL(VITE_DEV_SERVER_URL);
   } else {
-    // win.loadFile('dist/index.html')
     mainWin.loadFile(path.join(RENDERER_DIST, 'index.html'));
   }
-
+  // 检查更新
+  updater.checkForUpdates();
   // 创建托盘图标
   createTray(mainWin, app);
 
@@ -57,7 +61,7 @@ function createMainWindow() {
     }
   });
 
-  process.on('unhandledRejection', (reason: any, promise) => {
+  process.on('unhandledRejection', (reason: string, promise) => {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
     if (mainWin) {
       mainWin.webContents.send('error', reason.toString());
@@ -76,12 +80,18 @@ function createMainWindow() {
       }
     }
   });
+
+  // 监听来自渲染器的消息
+  updater.autoUpdaerOn(mainWin);
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
+  // 关闭所有的云机
+  closeAllScrcpyDevices();
+  // 再关闭主窗口和程序
   if (process.platform !== 'darwin') {
     app.quit();
     mainWin = null;
@@ -109,6 +119,7 @@ app.on('before-quit', () => {
     mainWin.destroy();
   }
 });
+
 ipcMain.on('loading:done', (_, type: 'main' | 'loading' = 'main') => {
   // 关闭加载窗口(关闭之前确保加载窗口的任务也同样完成)
   const loadingWinStatus = store.get('twoWindowsLoading');
