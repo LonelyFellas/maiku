@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { App, Badge, Space } from 'antd';
 import { useQuery } from '@tanstack/react-query';
 import { useLocalStorage, useSessionStorage } from '@darwish/hooks-core';
@@ -7,13 +7,14 @@ import { ExclamationCircleOutlined } from '@ant-design/icons';
 import ProfileCenter from './profile-center';
 import UpdateCenter from './update-center';
 import NotificationCenter from './notification-center';
-import { Constants, useRouteMeta } from '@common';
+import { Constants, useRouteMeta, useUpdate } from '@common';
 import { getReleaseService } from '@api';
 import pkg from '/package.json';
 import { isBlanks } from '@darwish/utils-is';
 
 const Header = () => {
   const [currentVersion] = useLocalStorage(Constants.LOCAL_CURRENT_VERSION, pkg.version);
+  const { isUpdate } = useUpdate();
   const [skipVersion, setSkipVersion] = useSessionStorage(Constants.SESSION_SKIP_VERSION, {
     version: pkg.version,
     isSkip: false,
@@ -24,8 +25,14 @@ const Header = () => {
   const { data = [] } = useQuery({
     queryKey: ['get_release'],
     queryFn: getReleaseService,
-    refetchInterval: 60 * 1000,
+    enabled: isUpdate,
   });
+  useEffect(() => {
+    console.log('msg1');
+    window.ipcRenderer.on('update-progress', (_, msg) => {
+      console.log('msg2', msg);
+    });
+  }, []);
 
   const isNewVersion = useMemo(() => {
     if (!isBlanks(data)) {
@@ -53,8 +60,13 @@ const Header = () => {
     });
   };
 
+  /** 跳过版本 */
   const handleSkipVersion = (version: string) => {
     setSkipVersion({ version, isSkip: true });
+  };
+  /** 下载更新 */
+  const handleDownloadUpdate = () => {
+    window.ipcRenderer.send('download-update');
   };
   return (
     <div className="flex justify-between h-30px ">
@@ -72,7 +84,14 @@ const Header = () => {
       <div>
         <Space size="large">
           <Badge count={isNewVersion ? '1' : ''} size="small">
-            <UpdateCenter newVersionData={isBlanks(data) ? [] : data} isNewVersion={isNewVersion} handleSkipVersion={handleSkipVersion} />
+            <UpdateCenter
+              {...{
+                newVersionData: isBlanks(data) ? [] : data,
+                isNewVersion,
+                handleSkipVersion,
+                handleDownloadUpdate,
+              }}
+            />
           </Badge>
           <NotificationCenter />
           <ProfileCenter />

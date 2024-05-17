@@ -3,11 +3,12 @@ import { FloatButton, App as AntdApp, message } from 'antd';
 import { GlobalOutlined as GlobalIcon } from '@ant-design/icons/lib/icons';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { isMacFunc, useI18nConfig, Wrapper } from '@common';
+import { isMacFunc, useI18nConfig, Wrapper, useUpdate } from '@common';
 
 const App = (props: PropsWithChildren<object>) => {
   const { href } = window.location;
   const isScrcpy = href.includes('scrcpy');
+  const { setIsUpdate } = useUpdate();
   // const { message } = AntdApp.useApp();
   const [, setLang] = useI18nConfig();
   const isMac = isMacFunc();
@@ -17,9 +18,10 @@ const App = (props: PropsWithChildren<object>) => {
       console.error(error);
       message.error(error);
     });
-    window.ipcRenderer.on('update-available', (args: any) => {
-      console.log('args: ', args);
+    window.ipcRenderer.on('update-available', (_, msg) => {
+      setIsUpdate(msg.isUpdate);
     });
+
     // scrcpy窗口打开成功
     window.ipcRenderer.on('open-scrcpy-window', (args: any) => {
       console.info('open-scrcpy-window: ', args);

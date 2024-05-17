@@ -1,10 +1,13 @@
 import type React from 'react';
-import type { Electron, IpcRenderer, OpenDialogOptions, MessageBoxReturnValue } from 'electron';
+import type { OpenDialogOptions, MessageBoxReturnValue } from 'electron';
 import type { Client } from '@devicefarmer/adbkit';
 import type { ColumnsType } from 'antd/es/table';
 import type { ModalProps } from 'antd';
 
 declare global {
+  type AnyObj = Darwish.AnyObj;
+  type EmptyObj = Darwish.EmptyObj;
+  type GenericsFn<P, R> = Darwish.GenericsFn<P, R>;
   type WindowState = 'close' | 'minimize' | 'maximize';
   type RememberState = '' | 'close' | 'minimizeToTray';
   type InvokeChannelMap = {
@@ -15,10 +18,12 @@ declare global {
     'scrcpy:start': [string, string];
     'app:operate': ['close' | 'restart'];
     'loading:done': ['main' | 'loading'];
+    'download-update': [];
   };
   type OnChannelMap = {
     error: Darwish.AnyFunc;
-    'update-available': Darwish.AnyFunc;
+    'update-available': GenericsFn<[unknown, { isUpdate: boolean }], void>;
+    'update-progress': GenericsFn<[unknown, { progress: number }], void>;
     'open-scrcpy-window': Darwish.AnyFunc;
   };
 
@@ -116,8 +121,6 @@ declare global {
   /**
    * 新增编辑统一的接口定义
    */
-  type AnyObj = Darwish.AnyObj;
-  type EmptyObj = Darwish.EmptyObj;
   type MergeObj<T extends AnyObj, U extends AnyObj, Merge extends AnyObj = U extends EmptyObj ? T : T extends EmptyObj ? U : T & U> = {
     [K in keyof Merge]: Merge[K];
   };
