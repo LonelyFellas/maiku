@@ -76,7 +76,7 @@ const TableMain = (props: TableMainProps) => {
         key: 'operation',
         render: (id: string, record: DataType) => (
           <Space size={0}>
-            <Button size="small" type="primary" onClick={() => handleStartScrcpy(id)}>
+            <Button size="small" type="primary" onClick={() => handleStartScrcpy(id, record.envId)}>
               启动
             </Button>
             <Button type="text" size="small" onClick={handleGetWindowRect}>
@@ -130,8 +130,8 @@ const TableMain = (props: TableMainProps) => {
     return defaultColumns.map((col) => ({ ...col, isVisible: true }));
   });
 
-  const handleStartScrcpy = (id: string) => {
-    window.ipcRenderer.send('scrcpy:start', id, 'Test');
+  const handleStartScrcpy = (id: string, envId: string) => {
+    window.ipcRenderer.send('scrcpy:start', id, envId);
   };
 
   return (

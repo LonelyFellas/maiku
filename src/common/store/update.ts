@@ -10,7 +10,7 @@ interface UseUpdateDispatch {
 
 const useUpdate = create<UseUpdateState & UseUpdateDispatch>()((set) => ({
   isUpdate: false,
-  setIsUpdate: (value: boolean) => set(() => ({ isUpdate: value })),
+  setIsUpdate: (value) => set(() => ({ isUpdate: value })),
 }));
 
 export default useUpdate;
