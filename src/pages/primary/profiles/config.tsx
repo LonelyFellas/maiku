@@ -139,7 +139,7 @@ export const columns: AntdColumns<DataType> = [
   // },
   {
     title: '名称',
-    width: 250,
+    width: 150,
     dataIndex: 'Names',
     key: 'Names',
   },

@@ -2,8 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Button, Dropdown, Space, Popconfirm, App, Input, Form } from 'antd';
 import { useUpdateEffect } from '@darwish/hooks-core';
 import { useMutation, useQuery } from '@tanstack/react-query';
-
-import { Table, TriggerModal, useScreens } from '@common';
+import { Table, TriggerModal } from '@common';
 import { getBackupListByEnvIdService, postAddBackupService, postDeleteBackService, type GetBackupParams } from '@api';
 import BackupProxy from './bakup-proxy';
 import { operationItems, columns as configColumns } from '../config';
@@ -16,7 +15,6 @@ interface TableMainProps {
 }
 
 const TableMain = (props: TableMainProps) => {
-  const size = useScreens();
   const { message } = App.useApp();
   const { deviceId, envId } = props;
   const [form] = Form.useForm();
@@ -75,7 +73,7 @@ const TableMain = (props: TableMainProps) => {
         ),
         dataIndex: 'operation',
         fixed: 'right',
-        width: size === '2xl' ? 235 : 215,
+        width: 235,
         key: 'operation',
         render: (id: string, record: DataType) => (
           <Space size={0}>
@@ -121,7 +119,7 @@ const TableMain = (props: TableMainProps) => {
                 删除
               </Button>
             </Popconfirm>
-            <TriggerModal title="编辑代理" renderModal={(renderProps) => <BackupProxy {...renderProps} />}>
+            <TriggerModal title="编辑代理" renderModal={(renderProps) => <BackupProxy {...renderProps} envId={record.envId ?? '0'} />}>
               <Button type="text" size="small">
                 代理
               </Button>
