@@ -20,7 +20,10 @@ const App = (props: PropsWithChildren<object>) => {
     window.ipcRenderer.on('update-available', (args: any) => {
       console.log('args: ', args);
     });
-    window.ipcRenderer.on('scrcpy:env-win-exist', (_: unknown, envId) => {});
+    // scrcpy窗口打开成功
+    window.ipcRenderer.on('open-scrcpy-window', (args: any) => {
+      console.info('open-scrcpy-window: ', args);
+    });
   }, [message]);
 
   const handleLanguageChange = () => {
