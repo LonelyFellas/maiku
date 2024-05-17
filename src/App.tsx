@@ -18,7 +18,7 @@ const App = (props: PropsWithChildren<object>) => {
       message.error(error);
     });
     window.ipcRenderer.on('update-available', (args: any) => {
-      console.info('args: ', args);
+      console.log('args: ', args);
     });
     // scrcpy窗口打开成功
     window.ipcRenderer.on('open-scrcpy-window', (args: any) => {

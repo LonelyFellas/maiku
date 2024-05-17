@@ -11,6 +11,7 @@ export default class Updater {
       url: 'http://maiku.npaas.cn/app/',
     });
   }
+
   checkForUpdates() {
     // 因为它默认为自动下载，所以这里设置成不自动下载.
     autoUpdater.autoDownload = false;
@@ -20,6 +21,11 @@ export default class Updater {
   autoUpdaerOn(mainWin: BrowserWindow | null) {
     autoUpdater.on('update-available', () => {
       if (mainWin) {
+        mainWin.webContents.send('update-available', {
+          aaa: 111,
+          bbb: 222,
+          ccc: 333,
+        });
         dialog
           .showMessageBox({
             type: 'info',
@@ -29,7 +35,7 @@ export default class Updater {
           })
           .then((result) => {
             if (result.response && result.response === 0) {
-              // autoUpdater.downloadUpdate();
+              autoUpdater.downloadUpdate();
             }
           });
       }

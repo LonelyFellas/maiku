@@ -5,9 +5,10 @@ import { getBackupProxyService } from '@api';
 interface BackupProxyProps extends AntdModalProps {
   envId: string;
 }
+
 const BackupProxy = (props: BackupProxyProps) => {
   const { envId, ...restProps } = props;
-  const { data } = useQuery({
+  useQuery({
     queryKey: ['backupProxy', envId],
     queryFn: () => getBackupProxyService({ envId }),
     enabled: !!props.open,
