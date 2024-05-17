@@ -60,7 +60,7 @@ export const postAddBackupService: Api.IFetch<boolean, GetBackupToBackupParams> 
 
 /** 查看备份代理 */
 export const getBackupProxyService: Api.IFetch<GetBackupListByIdResult[], GetBackupListByIdParams> = (data) =>
-  fetchData('env/getCurrenctVpc', {
-    method: 'GET',
+  fetchData('env/getCurrentVpc', {
+    method: 'POST',
     data,
   });

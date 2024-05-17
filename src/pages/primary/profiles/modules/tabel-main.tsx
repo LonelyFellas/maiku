@@ -2,9 +2,8 @@ import React, { useRef, useState } from 'react';
 import { Button, Dropdown, Space, Popconfirm, App, Input, Form } from 'antd';
 import { useUpdateEffect } from '@darwish/hooks-core';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Table, TriggerModal } from '@common';
+import { Table } from '@common';
 import { getBackupListByEnvIdService, postAddBackupService, postDeleteBackService, type GetBackupParams } from '@api';
-import BackupProxy from './bakup-proxy';
 import { operationItems, columns as configColumns } from '../config';
 import { DataType } from '../type';
 
@@ -73,7 +72,7 @@ const TableMain = (props: TableMainProps) => {
         ),
         dataIndex: 'operation',
         fixed: 'right',
-        width: 235,
+        width: 160,
         key: 'operation',
         render: (id: string, record: DataType) => (
           <Space size={0}>
@@ -119,11 +118,11 @@ const TableMain = (props: TableMainProps) => {
                 删除
               </Button>
             </Popconfirm>
-            <TriggerModal title="编辑代理" renderModal={(renderProps) => <BackupProxy {...renderProps} envId={record.envId ?? '0'} />}>
+            {/* <TriggerModal title="编辑代理" renderModal={(renderProps) => <BackupProxy {...renderProps} envId={record.envId ?? '0'} />}>
               <Button type="text" size="small">
                 代理
               </Button>
-            </TriggerModal>
+            </TriggerModal> */}
           </Space>
         ),
       },
