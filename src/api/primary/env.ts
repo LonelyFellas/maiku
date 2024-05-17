@@ -39,10 +39,9 @@ export const getBackupListByEnvIdService: Api.IFetch<GetBackupListByIdResult[], 
   });
 
 /** 启动备份 */
-// TODO 类型没有添加
-export const getRunBackupService: Api.IFetch<boolean, GetBackupParams> = (data) =>
-  fetchData('env/runBackup', {
-    method: 'GET',
+export const postRunBackupService: Api.IFetch<boolean, GetBackupParams> = (data) =>
+  fetchData('env/runBak', {
+    method: 'POST',
     data,
   });
 /** 删除备份 */

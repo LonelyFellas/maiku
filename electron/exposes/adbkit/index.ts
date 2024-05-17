@@ -5,9 +5,15 @@ export default function adbkit(): Partial<Window['adbApi']> {
   const client = Adb.createClient();
   // console.log(import.meta);
   return {
-    connect: async (...params) => client.connect(...params),
+    connect: async (...params) => {
+      // 在需要连接设备时，先断开之前的连接
+      // 有可能设备已经是一个offline状态，导致连接失败
+      await client.disconnect(...params);
+      return client.connect(...params);
+    },
     disconnect: async (...params) => client.disconnect(...params),
     getDevice: (serial) => client.getDevice(serial),
+    // getStatus: () => client.(),
     getPackages: (serial: string) => client.getDevice(serial).getPackages(),
     kill: () => client.kill(),
     shell: (id, command) => client.getDevice(id).shell(command).then(Adb.util.readAll),

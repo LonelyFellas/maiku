@@ -15,7 +15,7 @@ declare global {
     'dialog:open': [OpenDialogOptions, string[] | { url: string; name: string; size: number }[]];
   };
   type SendChannelMap = {
-    'scrcpy:start': [string, string];
+    'scrcpy:start': [{ deviceId: string; envId: string; type: 'task' | 'notask' }];
     'app:operate': ['close' | 'restart'];
     'loading:done': ['main' | 'loading'];
     'download-update': [];
@@ -24,6 +24,7 @@ declare global {
     error: Darwish.AnyFunc;
     'update-available': GenericsFn<[unknown, { isUpdate: boolean }], void>;
     'update-progress': GenericsFn<[unknown, { progress: number }], void>;
+    'scrcpy:env-win-exist': GenericsFn<[unknown, string], void>;
     'open-scrcpy-window': Darwish.AnyFunc;
   };
 
@@ -61,6 +62,7 @@ declare global {
       connect: Client['connect'];
       disconnect: Client['disconnect'];
       getDevice: Client['getDevice'];
+      listDevices: Client['listDevices'];
       getPackages: (serial: string) => Promise<any>;
       kill: Client['kill'];
       shell: (id: string, command: string) => Promise<any>;
