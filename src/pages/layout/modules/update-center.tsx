@@ -10,10 +10,12 @@ interface UpdateCenterProps {
   newVersionData: GetReleaseResult[] | never[];
   isNewVersion: boolean;
   handleSkipVersion: (version: string) => void;
+  handleDownloadUpdate: () => void;
 }
+
 const UpdateCenter = (props: UpdateCenterProps) => {
   const [open, setOpen] = useState(false);
-  const { isNewVersion, newVersionData, handleSkipVersion } = props;
+  const { isNewVersion, newVersionData, handleSkipVersion, handleDownloadUpdate } = props;
   const [lang] = useI18nConfig('config.layout.header.update');
   const handleSkip = () => {
     handleSkipVersion(newVersionData[0].version);
@@ -29,7 +31,7 @@ const UpdateCenter = (props: UpdateCenterProps) => {
       overlayClassName="header_btn"
       placement="bottomRight"
       title={lang.title}
-      content={isNewVersion ? <ContentView data={newVersionData[0]} handleSkipVersion={handleSkip} /> : <NoReleseView emptyTitle={lang.empty_title} />}
+      content={isNewVersion ? <ContentView data={newVersionData[0]} handleSkipVersion={handleSkip} handleDownloadUpdate={handleDownloadUpdate} /> : <NoReleaseView emptyTitle={lang.empty_title} />}
       trigger="click"
       onOpenChange={handOpenChange}
     >
@@ -41,13 +43,15 @@ const UpdateCenter = (props: UpdateCenterProps) => {
 };
 export default UpdateCenter;
 
-const NoReleseView = ({ emptyTitle = '' }: { emptyTitle: string }) => <Empty className="w-[400px] h-[120px] m-2 2xl:m-4" description={emptyTitle} />;
+const NoReleaseView = ({ emptyTitle = '' }: { emptyTitle: string }) => <Empty className="w-[400px] h-[120px] m-2 2xl:m-4" description={emptyTitle} />;
 
 interface ContentViewProps {
   data: GetReleaseResult;
   handleSkipVersion: (version: string) => void;
+  handleDownloadUpdate: () => void;
 }
-function ContentView({ data, handleSkipVersion }: ContentViewProps) {
+
+function ContentView({ data, handleSkipVersion, handleDownloadUpdate }: ContentViewProps) {
   return (
     <div className="w-[400px] min-h-[120px]">
       <div className="w-full bg-bg_primary/70 min-h-[120px] rounded-md p-2">
@@ -64,7 +68,7 @@ function ContentView({ data, handleSkipVersion }: ContentViewProps) {
             <Button size="small" className="text-12sm" onClick={() => handleSkipVersion(data.version)}>
               跳过
             </Button>
-            <Button type="primary" size="small" className="text-12sm">
+            <Button type="primary" size="small" className="text-12sm" onClick={handleDownloadUpdate}>
               下载更新
             </Button>
           </Space>

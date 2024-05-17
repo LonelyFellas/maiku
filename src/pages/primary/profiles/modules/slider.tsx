@@ -8,7 +8,8 @@ import { GetAllEnvListResult, getEnvByIdService } from '@api';
 import { LeftOutlined } from '@ant-design/icons';
 import '../index.css';
 import emptyImg from '@img/phone-test.png';
-import { cn, ContainerWithEmpty, toNumber, useScreens } from '@common';
+import { cn, ContainerWithEmpty, toNumber } from '@common';
+import DetailBackupProxy from './detail-backup-proxy';
 
 interface SliderProps {
   isFetching: boolean;
@@ -20,14 +21,14 @@ interface SliderProps {
 
 const Slider = (props: SliderProps) => {
   const navigate = useNavigate();
-  const size = useScreens();
   const { isFetching, isRefetching, envList, currentKey, setCurrentKey } = props;
   const [collapse, setCollapse] = useState([`${currentKey}`]);
+  const [detailModalVisible, setDetailModalVisible] = useState(false);
   const { data } = useQuery({
     queryKey: ['env-detail-by-id', currentKey],
     queryFn: () => getEnvByIdService({ id: envList.find((item) => item.id === currentKey)!.id }),
     refetchInterval: 1000 * 5,
-    enabled: envList.length > 0 && collapse.length > 0,
+    enabled: envList.length > 0 && collapse.length > 0 && detailModalVisible === false,
   });
 
   const handleChange = (indexStr: string | string[]) => {
@@ -39,8 +40,18 @@ const Slider = (props: SliderProps) => {
     }
   };
 
+  /** 跳转修改环境 */
   const handleGoToEdit = (id: number) => {
     navigate({ to: `/layout/new_profiles/${id}` });
+  };
+
+  /** 打开备份代理 */
+  const handleOpenDetailModal = () => {
+    setDetailModalVisible(true);
+  };
+  /** 关闭备份代理 */
+  const hadnleCloseDetailModal = () => {
+    setDetailModalVisible(false);
   };
 
   return (
@@ -68,11 +79,13 @@ const Slider = (props: SliderProps) => {
                   className="rounded h-[300px] 2xl:h-[400px]"
                   alt="screen shot"
                 />
-                <Flex className="my-2" gap={size === '2xl' ? 10 : 0}>
+                <Flex className="my-2" gap={10}>
                   <Button size="small" onClick={() => handleGoToEdit(item.id)}>
                     修改
                   </Button>
-                  <Button size="small">切换代理</Button>
+                  <Button size="small" onClick={handleOpenDetailModal}>
+                    代理
+                  </Button>
                   <Button size="small">更多</Button>
                 </Flex>
               </div>
@@ -87,6 +100,7 @@ const Slider = (props: SliderProps) => {
           }))}
         />
       </ContainerWithEmpty>
+      <DetailBackupProxy open={detailModalVisible} envId={data ? data.id.toString() : ''} onCancel={hadnleCloseDetailModal} onOk={hadnleCloseDetailModal} />
     </Scrollbar>
   );
 };

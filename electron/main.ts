@@ -44,8 +44,7 @@ function createMainWindow() {
   } else {
     mainWin.loadFile(path.join(RENDERER_DIST, 'index.html'));
   }
-  // 检查更新
-  updater.checkForUpdates();
+
   // 创建托盘图标
   createTray(mainWin, app);
 
@@ -80,9 +79,6 @@ function createMainWindow() {
       }
     }
   });
-
-  // 监听来自渲染器的消息
-  updater.autoUpdaerOn(mainWin);
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -140,6 +136,10 @@ ipcMain.on('loading:done', (_, type: 'main' | 'loading' = 'main') => {
   if (!getAgainLoadingWinStatus.loading && !getAgainLoadingWinStatus.main) {
     loadingWin?.destroy();
     mainWin?.show();
+    // 检查更新
+    updater.checkForUpdates();
+    // 监听来自渲染器的消息
+    updater.autoUpdaerOn(mainWin);
   }
 });
 

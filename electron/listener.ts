@@ -4,8 +4,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import * as process from 'node:process';
-import { isMac, getScrcpyCwd, killProcessWithWindows } from '/electron/utils';
+import { isMac, getScrcpyCwd, killProcessWithWindows, task } from '/electron/utils';
 import { scrcpyProcessObj } from './main';
+import { checkWindowExists } from '/electron/utils/getActiveWindowRect.ts';
+import { sleep } from '@common';
 
 interface CreateListenerOptions {
   store: Store<typeof import('./config/electron-store-schema.json')>;
@@ -69,9 +71,79 @@ export default function createListener(options: CreateListenerOptions) {
   });
 
   /** 启动scrcpy **/
-  im.on('scrcpy:start', async (event, deviceId, winName = 'Test') => {
-    const scrcpyCwd = getScrcpyCwd();
-    if (Object.prototype.hasOwnProperty.call(scrcpyProcessObj, deviceId)) {
+  im.on('scrcpy:start', async (event, deviceId, envId) => {
+    // 开启任务器的逻辑:
+    // 首先开一个5秒任务器，来检查窗口是否存在
+    // 1. 如果任务器失败，说明环境窗口不存在，直接打开scrcpy窗口 （打开scrcpy窗口还有其他逻辑）
+    // 2. 如果任务其成功，关闭当前窗口, defer 30s 再打开新的窗口（关闭窗口和给渲染层发送消息）
+    const title = `Test-${envId}`;
+    task(() => checkWindowExists(title), {
+      type: 'check',
+      attempts: 0,
+      maxAttempts: 5,
+      timeout: 1000,
+      onSuccess: async () => {
+        killProcess(deviceId);
+        event.reply('scrcpy:env-win-exist', envId);
+        await sleep(30000);
+        handleOpenScrcpyWindow(title);
+      },
+      onFailure: () => {
+        handleOpenScrcpyWindow(title);
+      },
+    });
+
+    /**
+     * 开启scrcpy窗口的逻辑:
+     * 首先检测环境id是否存在，如果存在，则杀掉进程,开启新的进程
+     * 如果不存在则直接开启新的进程
+     * 错误处理需要手动处理，
+     * 错误日志需要发送给渲染层
+     * 同时在主函数中，也要监听主窗口的关闭事件，如果当前的主窗口关闭，同时也要关闭scrcpy所有窗口
+     * @param title 窗口的标题
+     */
+    const handleOpenScrcpyWindow = (title: string) => {
+      const scrcpyCwd = getScrcpyCwd();
+      if (handleCheckProcessExists(deviceId)) {
+        killProcess(deviceId);
+      }
+
+      /**
+       * `--window-title`: 设置窗口的标题
+       * `--window-width`：设置窗口的宽度
+       * `--window-height`: 设置窗口的高度
+       */
+      scrcpyProcessObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', title, '--window-width', '381', '--window-height', '675'], {
+        cwd: scrcpyCwd,
+        shell: true,
+      });
+      scrcpyProcessObj[deviceId].stdout.on('data', (data) => {
+        const strData = data.toString();
+        console.error(`stdout: ${strData}`);
+
+        if (strData.includes('ERROR')) {
+          event.reply('error', strData);
+          event.reply('scrcpy:stop', {
+            isSuccess: false,
+            envId,
+          });
+        }
+      });
+      scrcpyProcessObj[deviceId].stderr.on('data', (data) => {
+        const strData = data.toString();
+        console.log(`stdrr: ${strData}`);
+
+        if (strData.includes('ERROR')) {
+          event.reply('error', strData);
+        }
+      });
+
+      scrcpyProcessObj[deviceId].on('close', (code) => {
+        console.log(`child process exited with code ${code}`);
+      });
+    };
+    const handleCheckProcessExists = (deviceId: string) => Object.prototype.hasOwnProperty.call(scrcpyProcessObj, deviceId);
+    const killProcess = (deviceId: string) => {
       if (isMac) {
         scrcpyProcessObj[deviceId].kill('SIGTERM');
         delete scrcpyProcessObj[deviceId];
@@ -79,92 +151,126 @@ export default function createListener(options: CreateListenerOptions) {
         killProcessWithWindows(scrcpyProcessObj[deviceId].pid!);
         delete scrcpyProcessObj[deviceId];
       }
-    }
-
-    /**
-     * `--window-title`: 设置窗口的标题
-     * `--window-width`：设置窗口的宽度
-     * `--window-height`: 设置窗口的高度
-     */
-    scrcpyProcessObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', winName, '--window-width', '381', '--window-height', '675'], {
-      cwd: scrcpyCwd,
-      shell: true,
-    });
-
-    scrcpyProcessObj[deviceId].stdout.on('data', (data) => {
-      const strData = data.toString();
-      console.error(`stdout: ${strData}`);
-
-      if (strData.includes('ERROR')) {
-        event.reply('error', strData);
-      } else {
-        // 确保它渲染完成
-        if (strData.includes('INFO: Device:')) {
-          // 你可以在这里执行其他操作，例如通知用户 scrcpy 已启动成功
-          console.log('Renderer ready');
-          event.reply('open-scrcpy-window', () => ({
-            bb: 1,
-            cc: 2,
-            ee: 3,
-          }));
-          /**
-           * 执行一个定时任务，检查窗口是否存在
-           * 如果窗口存在，则打开scrcpy的taskbar窗口
-           * 如果窗口不存在，则尝试重新打开窗口
-           */
-          // task(() => checkWindowExists(winName), {
-          //   type: 'check',
-          //   attempts: 0,
-          //   maxAttempts: 5,
-          //   timeout: 1000,
-          //   onSuccess: () => {
-          //     const rect = getWindowRect(winName)!;
-          //     const { top, bottom, right } = rect;
-          //     const scrcpyTaskbarWindow = createBrowserWindow({
-          //       x: right - 7,
-          //       y: top + 1,
-          //       width: 40,
-          //       height: bottom - top - 10,
-          //       frame: false,
-          //       webPreferences: {
-          //         nodeIntegration: true,
-          //         contextIsolation: true,
-          //         preload: path.join(__dirname, 'preload.mjs'),
-          //       },
-          //     });
-          //     setInterval(() => {
-          //       const rect = getWindowRect(winName)!;
-          //       const { top, right } = rect;
-          //       scrcpyTaskbarWindow.setPosition(right - 7, top + 1);
-          //     }, 0);
-          //     scrcpyTaskbarWindow.on('blur', (event) => {
-          //       event.preventDefault(); // 阻止子窗口最小化
-          //     });
-          //     scrcpyTaskbarWindow.on('minimize', (event) => {
-          //       event.preventDefault(); // 阻止子窗口最小化
-          //       if (scrcpyTaskbarWindow.isMinimized()) {
-          //         scrcpyTaskbarWindow.restore(); // 立即恢复子窗口
-          //       }
-          //     });
-          //     scrcpyTaskbarWindow.loadURL(`${VITE_DEV_SERVER_URL}/scrcpy`);
-          //   },
-          // });
-        }
-      }
-    });
-
-    scrcpyProcessObj[deviceId].stderr.on('data', (data) => {
-      const strData = data.toString();
-      console.log(`stdrr: ${strData}`);
-
-      if (strData.includes('ERROR')) {
-        event.reply('error', strData);
-      }
-    });
-
-    scrcpyProcessObj[deviceId].on('close', (code) => {
-      console.log(`child process exited with code ${code}`);
-    });
+    };
+    //
+    // const scrcpyCwd = getScrcpyCwd();
+    // if (Object.prototype.hasOwnProperty.call(scrcpyProcessObj, deviceId)) {
+    //   if (isMac) {
+    //     scrcpyProcessObj[deviceId].kill('SIGTERM');
+    //     delete scrcpyProcessObj[deviceId];
+    //   } else {
+    //     killProcessWithWindows(scrcpyProcessObj[deviceId].pid!);
+    //     delete scrcpyProcessObj[deviceId];
+    //   }
+    // }
+    //
+    // /**
+    //  * `--window-title`: 设置窗口的标题
+    //  * `--window-width`：设置窗口的宽度
+    //  * `--window-height`: 设置窗口的高度
+    //  */
+    // scrcpyProcessObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', `Test-${envId}`, '--window-width', '381', '--window-height', '675'], {
+    //   cwd: scrcpyCwd,
+    //   shell: true,
+    // });
+    //
+    // scrcpyProcessObj[deviceId].stdout.on('data', (data) => {
+    //   const strData = data.toString();
+    //   console.error(`stdout: ${strData}`);
+    //
+    //   if (strData.includes('ERROR')) {
+    //     event.reply('error', strData);
+    //     event.reply('scrcpy:stop', {
+    //       isSuccess: false,
+    //       envId,
+    //     });
+    //   } else {
+    //     // 确保它渲染完成
+    //     if (strData.includes('INFO: Device:')) {
+    //       // 你可以在这里执行其他操作，例如通知用户 scrcpy 已启动成功
+    //       console.log('Renderer ready');
+    //       /**
+    //        * 执行一个定时任务，检查窗口是否存在
+    //        * 如果窗口存在，则打开当前环境的scrcpy窗口
+    //        * 如果窗口不存在，则尝试重新10次打开窗口，如果还是没有打开成功，则返回失败信息
+    //        */
+    //       task(() => checkWindowExists(`Text-${envId}`), {
+    //         type: 'check',
+    //         attempts: 0,
+    //         maxAttempts: 5,
+    //         timeout: 1000,
+    //         onSuccess: () => {
+    //           event.reply('open-scrcpy-window', {
+    //             isSuccess: false,
+    //             envId,
+    //           });
+    //         },
+    //         onFailure: () => {
+    //           event.reply('open-scrcpy-window', {
+    //             isSuccess: false,
+    //             envId,
+    //           });
+    //         },
+    //       });
+    //
+    //       /**
+    //        * 执行一个定时任务，检查窗口是否存在
+    //        * 如果窗口存在，则打开scrcpy的taskbar窗口
+    //        * 如果窗口不存在，则尝试重新打开窗口
+    //        */
+    //       // task(() => checkWindowExists(winName), {
+    //       //   type: 'check',
+    //       //   attempts: 0,
+    //       //   maxAttempts: 5,
+    //       //   timeout: 1000,
+    //       //   onSuccess: () => {
+    //       //     const rect = getWindowRect(winName)!;
+    //       //     const { top, bottom, right } = rect;
+    //       //     const scrcpyTaskbarWindow = createBrowserWindow({
+    //       //       x: right - 7,
+    //       //       y: top + 1,
+    //       //       width: 40,
+    //       //       height: bottom - top - 10,
+    //       //       frame: false,
+    //       //       webPreferences: {
+    //       //         nodeIntegration: true,
+    //       //         contextIsolation: true,
+    //       //         preload: path.join(__dirname, 'preload.mjs'),
+    //       //       },
+    //       //     });
+    //       //     setInterval(() => {
+    //       //       const rect = getWindowRect(winName)!;
+    //       //       const { top, right } = rect;
+    //       //       scrcpyTaskbarWindow.setPosition(right - 7, top + 1);
+    //       //     }, 0);
+    //       //     scrcpyTaskbarWindow.on('blur', (event) => {
+    //       //       event.preventDefault(); // 阻止子窗口最小化
+    //       //     });
+    //       //     scrcpyTaskbarWindow.on('minimize', (event) => {
+    //       //       event.preventDefault(); // 阻止子窗口最小化
+    //       //       if (scrcpyTaskbarWindow.isMinimized()) {
+    //       //         scrcpyTaskbarWindow.restore(); // 立即恢复子窗口
+    //       //       }
+    //       //     });
+    //       //     scrcpyTaskbarWindow.loadURL(`${VITE_DEV_SERVER_URL}/scrcpy`);
+    //       //   },
+    //       // });
+    //     }
+    //   }
+    // });
+    //
+    // scrcpyProcessObj[deviceId].stderr.on('data', (data) => {
+    //   const strData = data.toString();
+    //   console.log(`stdrr: ${strData}`);
+    //
+    //   if (strData.includes('ERROR')) {
+    //     event.reply('error', strData);
+    //   }
+    // });
+    //
+    // scrcpyProcessObj[deviceId].on('close', (code) => {
+    //   console.log(`child process exited with code ${code}`);
+    // });
   });
 
   /** 关闭和重启 */
