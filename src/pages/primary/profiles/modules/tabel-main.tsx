@@ -119,7 +119,7 @@ const TableMain = (props: TableMainProps) => {
                 删除
               </Button>
             </Popconfirm>
-            <TriggerModal title="编辑代理" renderModal={(renderProps) => <BackupProxy {...renderProps} />}>
+            <TriggerModal title="编辑代理" renderModal={(renderProps) => <BackupProxy {...renderProps} envId={record.envId ?? '0'} />}>
               <Button type="text" size="small">
                 代理
               </Button>
