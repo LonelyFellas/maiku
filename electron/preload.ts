@@ -6,7 +6,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   on(...args: Parameters<typeof ipcRenderer.on>) {
     const [channel, listener] = args;
     // 设置白名单，限制可以访问的channel
-    const whitelist: UnionToTuple<keyof OnChannelMap> = ['error', 'update-available', 'open-scrcpy-window'];
+    const whitelist: UnionToTuple<keyof OnChannelMap> = ['update-available', 'error', 'open-scrcpy-window'];
     if (whitelist.includes(channel as any)) {
       return ipcRenderer.on(channel, (event, ...args) => listener(event, ...args));
     }

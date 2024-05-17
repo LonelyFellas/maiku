@@ -21,23 +21,22 @@ export default class Updater {
   autoUpdaerOn(mainWin: BrowserWindow | null) {
     autoUpdater.on('update-available', () => {
       if (mainWin) {
+        // mainWin.webContents.send('update-available-message', '有新版本可用，是否更新？');
         mainWin.webContents.send('update-available', {
-          aaa: 111,
-          bbb: 222,
-          ccc: 333,
+          isUpdate: true,
         });
-        dialog
-          .showMessageBox({
-            type: 'info',
-            title: '有新版本可用',
-            message: '有新版本可用，是否更新？',
-            buttons: ['是', '否'],
-          })
-          .then((result) => {
-            if (result.response && result.response === 0) {
-              autoUpdater.downloadUpdate();
-            }
-          });
+        // dialog
+        //   .showMessageBox({
+        //     type: 'info',
+        //     title: '有新版本可用',
+        //     message: '有新版本可用，是否更新？',
+        //     buttons: ['是', '否'],
+        //   })
+        //   .then((result) => {
+        //     if (result.response && result.response === 0) {
+        //       autoUpdater.downloadUpdate();
+        //     }
+        //   });
       }
     });
 
