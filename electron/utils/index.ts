@@ -10,3 +10,4 @@ export * from './tray';
 export * from './killProcessWithWindows';
 export * from './task';
 export * from './closeAllDevices';
+export * from './sleep';

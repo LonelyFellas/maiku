@@ -42,9 +42,10 @@ export type PostAddEnvParams<IsEdit extends boolean = false> = AddEditType<
 export interface GetBackupListByIdParams {
   envId: string;
 }
+
 export interface GetBackupListByIdResult {
   Names: string;
-  state: string;
+  State: string;
   index: number;
 }
 
@@ -52,6 +53,7 @@ export interface GetBackupParams {
   envId: string;
   containerName: string;
 }
+
 export interface GetBackupToBackupParams extends GetBackupParams {
   newName: string;
 }

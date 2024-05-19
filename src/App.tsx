@@ -3,12 +3,13 @@ import { FloatButton, App as AntdApp, message } from 'antd';
 import { GlobalOutlined as GlobalIcon } from '@ant-design/icons/lib/icons';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { isMacFunc, useI18nConfig, Wrapper } from '@common';
+import { isMacFunc, useI18nConfig, Wrapper, useUpdate, useScrcpyRecord } from '@common';
 
 const App = (props: PropsWithChildren<object>) => {
   const { href } = window.location;
   const isScrcpy = href.includes('scrcpy');
-  // const { message } = AntdApp.useApp();
+  const { setIsUpdate } = useUpdate();
+  const { setData, data } = useScrcpyRecord(); // const { message } = AntdApp.useApp();
   const [, setLang] = useI18nConfig();
   const isMac = isMacFunc();
 
@@ -17,12 +18,19 @@ const App = (props: PropsWithChildren<object>) => {
       console.error(error);
       message.error(error);
     });
-    window.ipcRenderer.on('update-available', (args: any) => {
-      console.log('args: ', args);
+    window.ipcRenderer.on('update-available', (_, msg) => {
+      setIsUpdate(msg.isUpdate);
     });
+
     // scrcpy窗口打开成功
     window.ipcRenderer.on('open-scrcpy-window', (args: any) => {
       console.info('open-scrcpy-window: ', args);
+    });
+
+    // 监听scrcpy窗口是否存在
+    window.ipcRenderer.on('scrcpy:env-win-exist', (_, envId) => {
+      const newMap = structuredClone(data);
+      newMap.set(envId, new Date().getTime()), setData(newMap);
     });
   }, [message]);
 

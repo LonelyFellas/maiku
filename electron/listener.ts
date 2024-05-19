@@ -4,10 +4,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import * as process from 'node:process';
-import { isMac, getScrcpyCwd, killProcessWithWindows, task } from '/electron/utils';
+import { isMac, getScrcpyCwd, killProcessWithWindows, task, sleep } from '/electron/utils';
 import { scrcpyProcessObj } from './main';
 import { checkWindowExists } from '/electron/utils/getActiveWindowRect.ts';
-import { sleep } from '@common';
 
 interface CreateListenerOptions {
   store: Store<typeof import('./config/electron-store-schema.json')>;
@@ -71,28 +70,8 @@ export default function createListener(options: CreateListenerOptions) {
   });
 
   /** 启动scrcpy **/
-  im.on('scrcpy:start', async (event, deviceId, envId) => {
-    // 开启任务器的逻辑:
-    // 首先开一个5秒任务器，来检查窗口是否存在
-    // 1. 如果任务器失败，说明环境窗口不存在，直接打开scrcpy窗口 （打开scrcpy窗口还有其他逻辑）
-    // 2. 如果任务其成功，关闭当前窗口, defer 30s 再打开新的窗口（关闭窗口和给渲染层发送消息）
+  im.on('scrcpy:start', async (event, { deviceId, envId, type }) => {
     const title = `Test-${envId}`;
-    task(() => checkWindowExists(title), {
-      type: 'check',
-      attempts: 0,
-      maxAttempts: 5,
-      timeout: 1000,
-      onSuccess: async () => {
-        killProcess(deviceId);
-        event.reply('scrcpy:env-win-exist', envId);
-        await sleep(30000);
-        handleOpenScrcpyWindow(title);
-      },
-      onFailure: () => {
-        handleOpenScrcpyWindow(title);
-      },
-    });
-
     /**
      * 开启scrcpy窗口的逻辑:
      * 首先检测环境id是否存在，如果存在，则杀掉进程,开启新的进程
@@ -113,6 +92,8 @@ export default function createListener(options: CreateListenerOptions) {
        * `--window-width`：设置窗口的宽度
        * `--window-height`: 设置窗口的高度
        */
+      // console.log('open scrcpy window1', ['-s', deviceId, '--window-title', title, '--window-width', '381', '--window-height', '675']);
+      // console.log('open scrcpy window2', scrcpyCwd);
       scrcpyProcessObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', title, '--window-width', '381', '--window-height', '675'], {
         cwd: scrcpyCwd,
         shell: true,
@@ -152,6 +133,32 @@ export default function createListener(options: CreateListenerOptions) {
         delete scrcpyProcessObj[deviceId];
       }
     };
+    if (type === 'notask') {
+      console.log('notask');
+      handleOpenScrcpyWindow(title);
+    }
+    if (type === 'task') {
+      // 开启任务器的逻辑:
+      // 首先开一个5秒任务器，来检查窗口是否存在
+      // 1. 如果任务器失败，说明环境窗口不存在，直接打开scrcpy窗口 （打开scrcpy窗口还有其他逻辑）
+      // 2. 如果任务其成功，关闭当前窗口, defer 30s 再打开新的窗口（关闭窗口和给渲染层发送消息）
+      task(() => checkWindowExists(title), {
+        type: 'check',
+        attempts: 0,
+        maxAttempts: 5,
+        timeout: 1000,
+        onSuccess: async () => {
+          console.log('window exist');
+          killProcess(deviceId);
+          // event.reply('scrcpy:env-win-exist', envId);
+          handleOpenScrcpyWindow(title);
+        },
+        onFailure: () => {
+          handleOpenScrcpyWindow(title);
+        },
+      });
+    }
+
     //
     // const scrcpyCwd = getScrcpyCwd();
     // if (Object.prototype.hasOwnProperty.call(scrcpyProcessObj, deviceId)) {
