@@ -91,7 +91,7 @@ const TableMain = (props: TableMainProps) => {
 
   const { data, isFetching, isRefetching, isLoading, refetch } = useQuery({
     queryKey: ['backupList', envId],
-    queryFn: () => getBackupListByEnvIdService({ envId: envId + '' }),
+    queryFn: () => getBackupListByEnvIdService({ envId }),
     enabled: !!envId,
   });
   const deleteMutation = useMutation({

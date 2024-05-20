@@ -1,10 +1,10 @@
-import { BrowserWindow, dialog, ipcMain, app } from 'electron';
-import type Store from 'electron-store';
+import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawn } from 'node:child_process';
 import * as process from 'node:process';
-import { isMac, getScrcpyCwd, killProcessWithWindows, task } from '/electron/utils';
+import { BrowserWindow, dialog, ipcMain, app } from 'electron';
+import type Store from 'electron-store';
+import { isMac, getScrcpyCwd, killProcessWithWindows } from '/electron/utils';
 import { scrcpyProcessObj } from './main';
 
 interface CreateListenerOptions {

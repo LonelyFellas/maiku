@@ -102,7 +102,7 @@ const Slider = (props: SliderProps) => {
           }))}
         />
       </ContainerWithEmpty>
-      <DetailBackupProxy title="云机代理" open={detailModalVisible} envId={data ? data.id.toString() : ''} onCancel={hadnleCloseDetailModal} onOk={hadnleCloseDetailModal} />
+      <DetailBackupProxy title="云机代理" open={detailModalVisible} envId={data ? data.id : -1} onCancel={hadnleCloseDetailModal} onOk={hadnleCloseDetailModal} />
     </Scrollbar>
   );
 };
