@@ -8,9 +8,10 @@ async function adbConnect(deviceId: string) {
   const listDevices = await window.adbApi.listDevices();
   const findDevice = listDevices.find((device) => device.id === deviceId);
   if (findDevice === undefined) {
+    console.error('No device found');
     window.adbApi.connect(deviceId);
   } else if (findDevice.type === 'offline') {
-    await window.adbApi.reboot(deviceId);
+    window.adbApi.reboot(deviceId);
     window.adbApi.disconnect(deviceId);
     window.adbApi.connect(deviceId);
   }

@@ -57,9 +57,27 @@ export const postAddBackupService: Api.IFetch<boolean, GetBackupToBackupParams> 
     data,
   });
 
-/** 查看备份代理 */
-export const getBackupProxyService: Api.IFetch<GetBackupListByIdResult[], GetBackupListByIdParams> = (data) =>
+/** 查看当前运行中代理 */
+// TODO: 类型待确认
+export const postBackupProxyService: Api.IFetch<GetBackupListByIdResult[], GetBackupListByIdParams> = (data) =>
   fetchData('env/getCurrentVpc', {
+    method: 'POST',
+    data,
+  });
+/** 设置/更新云手机代理 */
+
+// TODO: 类型待确认
+export const postSetBackupProxyService: Api.IFetch<GetBackupListByIdResult[], GetBackupListByIdParams> = (data) =>
+  fetchData('env/setVpc', {
+    method: 'POST',
+    data,
+  });
+
+/** 清空代理 */
+
+// TODO: 类型待确认
+export const postClearBackupProxyService: Api.IFetch<boolean, GetBackupListByIdParams> = (data) =>
+  fetchData('env/clearVpc', {
     method: 'POST',
     data,
   });

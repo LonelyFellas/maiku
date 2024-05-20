@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { Button, Collapse, Flex } from 'antd';
+import { Scrollbar } from '@darwish/scrollbar-react';
+import { isArray } from '@darwish/utils-is';
+import { LeftOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { isArray } from '@darwish/utils-is';
-import { Scrollbar } from '@darwish/scrollbar-react';
+import { cn, ContainerWithEmpty, toNumber } from '@common';
 import { GetAllEnvListResult, getEnvByIdService } from '@api';
-import { LeftOutlined } from '@ant-design/icons';
 import '../index.css';
 import emptyImg from '@img/phone-test.png';
-import { cn, ContainerWithEmpty, toNumber } from '@common';
 import DetailBackupProxy from './detail-backup-proxy';
 
 interface SliderProps {
@@ -102,7 +102,7 @@ const Slider = (props: SliderProps) => {
           }))}
         />
       </ContainerWithEmpty>
-      <DetailBackupProxy open={detailModalVisible} envId={data ? data.id.toString() : ''} onCancel={hadnleCloseDetailModal} onOk={hadnleCloseDetailModal} />
+      <DetailBackupProxy title="备份代理" open={detailModalVisible} envId={data ? data.id.toString() : ''} onCancel={hadnleCloseDetailModal} onOk={hadnleCloseDetailModal} />
     </Scrollbar>
   );
 };

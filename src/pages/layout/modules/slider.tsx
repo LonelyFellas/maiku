@@ -6,8 +6,8 @@ import { Scrollbar } from '@darwish/scrollbar-react';
 import { AppstoreOutlined, CalendarOutlined, ExclamationCircleOutlined, GiftOutlined, LinkOutlined, MailOutlined, MenuFoldOutlined, MenuUnfoldOutlined, PlusOutlined, SettingOutlined, TikTokOutlined } from '@ant-design/icons';
 import { useI18nConfig, isMacFunc, useRouteMeta, getItem } from '@common';
 import type { ItemType, MenuItemType } from 'antd/es/menu/hooks/useItems';
-import '@sty/button.css';
 import avatar from '/public/electron-vite.animate.svg';
+import '@sty/button.css';
 import '../style.css';
 
 const MENU_MAP = {
