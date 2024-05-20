@@ -1,0 +1,12 @@
+.file-transfer-no-file.ant-upload-wrapper {
+  display: flex;
+  height: 100%;
+}
+.file-transfer-has-file.ant-upload-wrapper {
+  display: flex;
+  height: 100%;
+  gap: 1rem;
+  .ant-upload-list {
+    width: 50%;
+  }
+}
