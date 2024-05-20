@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import * as process from 'node:process';
-import { isMac, getScrcpyCwd, killProcessWithWindows, task, sleep } from '/electron/utils';
+import { isMac, getScrcpyCwd, killProcessWithWindows, task } from '/electron/utils';
 import { scrcpyProcessObj } from './main';
 import { checkWindowExists } from '/electron/utils/getActiveWindowRect.ts';
 

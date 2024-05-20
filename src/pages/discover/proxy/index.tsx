@@ -1,5 +1,5 @@
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { Button, Space, Popconfirm } from 'antd';
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { PROXY_TYPE, Table, TriggerModal, useI18nConfig } from '@common';
 import { type GetProxyListResult, postDeleteProxyService } from '@api';

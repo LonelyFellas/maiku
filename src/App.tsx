@@ -1,8 +1,8 @@
 import { useEffect, Fragment, type PropsWithChildren } from 'react';
 import { FloatButton, App as AntdApp, message } from 'antd';
 import { GlobalOutlined as GlobalIcon } from '@ant-design/icons/lib/icons';
-import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { isMacFunc, useI18nConfig, Wrapper, useUpdate, useScrcpyRecord } from '@common';
 
 const App = (props: PropsWithChildren<object>) => {

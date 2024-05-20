@@ -1,12 +1,13 @@
 import ReactDOM from 'react-dom/client';
 import { ConfigProvider } from 'antd';
+import { GlobalScrollbarProvider } from '@darwish/scrollbar-react';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { RouterProvider } from '@tanstack/react-router';
 import { I18nConfigContextProvider } from '@common';
 import { queryClient, router } from '@/routes';
 import './index.css';
-import { RouterProvider } from '@tanstack/react-router';
-import { GlobalScrollbarProvider } from '@darwish/scrollbar-react';
 import '@darwish/scrollbar-react/dist/style.css';
-import { QueryClientProvider } from '@tanstack/react-query';
+
 window.env = import.meta.env;
 
 const rootElement = document.getElementById('app')!;

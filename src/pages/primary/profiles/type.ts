@@ -1,5 +1,11 @@
 import type React from 'react';
 
+export interface States {
+  loading: boolean;
+  running: 'running' | 'waiting' | 'stop';
+  containerName: string;
+}
+
 export interface DataType {
   num: React.Key;
   Names: string;
@@ -14,6 +20,14 @@ export interface DataType {
   // lastOpenTime: string;
   // createTime: string;
   isVisible?: boolean;
-  operation: string;
+  deviceId: string;
   envId?: string;
+  running: States['running'];
+}
+
+export interface StartScrcpyParams {
+  deviceId: string;
+  envId: string;
+  name: string;
+  states: string;
 }

@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { App, Badge, Space } from 'antd';
+import { isBlanks } from '@darwish/utils-is';
 import { useQuery } from '@tanstack/react-query';
 import { useLocalStorage, useSessionStorage } from '@darwish/hooks-core';
 import semverCompare from 'semver/functions/compare';
@@ -10,7 +11,6 @@ import NotificationCenter from './notification-center';
 import { Constants, useRouteMeta, useUpdate } from '@common';
 import { getReleaseService } from '@api';
 import pkg from '/package.json';
-import { isBlanks } from '@darwish/utils-is';
 
 const Header = () => {
   const [currentVersion] = useLocalStorage(Constants.LOCAL_CURRENT_VERSION, pkg.version);

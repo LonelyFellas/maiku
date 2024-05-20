@@ -4,14 +4,27 @@ import { postsEnvQueryOptions } from '@/routes/data';
 import Slider from './modules/slider';
 import TableMain from './modules/tabel-main';
 
+async function adbConnect(deviceId: string) {
+  const listDevices = await window.adbApi.listDevices();
+  const findDevice = listDevices.find((device) => device.id === deviceId);
+  if (findDevice === undefined) {
+    window.adbApi.connect(deviceId);
+  } else if (findDevice.type === 'offline') {
+    await window.adbApi.reboot(deviceId);
+    window.adbApi.disconnect(deviceId);
+    window.adbApi.connect(deviceId);
+  }
+  return null;
+}
+
 export default function Profiles() {
   const [currentKey, setCurrentKey] = useState(0);
   const { data: envList, isRefetching, isFetching } = useSuspenseQuery(postsEnvQueryOptions);
   const collapsedItems = envList?.find((li) => li.id === currentKey);
   useQuery({
-    queryKey: ['connect adb', currentKey],
-    queryFn: () => window.adbApi.connect(collapsedItems!.adbAddr),
-    enabled: currentKey > 0,
+    queryKey: ['connect adb', currentKey, collapsedItems],
+    queryFn: () => adbConnect(collapsedItems?.adbAddr ?? ''),
+    enabled: currentKey > 0 && collapsedItems !== undefined,
   });
 
   useEffect(() => {

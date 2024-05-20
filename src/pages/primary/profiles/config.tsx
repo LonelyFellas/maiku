@@ -1,3 +1,4 @@
+import { MenuProps, Tag } from 'antd';
 import {
   BackwardOutlined,
   DeleteOutlined,
@@ -15,7 +16,6 @@ import {
   ToolOutlined,
   VerifiedOutlined,
 } from '@ant-design/icons';
-import { MenuProps, Tag } from 'antd';
 import type { DataType } from './type.ts';
 
 export const settingItems: MenuProps['items'] = [

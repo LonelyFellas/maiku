@@ -1,18 +1,19 @@
-import { Adb } from '@devicefarmer/adbkit';
 import path from 'node:path';
+import { Adb } from '@devicefarmer/adbkit';
 
 export default function adbkit(): Partial<Window['adbApi']> {
   const client = Adb.createClient();
   // console.log(import.meta);
   return {
-    connect: async (...params) => {
-      // 在需要连接设备时，先断开之前的连接
-      // 有可能设备已经是一个offline状态，导致连接失败
-      await client.disconnect(...params);
-      return client.connect(...params);
-    },
+    // shellAdb: (command) => exec(command),
+    connect: async (...params) => client.connect(...params),
     disconnect: async (...params) => client.disconnect(...params),
+    reboot: async (serial: string) => client.getDevice(serial).reboot(),
     getDevice: (serial) => client.getDevice(serial),
+    listDevices: async () => {
+      const list = await client.listDevices();
+      return list;
+    },
     // getStatus: () => client.(),
     getPackages: (serial: string) => client.getDevice(serial).getPackages(),
     kill: () => client.kill(),

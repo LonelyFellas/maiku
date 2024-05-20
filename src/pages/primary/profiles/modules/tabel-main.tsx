@@ -1,18 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Button, Dropdown, Space, Popconfirm, App, Input, Form } from 'antd';
-import { useUnmount, useUpdateEffect } from '@darwish/hooks-core';
+import { useSetState, useUnmount, useUpdateEffect } from '@darwish/hooks-core';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { MaskSpin, Table, useScrcpyRecord } from '@common';
 import { getBackupListByEnvIdService, postAddBackupService, postDeleteBackService, type GetBackupParams, postRunBackupService } from '@api';
 import { operationItems, columns as configColumns } from '../config';
-import { DataType } from '../type';
-
-interface StartScrcpyParams {
-  id: string;
-  envId: string;
-  name: string;
-  states: string;
-}
+import type { DataType, StartScrcpyParams, States } from '../type';
 
 interface TableMainProps {
   deviceId: string;
@@ -26,11 +19,15 @@ const TableMain = (props: TableMainProps) => {
   const { data: recordData, setData: setRecordData } = useScrcpyRecord();
   const [form] = Form.useForm();
   const scrollRef = useRef<React.ElementRef<'div'>>(null);
-  const [loading, setLoading] = useState(false);
+  const [states, setStates] = useSetState<States>({
+    loading: false,
+    running: 'stop',
+    containerName: '',
+  });
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const startScrcpyRef = useRef<{ envId: string; id: string }>({
+  const startScrcpyRef = useRef<{ envId: string; deviceId: string }>({
     envId: '',
-    id: '',
+    deviceId: '',
   });
   const { data, isFetching, isRefetching, isLoading, refetch } = useQuery({
     queryKey: ['backupList', envId],
@@ -50,7 +47,11 @@ const TableMain = (props: TableMainProps) => {
     mutationFn: postAddBackupService,
     onSuccess: () => {
       message.success('备份成功');
-      window.ipcRenderer.send('scrcpy:start', startScrcpyRef.current.id, startScrcpyRef.current.envId);
+      window.ipcRenderer.send('scrcpy:start', {
+        deviceId: startScrcpyRef.current.deviceId,
+        envId: startScrcpyRef.current.envId,
+        type: 'task',
+      });
       refetch();
     },
   });
@@ -99,23 +100,28 @@ const TableMain = (props: TableMainProps) => {
         ),
         dataIndex: 'operation',
         fixed: 'right',
-        width: 160,
+        width: 170,
         key: 'operation',
-        render: (id: string, record: DataType) => (
+        render: (_: string, record: DataType) => (
           <Space size={0}>
             <Button
+              style={{ cursor: record.running === 'running' ? 'not-allowed' : 'pointer' }}
               size="small"
               type="primary"
+              danger={record.running === 'running'}
               onClick={() =>
-                handleStartScrcpy({
-                  id,
-                  envId: record.envId ?? '',
-                  name: record.Names,
-                  states: record.State,
-                })
+                // 当前前端在运行中，则不允许再次点击启动按钮
+                record.running === 'running'
+                  ? null
+                  : handleStartScrcpy({
+                      deviceId: record.deviceId,
+                      envId: record.envId ?? '',
+                      name: record.Names,
+                      states: record.State,
+                    })
               }
             >
-              启动
+              {record.running === 'running' ? '运行中' : '启动'}
             </Button>
             <Button type="text" size="small" onClick={handleGetWindowRect}>
               编辑
@@ -174,44 +180,61 @@ const TableMain = (props: TableMainProps) => {
     }
   });
 
-  const handleStartScrcpy = ({ id, envId, name, states }: StartScrcpyParams) => {
+  const handleStartScrcpy = ({ deviceId, envId, name, states }: StartScrcpyParams) => {
     // 当前启动的备份是属于切换的状态，则需要去等待30s后再启动
     // 所以先检查是否打开的是running状态
     if (states !== 'running') {
+      // window.adbApi.connect(deviceId);
       // 如果不是running状态，则是属于切换备份的操作，
       // 切换备份需要等待30s后再启动。
       const newMap = structuredClone(recordData);
       newMap.set(envId, new Date().getTime());
       setRecordData(newMap);
-      setLoading(true);
+      setStates({
+        loading: true,
+        running: 'waiting',
+        containerName: name,
+      });
       timeoutRef.current = setTimeout(() => {
-        setLoading(false);
+        setStates({ loading: false, running: 'running', containerName: name });
         runBackupMutation.mutate({
           envId,
           containerName: name,
         });
         startScrcpyRef.current = {
           envId,
-          id,
+          deviceId,
         };
       }, 3000);
     } else {
-      console.log('当前备份正在运行，无需切换');
       window.ipcRenderer.send('scrcpy:start', {
-        deviceId: id,
+        deviceId,
         envId,
         type: 'notask',
       });
+      setStates({
+        running: 'running',
+        containerName: name,
+      });
     }
-
-    // setTimeout(() => {
-    //   window.ipcRenderer.send('scrcpy:start', id, envId);
-    // }, 1000);
   };
+
+  const dataSource = useMemo(() => {
+    return data?.map((item) =>
+      item.Names === states.containerName
+        ? {
+            ...item,
+            deviceId,
+            envId,
+            running: states.running,
+          }
+        : { ...item, deviceId, envId, running: 'stop' },
+    );
+  }, [deviceId, envId, states.containerName, data]);
 
   return (
     <div ref={scrollRef} className="relative flex flex-col gap-2 flex-1 h-full bg-white rounded-md">
-      <MaskSpin content="正在切换备份，请稍后..." loading={loading} />
+      <MaskSpin content="正在切换备份，请稍后..." loading={states.loading} />
       <Table
         isFetching={isFetching || addBackupMutation.isPending}
         isRefetching={isRefetching}
@@ -224,7 +247,7 @@ const TableMain = (props: TableMainProps) => {
             ellipsis: true,
           }))}
         rowKey="Names"
-        dataSource={data?.map((item) => ({ ...item, operation: deviceId, envId })) || []}
+        dataSource={dataSource}
       />
     </div>
   );

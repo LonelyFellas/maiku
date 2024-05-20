@@ -86,7 +86,9 @@ const Slider = (props: SliderProps) => {
                   <Button size="small" onClick={handleOpenDetailModal}>
                     代理
                   </Button>
-                  <Button size="small">更多</Button>
+                  <Button size="small" onClick={() => window.adbApi.reboot('bgm8.cn:65341')}>
+                    更多
+                  </Button>
                 </Flex>
               </div>
             ),

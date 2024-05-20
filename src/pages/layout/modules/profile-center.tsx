@@ -1,35 +1,21 @@
-import {
-  AndroidFilled,
-  CaretDownOutlined,
-  GlobalOutlined,
-  LogoutOutlined,
-} from '@ant-design/icons';
 import { Flex, Menu, Popover, Space } from 'antd';
-import '../style.css';
+import { AndroidFilled, CaretDownOutlined, GlobalOutlined, LogoutOutlined } from '@ant-design/icons';
 import { useNavigate } from '@tanstack/react-router';
 import { useI18nConfig, getItem } from '@common';
 import { MenuItem } from '@common/utils/get-item';
+import '../style.css';
 
 const ProfileCenter = () => {
   const [lang] = useI18nConfig('config.layout.header.profile');
   return (
-    <Popover
-      overlayClassName="card_profile"
-      content={<ContentView />}
-      arrow={false}
-      placement="bottomLeft"
-    >
+    <Popover overlayClassName="card_profile" content={<ContentView />} arrow={false} placement="bottomLeft">
       <Space className="all_flex p-2 h-9 bg-bg_secondary/20 rounded-md shadow-sm hover:shadow-lg transition-shadow duration-200">
         <div className="all_flex bg-bg_secondary rounded-full w-6 h-6">
           <AndroidFilled className="text-white" />
         </div>
         <Flex vertical gap={6}>
-          <span className="text-sm text-[12px] leading-[12px]">
-            15257294120
-          </span>
-          <span className="text-gray-900/50 text-[10px] leading-[10px]">
-            {lang.role}
-          </span>
+          <span className="text-sm text-[12px] leading-[12px]">15257294120</span>
+          <span className="text-gray-900/50 text-[10px] leading-[10px]">{lang.role}</span>
         </Flex>
         <div className="-mt-1">
           <CaretDownOutlined className="text-[12px] text-text_secondary/40" />
@@ -47,10 +33,7 @@ const ContentView = () => {
   const items: MenuItem[] = [
     getItem('15257294120', 'sub1', <AndroidFilled />),
 
-    getItem(config.lang, 'lang', <GlobalOutlined />, [
-      getItem('简体中文', 'lang-zh'),
-      getItem('English', 'lang-en'),
-    ]),
+    getItem(config.lang, 'lang', <GlobalOutlined />, [getItem('简体中文', 'lang-zh'), getItem('English', 'lang-en')]),
 
     getItem(lang.exit_system, 'exit system', <LogoutOutlined />),
   ];
@@ -66,12 +49,5 @@ const ContentView = () => {
       setI81n(key.split('-')[1] as Common.Locale);
     }
   };
-  return (
-    <Menu
-      style={{ width: 200 }}
-      mode="vertical"
-      items={items}
-      onClick={handleMenuClick}
-    />
-  );
+  return <Menu style={{ width: 200 }} mode="vertical" items={items} onClick={handleMenuClick} />;
 };

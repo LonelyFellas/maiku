@@ -1,6 +1,5 @@
 import { queryOptions } from '@tanstack/react-query';
-import { getProxyListService } from '@api/discover/proxy.ts';
-import { getEnvListService } from '@api/primary/env.ts';
+import { getProxyListService, getEnvListService } from '@api';
 
 export const postsProxyQueryOptions = queryOptions({
   queryKey: ['posts-proxy-list'],

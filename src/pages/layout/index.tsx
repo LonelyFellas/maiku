@@ -1,10 +1,10 @@
 import { ConfigProvider } from 'antd';
+import enUS from 'antd/locale/en_US';
+import zhCN from 'antd/locale/zh_CN';
+import { BgWrapper, useI18nConfig } from '@common';
 import Body from './modules/body';
 import Header from './modules/header';
 import Slider from './modules/slider';
-import { BgWrapper, useI18nConfig } from '@common';
-import zhCN from 'antd/locale/zh_CN';
-import enUS from 'antd/locale/en_US';
 
 export default function Layout() {
   const [lang] = useI18nConfig();
