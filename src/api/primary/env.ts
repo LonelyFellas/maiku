@@ -1,5 +1,5 @@
 import { fetchData } from '@api/fetch-data.ts';
-import type { GetBackupListByIdParams, GetBackupListByIdResult, GetAllEnvListResult, PostAddEnvParams, GetBackupParams, GetBackupToBackupParams } from '@api';
+import type { GetBackupListByIdParams, GetBackupListByIdResult, GetAllEnvListResult, PostAddEnvParams, GetBackupParams, GetBackupToBackupParams, PostSetBackupProxyParams, PostBackupProxyResult } from '@api';
 
 /** 获取环境列表 */
 export const getEnvListService: Api.IFetch<GetAllEnvListResult[]> = () =>
@@ -58,8 +58,7 @@ export const postAddBackupService: Api.IFetch<boolean, GetBackupToBackupParams> 
   });
 
 /** 查看当前运行中代理 */
-// TODO: 类型待确认
-export const postBackupProxyService: Api.IFetch<GetBackupListByIdResult[], GetBackupListByIdParams> = (data) =>
+export const postBackupProxyService: Api.IFetch<PostBackupProxyResult[], GetBackupListByIdParams> = (data) =>
   fetchData('env/getCurrentVpc', {
     method: 'POST',
     data,
@@ -67,7 +66,7 @@ export const postBackupProxyService: Api.IFetch<GetBackupListByIdResult[], GetBa
 /** 设置/更新云手机代理 */
 
 // TODO: 类型待确认
-export const postSetBackupProxyService: Api.IFetch<GetBackupListByIdResult[], GetBackupListByIdParams> = (data) =>
+export const postSetBackupProxyService: Api.IFetch<GetBackupListByIdResult[], PostSetBackupProxyParams> = (data) =>
   fetchData('env/setVpc', {
     method: 'POST',
     data,

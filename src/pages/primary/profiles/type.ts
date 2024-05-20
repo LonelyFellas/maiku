@@ -21,13 +21,15 @@ export interface DataType {
   // createTime: string;
   isVisible?: boolean;
   deviceId: string;
-  envId?: string;
+  envId?: number;
   running: States['running'];
+  containerName: States['containerName'];
 }
 
 export interface StartScrcpyParams {
   deviceId: string;
-  envId: string;
+  envId: number;
   name: string;
   states: string;
+  containerName: string;
 }

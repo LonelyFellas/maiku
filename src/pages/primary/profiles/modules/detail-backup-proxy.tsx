@@ -1,19 +1,20 @@
-import { Descriptions, Button, Popconfirm } from 'antd';
+import { Descriptions, Button, Popconfirm, App } from 'antd';
 import { useQueries, useMutation } from '@tanstack/react-query';
-import { Modal, PROXY_TYPE, Table } from '@common';
-import { GetProxyListResult, postBackupProxyService, getProxyListService, postSetBackupProxyService, postClearBackupProxyService } from '@api';
+import { ContainerWithEmpty, Modal, PROXY_TYPE, Table } from '@common';
+import { GetProxyListResult, postBackupProxyService, getProxyListService, postSetBackupProxyService, postClearBackupProxyService, PostBackupProxyResult } from '@api';
 
 interface DetailBackupProxyProps extends AntdModalProps {
-  envId: string;
+  envId: number;
 }
 
 const BackupProxy = (props: DetailBackupProxyProps) => {
+  const { message } = App.useApp();
   const { envId, ...restProps } = props;
   const results = useQueries({
-    queries: ['detail-proxy', 'proxy-list'].map((key) => ({
+    queries: [`detail-proxy ${envId || 0}`, 'proxy-list'].map((key) => ({
       queryKey: [key],
       queryFn: () => {
-        if (key === 'detail-proxy') {
+        if (key.includes('detail-proxy')) {
           return postBackupProxyService({ envId });
         } else {
           return getProxyListService();
@@ -26,6 +27,7 @@ const BackupProxy = (props: DetailBackupProxyProps) => {
     mutationKey: ['set-proxy'],
     mutationFn: postSetBackupProxyService,
     onSuccess: () => {
+      message.success('设置成功');
       results[0].refetch();
     },
   });
@@ -33,31 +35,37 @@ const BackupProxy = (props: DetailBackupProxyProps) => {
     mutationKey: ['clear-proxy'],
     mutationFn: postClearBackupProxyService,
     onSuccess: () => {
+      message.success('清除成功');
       results[0].refetch();
     },
   });
-  console.log('data', results);
-  const handleSetVpc = () => {};
+  const handleSetVpc = (vpcId: number) => {
+    setMutation.mutate({ envId, vpcId });
+  };
   const handleClearVpc = () => {
     clearMutation.mutate({ envId });
   };
+  const detailData = results[0].data as unknown as PostBackupProxyResult;
+  const proxyList = results[1].data as unknown as GetProxyListResult[];
   return (
     <Modal {...restProps} width={600}>
-      <Descriptions title="">
-        <Descriptions.Item label="UserName">Zhou Maomao</Descriptions.Item>
-        <Descriptions.Item label="Telephone">1810000000</Descriptions.Item>
-        <Descriptions.Item label="Live">Hangzhou, Zhejiang</Descriptions.Item>
-        <Descriptions.Item label="Remark">empty</Descriptions.Item>
-        <Descriptions.Item label="Address">No. 18, Wantang Road, Xihu District, Hangzhou, Zhejiang, China</Descriptions.Item>
-      </Descriptions>
+      <ContainerWithEmpty emptyDescription="未启动" hasData={Boolean(detailData)} isFetching={results[0].isLoading} isRefetching={results[0].isRefetching}>
+        <Descriptions title="">
+          <Descriptions.Item label="IP地址" span={3}>
+            {detailData?.addr}
+          </Descriptions.Item>
+          <Descriptions.Item label="启动状态">{detailData?.statusText}</Descriptions.Item>
+          <Descriptions.Item label="代理类型">{PROXY_TYPE[detailData?.type || 1]}</Descriptions.Item>
+        </Descriptions>
+      </ContainerWithEmpty>
       <Table
+        className="mt-4"
         loading={results[1].isLoading}
-        dataSource={results[1].data}
+        dataSource={proxyList}
         pagination={false}
         scroll={{ y: 200 }}
         rowKey="id"
         columns={[
-          { title: '代理账号', dataIndex: 'username' },
           {
             title: '代理信息',
             dataIndex: 'proxyInfo',
@@ -71,11 +79,12 @@ const BackupProxy = (props: DetailBackupProxyProps) => {
               );
             },
           },
+          { title: '代理账号', dataIndex: 'username' },
           {
             title: '操作',
             dataIndex: 'operation',
-            render: () => (
-              <Popconfirm title="确定要切换当前代理" onConfirm={() => handleSetVpc()}>
+            render: (_: unknown, record: GetProxyListResult) => (
+              <Popconfirm title="确定要切换当前代理" onConfirm={() => handleSetVpc(record.id)}>
                 <Button type="text" className="text-text_primary hover:!text-text_secondary">
                   切换
                 </Button>
@@ -85,8 +94,8 @@ const BackupProxy = (props: DetailBackupProxyProps) => {
         ]}
       />
 
-      <div className="mt-4">
-        <Popconfirm title="确定清空该备份代理？" onConfirm={handleClearVpc}>
+      <div className="mt-4 text-center">
+        <Popconfirm title="确定清空该云机代理？" onConfirm={handleClearVpc}>
           <Button type="primary" danger>
             清空当前代理
           </Button>

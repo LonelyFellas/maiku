@@ -1,3 +1,5 @@
+import { PROXY_TYPE } from '/src/common';
+
 export interface GetAllEnvListResult {
   id: number;
   name: string;
@@ -40,7 +42,7 @@ export type PostAddEnvParams<IsEdit extends boolean = false> = AddEditType<
 >;
 
 export interface GetBackupListByIdParams {
-  envId: string;
+  envId: number;
 }
 
 export interface GetBackupListByIdResult {
@@ -50,8 +52,19 @@ export interface GetBackupListByIdResult {
 }
 
 export interface GetBackupParams {
-  envId: string;
+  envId: number;
   containerName: string;
+}
+export interface PostSetBackupProxyParams {
+  envId: number;
+  vpcId: number;
+}
+
+export interface PostBackupProxyResult {
+  addr: string;
+  status: number;
+  statusText: string;
+  type?: keyof typeof PROXY_TYPE;
 }
 
 export interface GetBackupToBackupParams extends GetBackupParams {

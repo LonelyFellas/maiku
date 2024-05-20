@@ -6,6 +6,7 @@ interface ContainerWithEmptyProps extends EmptyProps {
   isFetching?: boolean;
   hasData?: boolean;
   className?: string;
+  emptyDescription?: string;
 }
 
 const contentStyle: React.CSSProperties = {
@@ -34,7 +35,7 @@ export function LoadingView({ tip }: { tip: string }) {
  * @param { unknown[] } props.list 需要传入list数据，来进行计算长度
  */
 export default function ContainerWithEmpty(props: React.PropsWithChildren<ContainerWithEmptyProps>) {
-  const { isFetching, isRefetching, children, className = '', hasData = false, ...restProps } = props;
+  const { isFetching, isRefetching, children, className = '', hasData = false, emptyDescription = '暂无数据', ...restProps } = props;
 
   if (isRefetching) {
     return <LoadingView tip="正在重新获取数据" />;
@@ -43,5 +44,5 @@ export default function ContainerWithEmpty(props: React.PropsWithChildren<Contai
     return <LoadingView tip="正在获取数据" />;
   }
 
-  return <div className={className}>{hasData === false || children === null || children === undefined ? <Empty {...restProps} className="all_flex_col h-full w-full" /> : children}</div>;
+  return <div className={className}>{hasData === false || children === null || children === undefined ? <Empty {...restProps} description={emptyDescription} className="all_flex_col h-full w-full" /> : children}</div>;
 }

@@ -15,7 +15,8 @@ declare global {
     'dialog:open': [OpenDialogOptions, string[] | { url: string; name: string; size: number }[]];
   };
   type SendChannelMap = {
-    'scrcpy:start': [{ deviceId: string; envId: string; type: 'task' | 'notask' }];
+    'scrcpy:start': [{ deviceId: string; envId: number; type: 'task' | 'notask' }];
+    'scrcpy:stop': [{ deviceId: string }];
     'app:operate': ['close' | 'restart'];
     'loading:done': ['main' | 'loading'];
     'download-update': [];
