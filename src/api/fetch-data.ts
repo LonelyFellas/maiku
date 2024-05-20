@@ -1,6 +1,7 @@
 import { message } from 'antd';
 import { isObject } from '@darwish/utils-is';
 import { Constants } from '@common';
+import { RcFile } from 'antd/es/upload';
 
 export const fetchData = async <TData, TParams = null>(url: Api.Url, init: Api.Init<TParams>): Promise<TData> => {
   const defaultInit: Api.Init<unknown> = {
@@ -23,7 +24,28 @@ export const fetchData = async <TData, TParams = null>(url: Api.Url, init: Api.I
   if (init.method === 'GET') {
     url = getSerialUrl(url as string, init.data ?? {});
   } else if (init.data !== null) {
-    defaultInit.body = JSON.stringify(init.data);
+    if (init.formData) {
+      const formData = new FormData();
+      for (const key in init.data) {
+        if (init.data.hasOwnProperty(key)) {
+          console.log('key', key);
+          console.log('vlues', init.data[key]);
+          const file = init.data[key] as RcFile;
+          const blobUrl = URL.createObjectURL(file);
+          // 将Blob URL转换为Blob对象
+          const response = await fetch(blobUrl);
+          const blob = await response.blob();
+          formData.append(key, blob, file.name);
+        }
+        console.log(formData.get(key));
+      }
+
+      defaultInit.body = formData as any;
+
+      delete init.formData;
+    } else {
+      defaultInit.body = JSON.stringify(init.data);
+    }
   }
 
   // 删除多余参数

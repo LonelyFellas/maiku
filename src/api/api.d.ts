@@ -5,9 +5,8 @@ declare namespace Api {
     method: 'GET' | 'POST' | 'DELETE' | 'PUT';
     data?: TParam;
     body?: string;
+    formData?: boolean;
   }
 
-  type IFetch<TData, TParams = null> = TParams extends null
-    ? () => Promise<TData>
-    : (data: TParams) => Promise<TData>;
+  type IFetch<TData, TParams = null> = TParams extends null ? () => Promise<TData> : (data: TParams) => Promise<TData>;
 }

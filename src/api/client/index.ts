@@ -1,5 +1,5 @@
+import type { GetReleaseResult, PostUpgradeRelease } from './type';
 import { fetchData } from '../fetch-data';
-import { GetReleaseResult, PostUpgradeRelease } from './type';
 
 export const getReleaseService: Api.IFetch<GetReleaseResult[]> = () =>
   fetchData('/app/getRelease', {

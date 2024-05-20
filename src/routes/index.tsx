@@ -2,6 +2,7 @@ import { QueryClient } from '@tanstack/react-query';
 import { createHashHistory, createRootRouteWithContext, createRoute, createRouter, Outlet } from '@tanstack/react-router';
 import { ErrorComponent } from '@common';
 import App from '@/App.tsx';
+import FileTransferStation from '@/pages/discover/file-transfer';
 import Proxy from '@/pages/discover/proxy';
 import AddBatches from '@/pages/discover/proxy/add-batches.tsx';
 import { IndexPage } from '@/pages/index-page.tsx';
@@ -11,7 +12,7 @@ import UpgradePkg from '@/pages/layout/upgrade-pkg.tsx';
 import Login from '@/pages/login';
 import Profiles from '@/pages/primary/profiles';
 import ScrcpyWindow from '@/pages/scrcpy';
-import { postsEnvQueryOptions, postsProxyQueryOptions } from './data.ts';
+import { postsEnvQueryOptions, postsFileQueryOptions, postsProxyQueryOptions } from './data.ts';
 
 const rootRoute = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -68,6 +69,14 @@ const proxy = createRoute({
   component: Proxy,
   meta: () => [{ title: '代理管理' }],
 });
+/** 文件中转站 */
+const fileTransfer = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/file_transfer',
+  loader: ({ context: { queryClient } }) => queryClient.ensureQueryData(postsFileQueryOptions),
+  component: FileTransferStation,
+  meta: () => [{ title: '文件中转站' }],
+});
 /** 批量添加代理 */
 const addBatchesProxy = createRoute({
   getParentRoute: () => layoutRoute,
@@ -107,7 +116,7 @@ const upgradePkg = createRoute({
   ],
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, scrcpyRoute, loginRoute, layoutRoute.addChildren([profiles, newProfiles, proxy, upgradePkg, addBatchesProxy])]);
+const routeTree = rootRoute.addChildren([indexRoute, scrcpyRoute, loginRoute, layoutRoute.addChildren([profiles, newProfiles, proxy, upgradePkg, addBatchesProxy, fileTransfer])]);
 
 export const queryClient = new QueryClient();
 export const router = createRouter({
