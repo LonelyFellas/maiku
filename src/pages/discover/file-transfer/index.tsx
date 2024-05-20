@@ -4,18 +4,32 @@ import type { UploadProps } from 'antd';
 import prettyBytes from 'pretty-bytes';
 import dayjs from 'dayjs';
 import { InboxOutlined } from '@ant-design/icons';
-import type { UploadChangeParam, UploadFile } from 'antd/es/upload';
-import { Table } from '@common';
+import type { RcFile, UploadChangeParam, UploadFile } from 'antd/es/upload';
+import { Constants, Table } from '@common';
 import './index.css';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { postsFileQueryOptions } from '/src/routes/data';
+import { GetFilesListResult, postDeleteFileService, postUploadFileService } from '/src/api';
 
 const { Dragger } = Upload;
 export default function FileTransferStation() {
   const { message } = App.useApp();
   const [recordFiles, setRecordFiles] = useState<any[]>([]);
-  const { data: postsFileData, isFetching, isRefetching } = useSuspenseQuery(postsFileQueryOptions);
+  const { data: postsFileData, isFetching, isRefetching, refetch: refetchPostsFile } = useSuspenseQuery(postsFileQueryOptions);
   console.log(postsFileData);
+  const updateMutation = useMutation({
+    mutationKey: ['update-files'],
+    mutationFn: postUploadFileService,
+  });
+  const deleteMutation = useMutation({
+    mutationKey: ['delete-files'],
+    mutationFn: postDeleteFileService,
+    onSuccess: () => {
+      message.success('文件删除成功！');
+      refetchPostsFile();
+    },
+  });
+
   const handleUploadOnChange = (info: UploadChangeParam<UploadFile<any>>) => {
     setRecordFiles(info.fileList);
     const { status } = info.file;
@@ -34,12 +48,29 @@ export default function FileTransferStation() {
   const props: UploadProps = {
     name: 'file',
     multiple: true,
-    action: `${import.meta.env.VITE_API_URL}/file/upload`,
+    action: '#',
+    maxCount: 9,
+    // headers: {
+    //   'x-token': window.localStorage.getItem(Constants.LOCAL_TOKEN) || 'null',
+    // },
+    // data: (file) => {
+    //   return {
+    //     files: [file],
+    //   };
+    // },
+    customRequest(options) {
+      console.log('customRequest', options);
+      const file = options.file as RcFile;
+      updateMutation.mutate({ files: file });
+    },
     onChange: handleUploadOnChange,
     onDrop(e) {
       console.log('Dropped files', e.dataTransfer.files);
     },
     onRemove: handleRemove,
+  };
+  const handleRemoteRemoveFile = (id: number) => {
+    deleteMutation.mutate({ id });
   };
   const columns = [
     {
@@ -62,14 +93,14 @@ export default function FileTransferStation() {
       title: '上传时间',
       dataIndex: 'create_at',
       key: 'create_at',
-      render: (text: any) => dayjs(text).format('YYYY-MM-DD HH:mm:ss'),
+      render: (text: string) => dayjs(text).format('YYYY-MM-DD HH:mm:ss'),
     },
     {
       title: '操作',
       dataIndex: 'operation',
       key: 'operation',
-      render: () => (
-        <Popconfirm title="确认删除？" onConfirm={() => {}}>
+      render: (_: unknown, record: GetFilesListResult) => (
+        <Popconfirm title="确认删除？" onConfirm={() => handleRemoteRemoveFile(record.id)}>
           <Button type="link" danger>
             删除
           </Button>
@@ -84,7 +115,7 @@ export default function FileTransferStation() {
       </div>
       <Divider className="my-2 2xl:my-4" />
       <div className="relative h-[150px]">
-        <Dragger {...props} className={recordFiles.length > 0 ? `file-transfer-has-file` : 'file-transfer-no-file'} multiple maxCount={9}>
+        <Dragger {...props} className={recordFiles.length > 0 ? `file-transfer-has-file` : 'file-transfer-no-file'}>
           <p className="ant-upload-drag-icon !mb-2">
             <InboxOutlined />
           </p>

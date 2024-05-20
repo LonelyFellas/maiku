@@ -7,3 +7,4 @@ export type * from './user/type';
 export type * from './primary/type';
 export type * from './discover/type';
 export type * from './client/type';
+export type * from './file/type';
