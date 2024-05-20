@@ -18,7 +18,10 @@
   "dependencies": {
     "@darwish/captures-win32-position": "^0.0.1",
     "@darwish/hooks-core": "^0.0.16",
+    "@darwish/is": "^0.0.3",
     "@darwish/scrollbar-react": "^0.1.3",
+    "@darwish/tools": "^0.0.1",
+    "@darwish/utils-core": "^0.0.1",
     "@darwish/utils-dlv": "^1.0.1",
     "@darwish/utils-is": "^0.0.3",
     "@devicefarmer/adbkit": "^3.2.6",
@@ -51,6 +54,7 @@
     "electron": "^30.0.1",
     "electron-builder": "^24.13.3",
     "eslint": "^8.57.0",
+    "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "less": "^4.2.0",

@@ -1,17 +1,17 @@
-import { createHashHistory, createRootRouteWithContext, createRoute, createRouter, Outlet } from '@tanstack/react-router';
 import { QueryClient } from '@tanstack/react-query';
-import App from '@/App.tsx';
+import { createHashHistory, createRootRouteWithContext, createRoute, createRouter, Outlet } from '@tanstack/react-router';
 import { ErrorComponent } from '@common';
-import Login from '@/pages/login';
-import Layout from '@/pages/layout';
-import Profiles from '@/pages/primary/profiles';
-import NewProfiles from '@/pages/layout/new-profiles.tsx';
+import App from '@/App.tsx';
 import Proxy from '@/pages/discover/proxy';
 import AddBatches from '@/pages/discover/proxy/add-batches.tsx';
-import UpgradePkg from '@/pages/layout/upgrade-pkg.tsx';
-import { postsEnvQueryOptions, postsProxyQueryOptions } from './data.ts';
 import { IndexPage } from '@/pages/index-page.tsx';
+import Layout from '@/pages/layout';
+import NewProfiles from '@/pages/layout/new-profiles.tsx';
+import UpgradePkg from '@/pages/layout/upgrade-pkg.tsx';
+import Login from '@/pages/login';
+import Profiles from '@/pages/primary/profiles';
 import ScrcpyWindow from '@/pages/scrcpy';
+import { postsEnvQueryOptions, postsProxyQueryOptions } from './data.ts';
 
 const rootRoute = createRootRouteWithContext<{
   queryClient: QueryClient;

@@ -27,14 +27,7 @@ const DetailCollapse: ReactFCWithChildren<CollapseProps> = (props) => {
   }, [props.children, props.defaultActiveKey]);
 
   return (
-    <Collapse
-      className="custom-collapse_detail-collapse"
-      bordered={false}
-      ghost
-      expandIconPosition="end"
-      defaultActiveKey={keys as string[]}
-      {...props}
-    >
+    <Collapse className="custom-collapse_detail-collapse" bordered={false} ghost expandIconPosition="end" defaultActiveKey={keys as string[]} {...props}>
       {props.children}
     </Collapse>
   );
@@ -52,10 +45,7 @@ interface DetailPanelProps extends CollapsePanelProps {
 const DetailPanel: ReactFCWithChildren<DetailPanelProps> = (props) => {
   const { className } = props;
   return (
-    <Panel
-      className={`${props.noHeader ? 'panel_no_header' : ''} ${className || ''}`}
-      {...props}
-    >
+    <Panel className={`${props.noHeader ? 'panel_no_header' : ''} ${className || ''}`} {...props}>
       {props.children}
     </Panel>
   );
@@ -116,15 +106,7 @@ const TabsPanel: ReactFCWithChildren<TabsPanelProps> = (props) => {
       onChange={(key) => setStates({ activeKey: key })}
       className="custom-tabs_detail-collapse"
       defaultActiveKey={activeKey}
-      tabBarExtraContent={
-        <Button
-          onClick={handleClick}
-          type="text"
-          icon={
-            <ComponentIcon style={{ fontSize: '12px', marginLeft: '10px' }} />
-          }
-        />
-      }
+      tabBarExtraContent={<Button onClick={handleClick} type="text" icon={<ComponentIcon style={{ fontSize: '12px', marginLeft: '10px' }} />} />}
       items={reItems}
     />
   );

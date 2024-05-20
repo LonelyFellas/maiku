@@ -24,7 +24,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   send(...args: Parameters<typeof ipcRenderer.send>) {
     const [channel, ...omit] = args;
     // 同上
-    const whitelist = ['scrcpy:start', 'app:operate', 'loading:done', 'download-update'] as unknown as UnionToTuple<keyof SendChannelMap>;
+    const whitelist = ['scrcpy:start', 'scrcpy:stop', 'app:operate', 'loading:done', 'download-update'] as unknown as UnionToTuple<keyof SendChannelMap>;
     if (whitelist.includes(channel as any)) {
       return ipcRenderer.send(channel, ...omit);
     }

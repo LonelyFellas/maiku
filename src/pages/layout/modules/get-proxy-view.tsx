@@ -1,7 +1,7 @@
 import { Form, Select } from 'antd';
 import { isBlanks } from '@darwish/utils-is';
-import { PROXY_TYPE, useI18nConfig } from '@common';
 import type { UseMutationResult } from '@tanstack/react-query';
+import { PROXY_TYPE, useI18nConfig } from '@common';
 import type { GetProxyListResult } from '@api';
 
 interface GetProxyViewProps {

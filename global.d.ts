@@ -15,7 +15,8 @@ declare global {
     'dialog:open': [OpenDialogOptions, string[] | { url: string; name: string; size: number }[]];
   };
   type SendChannelMap = {
-    'scrcpy:start': [{ deviceId: string; envId: string; type: 'task' | 'notask' }];
+    'scrcpy:start': [{ deviceId: string; envId: number; type: 'task' | 'notask' }];
+    'scrcpy:stop': [{ deviceId: string }];
     'app:operate': ['close' | 'restart'];
     'loading:done': ['main' | 'loading'];
     'download-update': [];
@@ -61,8 +62,9 @@ declare global {
     adbApi: {
       connect: Client['connect'];
       disconnect: Client['disconnect'];
+      reboot: Client['reboot'];
       getDevice: Client['getDevice'];
-      listDevices: Client['listDevices'];
+      listDevices: () => Promise<{ type: 'device' | 'offline'; id: string }[]>;
       getPackages: (serial: string) => Promise<any>;
       kill: Client['kill'];
       shell: (id: string, command: string) => Promise<any>;

@@ -1,6 +1,6 @@
 import { useContext } from 'react';
-import { I18nConfigContext, type I18nConfigContextType } from '@common';
 import dlv from '@darwish/utils-dlv';
+import { I18nConfigContext, type I18nConfigContextType } from '@common';
 
 /**
  * 这是一个修改国际化配置和获取国际文本的hooks

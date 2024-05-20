@@ -1,8 +1,8 @@
-import { Button, Divider, InputNumber, Select, Tooltip } from 'antd';
 import { useState } from 'react';
-import { cn } from '@common';
+import { Button, Divider, InputNumber, Select, Tooltip } from 'antd';
 import { Scrollbar } from '@darwish/scrollbar-react';
 import { InfoCircleOutlined, CheckCircleFilled } from '@ant-design/icons';
+import { cn } from '@common';
 import './style.css';
 
 export default function UpgradePkg() {
@@ -19,14 +19,7 @@ export default function UpgradePkg() {
           1.选择套餐
         </div>
         <Divider className="w-8 min-w-[unset] mx-2 bg-gray-300 h-[1px] rounded-md" />
-        <div
-          className={cn(
-            'transition-all',
-            step === 1 ? 'text-black text-[15px]' : 'text-gray-400',
-          )}
-        >
-          2.订单信息
-        </div>
+        <div className={cn('transition-all', step === 1 ? 'text-black text-[15px]' : 'text-gray-400')}>2.订单信息</div>
       </div>
       <Scrollbar
         className="flex-1 pl-24 my-6"
@@ -77,14 +70,7 @@ export default function UpgradePkg() {
             <span>团队成员数</span>
             <InputNumber defaultValue={2} size="large" />
             <span>人</span>
-            <Tooltip
-              placement="bottom"
-              title={
-                <span className="text-nowrap">
-                  每个套餐都包换一个免费的超级管理员
-                </span>
-              }
-            >
+            <Tooltip placement="bottom" title={<span className="text-nowrap">每个套餐都包换一个免费的超级管理员</span>}>
               <InfoCircleOutlined className="text-gray-400" />
             </Tooltip>
             <span className="text-red-500">+$5.00/人</span>
@@ -96,12 +82,7 @@ export default function UpgradePkg() {
           <span className="text-lg">套餐费用</span>
           <span className="text-3xl text-text_secondary">$5.00/月</span>
         </p>
-        <Button
-          type="primary"
-          size="large"
-          className="w-32 mt-1"
-          onClick={step === 0 ? () => setStep(1) : () => null}
-        >
+        <Button type="primary" size="large" className="w-32 mt-1" onClick={step === 0 ? () => setStep(1) : () => null}>
           按月订购
         </Button>
       </div>
