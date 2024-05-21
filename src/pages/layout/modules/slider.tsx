@@ -13,6 +13,7 @@ import '../style.css';
 const MENU_MAP = {
   '/layout/profiles': ['primary', 'profiles'],
   '/layout/proxy': ['discover', 'proxy'],
+  '/layout/file_transfer': ['discover', 'file_transfer'],
 };
 const Slider = () => {
   const { modal } = App.useApp();
