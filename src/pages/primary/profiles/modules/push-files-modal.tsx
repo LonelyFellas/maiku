@@ -19,6 +19,7 @@ const PushFilesModal = (props: PushFilesModalProps) => {
       title: '文件名',
       dataIndex: 'name',
       key: 'name',
+      width: 120,
     },
     {
       title: '自定义名称',
@@ -29,6 +30,7 @@ const PushFilesModal = (props: PushFilesModalProps) => {
       title: '文件大小',
       dataIndex: 'size',
       key: 'size',
+      width: 80,
       render: (text: number) => prettyBytes(text ?? 0),
     },
     {
@@ -42,6 +44,7 @@ const PushFilesModal = (props: PushFilesModalProps) => {
       dataIndex: 'operation',
       key: 'operation',
       fixed: 'right',
+      width: 120,
       render: (_: unknown) => (
         <Space>
           <Button type="primary" size="small">

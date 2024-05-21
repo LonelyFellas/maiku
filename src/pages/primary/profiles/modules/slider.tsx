@@ -7,10 +7,10 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { cn, ContainerWithEmpty, toNumber } from '@common';
 import { GetAllEnvListResult, getEnvByIdService } from '@api';
-import emptyImg from '@img/phone-test.png';
 import BackupProxyModal from './backup-proxy-modal';
 import PushFilesModal from './push-files-modal';
 import '../index.css';
+import { emptyImg } from '../config.tsx';
 
 interface SliderProps {
   isFetching: boolean;

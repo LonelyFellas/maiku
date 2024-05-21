@@ -82,6 +82,7 @@ export default function FileTransferStation() {
       title: '文件大小',
       dataIndex: 'size',
       key: 'size',
+      width: 100,
       render: (text: number) => prettyBytes(text ?? 0),
     },
     {
@@ -110,7 +111,8 @@ export default function FileTransferStation() {
         <Table
           columns={columns}
           rowKey="id"
-          dataSource={postsFileData}
+          dataSource={postsFileData.concat(postsFileData).concat(postsFileData)}
+          paginationTop={-35}
           pagination={{
             total: postsFileData?.length,
             defaultPageSize: 5,

@@ -8,6 +8,7 @@ interface TableProps extends AntdTableProps {
   isFetching?: boolean;
   isRefetching?: boolean;
   isSuccess?: boolean;
+  paginationTop?: number;
 }
 
 /**
@@ -16,12 +17,13 @@ interface TableProps extends AntdTableProps {
  * @constructor
  */
 const Table = (props: TableProps) => {
-  const { tableClassName, pagination, className, ...restProps } = props;
+  const { tableClassName, pagination, className, paginationTop = 0, ...restProps } = props;
   const { defaultPageSize = 10, total, showTotal = (total: number) => `总共${total}条`, showSizeChanger = true, showQuickJumper = true, ...restPagination } = pagination || {};
   const scrollRef = useRef<HTMLDivElement>(null);
   const scroll = useTableScroll({
     scrollRef,
     columns: props.columns || [],
+    paginationTop,
   });
 
   return (
@@ -31,7 +33,8 @@ const Table = (props: TableProps) => {
       </div>
       {pagination && (
         <Pagination
-          className="flex justify-end"
+          className="flex justify-end pt-1"
+          style={{ marginTop: `${paginationTop}px` }}
           {...{
             defaultPageSize,
             total,
