@@ -1,58 +1,64 @@
 import { message } from 'antd';
 import { isObject } from '@darwish/utils-is';
-import { Constants } from '@common';
-import { RcFile } from 'antd/es/upload';
+import { Constants, hasOwnProperty } from '@common';
 
 export const fetchData = async <TData, TParams = null>(url: Api.Url, init: Api.Init<TParams>): Promise<TData> => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { body, contentType, formData, data, isProxy, ...restInit } = init;
   const defaultInit: Api.Init<unknown> = {
     method: 'GET',
     mode: 'cors',
     cache: 'no-cache',
     credentials: 'same-origin',
     headers: {
-      'Content-type': 'application/json',
+      'Content-Type': 'application/json',
       'X-Token': window.localStorage.getItem(Constants.LOCAL_TOKEN) || 'null',
+      Accept: 'application/json, text/plain, */*',
     },
     redirect: 'follow',
-    referrerPolicy: 'no-referrer',
+    referrerPolicy: 'origin-when-cross-origin',
   };
 
   // 拼接地址
-  url = `${import.meta.env.VITE_API_URL}/${url}`;
+  if (isProxy) {
+    url = `mkapi/${url}`;
+  } else {
+    url = `${import.meta.env.VITE_API_URL}/${url}`;
+  }
+
   // GET请求参数放地址上
   // 其他请求参数放body上
   if (init.method === 'GET') {
-    url = getSerialUrl(url as string, init.data ?? {});
-  } else if (init.data !== null) {
-    if (init.formData) {
+    url = getSerialUrl(url as string, data ?? {});
+  } else if (data !== null) {
+    // 处理formData
+    if (formData) {
       const formData = new FormData();
-      for (const key in init.data) {
-        if (init.data.hasOwnProperty(key)) {
-          console.log('key', key);
-          console.log('vlues', init.data[key]);
-          const file = init.data[key] as RcFile;
-          const blobUrl = URL.createObjectURL(file);
-          // 将Blob URL转换为Blob对象
-          const response = await fetch(blobUrl);
-          const blob = await response.blob();
-          formData.append(key, blob, file.name);
+      for (const key in data) {
+        if (hasOwnProperty(data, key)) {
+          formData.append(key, data[key] as any);
         }
         console.log(formData.get(key));
       }
 
-      defaultInit.body = formData as any;
-
-      delete init.formData;
+      defaultInit.body = formData;
     } else {
-      defaultInit.body = JSON.stringify(init.data);
+      defaultInit.body = JSON.stringify(data);
     }
   }
-
-  // 删除多余参数
-  delete init.data;
+  // contentType
+  if (init.contentType && defaultInit.headers) {
+    defaultInit.headers['Content-Type'] = contentTypeConfig(contentType);
+  }
 
   // 合并配置
-  const options = Object.assign(defaultInit, init);
+  const options = {
+    ...defaultInit,
+    ...restInit,
+  };
+  if (formData) {
+    console.log(options);
+  }
 
   return fetch(url, options)
     .then((response) => response.json())
@@ -88,4 +94,17 @@ function getSerialUrl<T extends Darwish.AnyObj>(baseUrl: string, params: T) {
 
   // 拼接基础 URL 和查询字符串
   return `${baseUrl}?${queryString}`;
+}
+
+function contentTypeConfig(contentType: keyof Api.ContentType | undefined) {
+  switch (contentType) {
+    case 'json':
+      return 'application/json';
+    case 'app-form':
+      return 'application/x-www-form-urlencoded';
+    case 'mul-form':
+      return `multipart/form-data`;
+    default:
+      return 'application/json';
+  }
 }

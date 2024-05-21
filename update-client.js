@@ -1,7 +1,7 @@
-import pkg from './package.json' assert { type: 'json' };
 import fs from 'node:fs';
 import process from 'node:process';
 import Semver from 'semver';
+import pkg from './package.json' assert { type: 'json' };
 
 const { version } = pkg;
 
@@ -23,7 +23,6 @@ if (!['major', 'minor', 'patch', 'beta', 'alpha'].includes(semverType)) {
   console.error(`Invalid semver type: ${semverType}`);
 }
 
-
 /**
  * 计算新版本号
  * @type {string}
@@ -36,5 +35,3 @@ fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
 
 // 打印新版本号
 console.log(`New version: ${newVersion}`);
-
-

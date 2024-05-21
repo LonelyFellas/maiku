@@ -20,6 +20,10 @@ export default function FileTransferStation() {
   const updateMutation = useMutation({
     mutationKey: ['update-files'],
     mutationFn: postUploadFileService,
+    onSuccess: () => {
+      message.success('文件上传成功！');
+      refetchPostsFile();
+    },
   });
   const deleteMutation = useMutation({
     mutationKey: ['delete-files'],
@@ -50,16 +54,7 @@ export default function FileTransferStation() {
     multiple: true,
     action: '#',
     maxCount: 9,
-    // headers: {
-    //   'x-token': window.localStorage.getItem(Constants.LOCAL_TOKEN) || 'null',
-    // },
-    // data: (file) => {
-    //   return {
-    //     files: [file],
-    //   };
-    // },
     customRequest(options) {
-      console.log('customRequest', options);
       const file = options.file as RcFile;
       updateMutation.mutate({ files: file });
     },

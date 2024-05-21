@@ -3,11 +3,11 @@ import { useQueries, useMutation } from '@tanstack/react-query';
 import { ContainerWithEmpty, Modal, PROXY_TYPE, Table } from '@common';
 import { GetProxyListResult, postBackupProxyService, getProxyListService, postSetBackupProxyService, postClearBackupProxyService, PostBackupProxyResult } from '@api';
 
-interface DetailBackupProxyProps extends AntdModalProps {
+interface BackupProxyModalProps extends AntdModalProps {
   envId: number;
 }
 
-const BackupProxy = (props: DetailBackupProxyProps) => {
+const BackupProxyModal = (props: BackupProxyModalProps) => {
   const { message } = App.useApp();
   const { envId, ...restProps } = props;
   const results = useQueries({
@@ -105,4 +105,4 @@ const BackupProxy = (props: DetailBackupProxyProps) => {
   );
 };
 
-export default BackupProxy;
+export default BackupProxyModal;
