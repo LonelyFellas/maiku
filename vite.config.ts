@@ -36,6 +36,16 @@ export default defineConfig({
       '@api': '/src/api',
     },
   },
+
+  server: {
+    proxy: {
+      '/mkapi': {
+        target: 'http://maiku.npaas.cn/s/api',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/mkapi/, ''),
+      },
+    },
+  },
   build: {
     rollupOptions: {
       output: {

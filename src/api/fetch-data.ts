@@ -4,7 +4,7 @@ import { Constants, hasOwnProperty } from '@common';
 
 export const fetchData = async <TData, TParams = null>(url: Api.Url, init: Api.Init<TParams>): Promise<TData> => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { body, contentType, formData, data, ...restInit } = init;
+  const { body, contentType, formData, data, isProxy, ...restInit } = init;
   const defaultInit: Api.Init<unknown> = {
     method: 'GET',
     mode: 'cors',
@@ -13,13 +13,18 @@ export const fetchData = async <TData, TParams = null>(url: Api.Url, init: Api.I
     headers: {
       'Content-Type': 'application/json',
       'X-Token': window.localStorage.getItem(Constants.LOCAL_TOKEN) || 'null',
+      Accept: 'application/json, text/plain, */*',
     },
     redirect: 'follow',
-    referrerPolicy: 'no-referrer',
+    referrerPolicy: 'origin-when-cross-origin',
   };
 
   // 拼接地址
-  url = `${import.meta.env.VITE_API_URL}/${url}`;
+  if (isProxy) {
+    url = `mkapi/${url}`;
+  } else {
+    url = `${import.meta.env.VITE_API_URL}/${url}`;
+  }
 
   // GET请求参数放地址上
   // 其他请求参数放body上
@@ -51,7 +56,9 @@ export const fetchData = async <TData, TParams = null>(url: Api.Url, init: Api.I
     ...defaultInit,
     ...restInit,
   };
-  console.log('options', options);
+  if (formData) {
+    console.log(options);
+  }
 
   return fetch(url, options)
     .then((response) => response.json())

@@ -8,6 +8,7 @@ declare namespace Api {
     formData?: boolean;
     contentType?: keyof ContentType;
     headers?: { 'Content-Type': any; 'X-token': string } | Record<string, string>;
+    isProxy?: boolean;
   }
 
   type IFetch<TData, TParams = null> = TParams extends null ? () => Promise<TData> : (data: TParams) => Promise<TData>;

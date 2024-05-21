@@ -1,10 +1,5 @@
 import { useState } from 'react';
-import {
-  BgWrapper as Wrapper,
-  useI18nConfig,
-  cn,
-  useLoadingDone,
-} from '@common';
+import { BgWrapper as Wrapper, useI18nConfig, cn } from '@common';
 import MainLogin from './modules/login';
 import MainRegister from './modules/register';
 import MainVerify from './modules/verify';
@@ -14,7 +9,6 @@ export interface LoginProps {
 }
 
 export default function Login() {
-  useLoadingDone();
   const [lang] = useI18nConfig('config.login');
   const modulesConfig = {
     login: {
@@ -46,12 +40,7 @@ export default function Login() {
       <main className="w-[600px] h-[500px] text-center">
         <header>
           <span>{Config.mainTitle1}</span>
-          <span
-            className="text-text_primary cursor-pointer hover:text-text_primary/80"
-            onClick={() =>
-              setModuleType((prev) => (prev === 'login' ? 'register' : 'login'))
-            }
-          >
+          <span className="text-text_primary cursor-pointer hover:text-text_primary/80" onClick={() => setModuleType((prev) => (prev === 'login' ? 'register' : 'login'))}>
             {Config.mainTitle2}
           </span>
         </header>

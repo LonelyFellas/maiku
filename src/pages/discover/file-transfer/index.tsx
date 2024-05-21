@@ -20,6 +20,10 @@ export default function FileTransferStation() {
   const updateMutation = useMutation({
     mutationKey: ['update-files'],
     mutationFn: postUploadFileService,
+    onSuccess: () => {
+      message.success('文件上传成功！');
+      refetchPostsFile();
+    },
   });
   const deleteMutation = useMutation({
     mutationKey: ['delete-files'],
@@ -50,35 +54,8 @@ export default function FileTransferStation() {
     multiple: true,
     action: '#',
     maxCount: 9,
-    // headers: {
-    //   'x-token': window.localStorage.getItem(Constants.LOCAL_TOKEN) || 'null',
-    // },
-    // data: (file) => {
-    //   return {
-    //     files: [file],
-    //   };
-    // },
     customRequest(options) {
-      console.log('customRequest', options);
       const file = options.file as RcFile;
-      console.log('upload file', file);
-      // const formData = new FormData();
-      // formData.append('files', file, file.name);
-      // fetch('http://maiku.npaas.cn/s/api//file/upload', {
-      //   method: 'POST',
-      //   body: formData,
-      //   headers: {
-      //     'x-token': window.localStorage.getItem(Constants.LOCAL_TOKEN) || 'null',
-      //     'Content-Type': 'multipart/form-data',
-      //   },
-      // })
-      //   .then((response) => response.json())
-      //   .then((data) => {
-      //     console.log('upload success', data);
-      //   })
-      //   .catch((error) => {
-      //     console.error('upload error', error);
-      //   });
       updateMutation.mutate({ files: file });
     },
     onChange: handleUploadOnChange,
