@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { App, Button, Divider, Popconfirm, Upload } from 'antd';
 import type { UploadProps } from 'antd';
+import { App, Button, Divider, Popconfirm, Upload } from 'antd';
 import prettyBytes from 'pretty-bytes';
 import dayjs from 'dayjs';
 import { InboxOutlined } from '@ant-design/icons';
 import type { RcFile, UploadChangeParam, UploadFile } from 'antd/es/upload';
-import { Constants, Table } from '@common';
+import { Table } from '@common';
 import './index.css';
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { postsFileQueryOptions } from '/src/routes/data';
@@ -67,7 +67,7 @@ export default function FileTransferStation() {
   const handleRemoteRemoveFile = (id: number) => {
     deleteMutation.mutate({ id });
   };
-  const columns = [
+  const columns: AntdColumns<GetFilesListResult> = [
     {
       title: '文件名',
       dataIndex: 'name',
@@ -82,7 +82,7 @@ export default function FileTransferStation() {
       title: '文件大小',
       dataIndex: 'size',
       key: 'size',
-      render: (text: number) => prettyBytes(text),
+      render: (text: number) => prettyBytes(text ?? 0),
     },
     {
       title: '上传时间',
@@ -94,6 +94,7 @@ export default function FileTransferStation() {
       title: '操作',
       dataIndex: 'operation',
       key: 'operation',
+      fixed: 'right',
       render: (_: unknown, record: GetFilesListResult) => (
         <Popconfirm title="确认删除？" onConfirm={() => handleRemoteRemoveFile(record.id)}>
           <Button type="link" danger>
@@ -106,7 +107,17 @@ export default function FileTransferStation() {
   return (
     <div className="flex flex-col h-full p-2 2xl:p-4">
       <div className="flex-1">
-        <Table columns={columns} rowKey="id" dataSource={postsFileData} pagination={false} isFetching={isFetching} isRefetching={isRefetching} />
+        <Table
+          columns={columns}
+          rowKey="id"
+          dataSource={postsFileData}
+          pagination={{
+            total: postsFileData?.length,
+            defaultPageSize: 5,
+          }}
+          isFetching={isFetching}
+          isRefetching={isRefetching}
+        />
       </div>
       <Divider className="my-2 2xl:my-4" />
       <div className="relative h-[150px]">
