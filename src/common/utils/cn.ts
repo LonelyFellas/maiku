@@ -1,5 +1,5 @@
-import { twMerge } from 'tailwind-merge';
 import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 /**
  * 合并tailwind类名

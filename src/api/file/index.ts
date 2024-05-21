@@ -2,11 +2,12 @@ import { GetFilesListResult } from './type';
 import { fetchData } from '../fetch-data';
 
 /** 上传文件 */
-export const postUploadFileService: Api.IFetch<boolean, { files: BinaryData }> = (data) =>
+export const postUploadFileService: Api.IFetch<boolean, { files: any }> = (data) =>
   fetchData('/file/upload', {
     method: 'POST',
     data,
     formData: true,
+    mode: 'no-cors',
   });
 /** 查询我的全部文件 */
 export const getFilesListService: Api.IFetch<GetFilesListResult[]> = () =>

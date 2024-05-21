@@ -61,6 +61,24 @@ export default function FileTransferStation() {
     customRequest(options) {
       console.log('customRequest', options);
       const file = options.file as RcFile;
+      console.log('upload file', file);
+      // const formData = new FormData();
+      // formData.append('files', file, file.name);
+      // fetch('http://maiku.npaas.cn/s/api//file/upload', {
+      //   method: 'POST',
+      //   body: formData,
+      //   headers: {
+      //     'x-token': window.localStorage.getItem(Constants.LOCAL_TOKEN) || 'null',
+      //     'Content-Type': 'multipart/form-data',
+      //   },
+      // })
+      //   .then((response) => response.json())
+      //   .then((data) => {
+      //     console.log('upload success', data);
+      //   })
+      //   .catch((error) => {
+      //     console.error('upload error', error);
+      //   });
       updateMutation.mutate({ files: file });
     },
     onChange: handleUploadOnChange,

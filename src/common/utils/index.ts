@@ -6,3 +6,4 @@ export { default as toNumber } from './to-number';
 export { default as getItem } from './get-item';
 export { default as onlyTrueObj } from './only-true-obj.ts';
 export { default as timeTask } from './time-task.ts';
+export * from './share';
