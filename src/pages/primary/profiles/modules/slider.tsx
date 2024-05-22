@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Button, Collapse, Dropdown, Flex } from 'antd';
 import { useSetState } from '@darwish/hooks-core';
 import { Scrollbar } from '@darwish/scrollbar-react';
@@ -8,10 +7,10 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { cn, ContainerWithEmpty, toNumber } from '@common';
 import { GetAllEnvListResult, getEnvByIdService } from '@api';
-import '../index.css';
-import emptyImg from '@img/phone-test.png';
 import BackupProxyModal from './backup-proxy-modal';
 import PushFilesModal from './push-files-modal';
+import '../index.css';
+import { emptyImg } from '../config.tsx';
 
 interface SliderProps {
   isFetching: boolean;
@@ -24,18 +23,19 @@ interface SliderProps {
 const Slider = (props: SliderProps) => {
   const navigate = useNavigate();
   const { isFetching, isRefetching, envList, currentKey, setCurrentKey } = props;
-  const [collapse, setCollapse] = useState([`${currentKey}`]);
-  const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [states, setStates] = useSetState({
     pushFilesModalVisible: false,
     backupProxyModalVisible: false,
-    cullapse: [currentKey],
+    collapse: [`${currentKey}`],
   });
+  const { pushFilesModalVisible, backupProxyModalVisible, collapse } = states;
+
+  const enabled = envList.length > 0 && collapse.length > 0 && (!backupProxyModalVisible || !pushFilesModalVisible);
   const { data } = useQuery({
     queryKey: ['env-detail-by-id', currentKey],
     queryFn: () => getEnvByIdService({ id: envList.find((item) => item.id === currentKey)!.id }),
     refetchInterval: 1000 * 5,
-    enabled: envList.length > 0 && collapse.length > 0 && detailModalVisible === false,
+    enabled,
   });
 
   const handleChange = (indexStr: string | string[]) => {
@@ -43,7 +43,7 @@ const Slider = (props: SliderProps) => {
       if (indexStr.length) {
         setCurrentKey(toNumber(indexStr[0]));
       }
-      setCollapse(indexStr);
+      setStates({ collapse: indexStr });
     }
   };
 
@@ -54,11 +54,11 @@ const Slider = (props: SliderProps) => {
 
   /** 打开备份代理 */
   const handleOpenDetailModal = () => {
-    setDetailModalVisible(true);
+    setStates({ backupProxyModalVisible: true });
   };
   /** 关闭备份代理 */
   const handleCloseDetailModal = () => {
-    setDetailModalVisible(false);
+    setStates({ backupProxyModalVisible: false });
   };
   /** 打开推送文件弹窗 */
   const handleOpenPushFilesModal = () => {
@@ -119,8 +119,8 @@ const Slider = (props: SliderProps) => {
           }))}
         />
       </ContainerWithEmpty>
-      <BackupProxyModal title="云机代理" open={detailModalVisible} envId={data ? data.id : -1} onCancel={handleCloseDetailModal} onOk={handleCloseDetailModal} />
-      <PushFilesModal title="推送文件" open={states.pushFilesModalVisible} onCancel={handleClosePushFilesModal} onOk={handleClosePushFilesModal} />
+      <BackupProxyModal title="云机代理" open={backupProxyModalVisible} envId={data ? data.id : -1} onCancel={handleCloseDetailModal} onOk={handleCloseDetailModal} />
+      <PushFilesModal title="推送文件" open={pushFilesModalVisible} onCancel={handleClosePushFilesModal} onOk={handleClosePushFilesModal} />
     </Scrollbar>
   );
 };

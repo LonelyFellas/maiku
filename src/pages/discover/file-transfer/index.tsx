@@ -1,19 +1,19 @@
 import { useState } from 'react';
-import type { UploadProps } from 'antd';
-import { App, Button, Divider, Popconfirm, Upload } from 'antd';
+import { App, Button, Divider, Popconfirm, Upload, type UploadProps } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
-import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import type { RcFile, UploadChangeParam, UploadFile } from 'antd/es/upload';
 import { fileSizeFormat, Table, timeFormatHours } from '@common';
-import { GetFilesListResult, postDeleteFileService, postUploadFileService } from '@api';
-import { postsFileQueryOptions } from '@/routes/data';
 import './index.css';
+import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
+import { postsFileQueryOptions } from '/src/routes/data';
+import { GetFilesListResult, postDeleteFileService, postUploadFileService } from '/src/api';
 
 const { Dragger } = Upload;
 export default function FileTransferStation() {
   const { message } = App.useApp();
   const [recordFiles, setRecordFiles] = useState<any[]>([]);
   const { data: postsFileData, isFetching, isRefetching, refetch: refetchPostsFile } = useSuspenseQuery(postsFileQueryOptions);
+  console.log(postsFileData);
   const updateMutation = useMutation({
     mutationKey: ['update-files'],
     mutationFn: postUploadFileService,
@@ -64,7 +64,7 @@ export default function FileTransferStation() {
   const handleRemoteRemoveFile = (id: number) => {
     deleteMutation.mutate({ id });
   };
-  const columns = [
+  const columns: AntdColumns<GetFilesListResult> = [
     {
       title: '文件名',
       dataIndex: 'name',
@@ -91,6 +91,7 @@ export default function FileTransferStation() {
       title: '操作',
       dataIndex: 'operation',
       key: 'operation',
+      fixed: 'right',
       render: (_: unknown, record: GetFilesListResult) => (
         <Popconfirm title="确认删除？" onConfirm={() => handleRemoteRemoveFile(record.id)}>
           <Button type="link" danger>
@@ -103,7 +104,18 @@ export default function FileTransferStation() {
   return (
     <div className="flex flex-col h-full p-2 2xl:p-4">
       <div className="flex-1">
-        <Table columns={columns} rowKey="id" dataSource={postsFileData} pagination={false} isFetching={isFetching} isRefetching={isRefetching} />
+        <Table
+          columns={columns}
+          rowKey="id"
+          dataSource={postsFileData}
+          paginationTop={-35}
+          pagination={{
+            total: postsFileData?.length,
+            defaultPageSize: 5,
+          }}
+          isFetching={isFetching}
+          isRefetching={isRefetching}
+        />
       </div>
       <Divider className="my-2 2xl:my-4" />
       <div className="relative h-[150px]">

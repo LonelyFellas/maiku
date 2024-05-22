@@ -1,13 +1,14 @@
 import { useRef } from 'react';
-import { TableFetch } from '../table-fetch';
 import { Pagination, type TableProps as AntdTableProps } from 'antd';
 import { cn, useTableScroll } from '@/common';
+import { TableFetch } from '../table-fetch';
 
 interface TableProps extends AntdTableProps {
   tableClassName?: string;
   isFetching?: boolean;
   isRefetching?: boolean;
   isSuccess?: boolean;
+  paginationTop?: number;
 }
 
 /**
@@ -16,11 +17,13 @@ interface TableProps extends AntdTableProps {
  * @constructor
  */
 const Table = (props: TableProps) => {
-  const { tableClassName, pagination = true, className, ...restProps } = props;
+  const { tableClassName, pagination, className, paginationTop = 0, ...restProps } = props;
+  const { defaultPageSize = 10, total, showTotal = (total: number) => `总共${total}条`, showSizeChanger = true, showQuickJumper = true, ...restPagination } = pagination || {};
   const scrollRef = useRef<HTMLDivElement>(null);
   const scroll = useTableScroll({
     scrollRef,
     columns: props.columns || [],
+    paginationTop,
   });
 
   return (
@@ -28,7 +31,20 @@ const Table = (props: TableProps) => {
       <div className={cn('flex-1 overflow-hidden h-full', className)} ref={scrollRef}>
         <TableFetch className={tableClassName} pagination={false} size="small" virtual scroll={scroll} {...restProps} />
       </div>
-      {pagination && <Pagination className="flex justify-end" total={85} showTotal={(total) => `共 ${total} 条数据`} defaultPageSize={20} defaultCurrent={1} />}
+      {pagination && (
+        <Pagination
+          className="flex justify-end pt-1"
+          style={{ marginTop: `${paginationTop}px` }}
+          {...{
+            defaultPageSize,
+            total,
+            showTotal,
+            showSizeChanger,
+            showQuickJumper,
+            ...restPagination,
+          }}
+        />
+      )}
     </>
   );
 };

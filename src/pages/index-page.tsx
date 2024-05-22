@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { hasToken } from '../common';
+import { hasToken } from '@common';
 
 export function IndexPage() {
   const navigate = useNavigate({ from: '/' });
