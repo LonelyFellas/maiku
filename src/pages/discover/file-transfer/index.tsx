@@ -1,11 +1,8 @@
 import { useState } from 'react';
-import type { UploadProps } from 'antd';
-import { App, Button, Divider, Popconfirm, Upload } from 'antd';
-import prettyBytes from 'pretty-bytes';
-import dayjs from 'dayjs';
+import { App, Button, Divider, Popconfirm, Upload, type UploadProps } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import type { RcFile, UploadChangeParam, UploadFile } from 'antd/es/upload';
-import { Table } from '@common';
+import { fileSizeFormat, Table, timeFormatHours } from '@common';
 import './index.css';
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { postsFileQueryOptions } from '/src/routes/data';
@@ -82,14 +79,13 @@ export default function FileTransferStation() {
       title: '文件大小',
       dataIndex: 'size',
       key: 'size',
-      width: 100,
-      render: (text: number) => prettyBytes(text ?? 0),
+      render: (text: number) => fileSizeFormat(text),
     },
     {
       title: '上传时间',
       dataIndex: 'create_at',
       key: 'create_at',
-      render: (text: string) => dayjs(text).format('YYYY-MM-DD HH:mm:ss'),
+      render: (text: number) => timeFormatHours(text),
     },
     {
       title: '操作',
@@ -111,7 +107,7 @@ export default function FileTransferStation() {
         <Table
           columns={columns}
           rowKey="id"
-          dataSource={postsFileData.concat(postsFileData).concat(postsFileData)}
+          dataSource={postsFileData}
           paginationTop={-35}
           pagination={{
             total: postsFileData?.length,
