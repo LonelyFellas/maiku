@@ -1,22 +1,19 @@
 import { useState } from 'react';
-import { App, Button, Divider, Popconfirm, Upload } from 'antd';
 import type { UploadProps } from 'antd';
-import prettyBytes from 'pretty-bytes';
-import dayjs from 'dayjs';
+import { App, Button, Divider, Popconfirm, Upload } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
-import type { RcFile, UploadChangeParam, UploadFile } from 'antd/es/upload';
-import { Constants, Table } from '@common';
-import './index.css';
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
-import { postsFileQueryOptions } from '/src/routes/data';
-import { GetFilesListResult, postDeleteFileService, postUploadFileService } from '/src/api';
+import type { RcFile, UploadChangeParam, UploadFile } from 'antd/es/upload';
+import { fileSizeFormat, Table, timeFormatHours } from '@common';
+import { GetFilesListResult, postDeleteFileService, postUploadFileService } from '@api';
+import { postsFileQueryOptions } from '@/routes/data';
+import './index.css';
 
 const { Dragger } = Upload;
 export default function FileTransferStation() {
   const { message } = App.useApp();
   const [recordFiles, setRecordFiles] = useState<any[]>([]);
   const { data: postsFileData, isFetching, isRefetching, refetch: refetchPostsFile } = useSuspenseQuery(postsFileQueryOptions);
-  console.log(postsFileData);
   const updateMutation = useMutation({
     mutationKey: ['update-files'],
     mutationFn: postUploadFileService,
@@ -82,13 +79,13 @@ export default function FileTransferStation() {
       title: '文件大小',
       dataIndex: 'size',
       key: 'size',
-      render: (text: number) => prettyBytes(text),
+      render: (text: number) => fileSizeFormat(text),
     },
     {
       title: '上传时间',
       dataIndex: 'create_at',
       key: 'create_at',
-      render: (text: string) => dayjs(text).format('YYYY-MM-DD HH:mm:ss'),
+      render: (text: number) => timeFormatHours(text),
     },
     {
       title: '操作',
