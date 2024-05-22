@@ -1,4 +1,4 @@
-import { ipcRenderer, contextBridge } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 import exposes from './exposes/index.ts';
 
 // --------- Expose some API to the Renderer process ---------
@@ -6,7 +6,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   on(...args: Parameters<typeof ipcRenderer.on>) {
     const [channel, listener] = args;
     // 设置白名单，限制可以访问的channel
-    const whitelist: UnionToTuple<keyof OnChannelMap> = ['error', 'update-available', 'update-progress', 'scrcpy:env-win-exist', 'open-scrcpy-window'];
+    const whitelist: UnionToTuple<keyof OnChannelMap> = ['error', 'update-available', 'update-progress', 'close-device-envId', 'scrcpy:env-win-exist', 'open-scrcpy-window'];
     if (whitelist.includes(channel as any)) {
       return ipcRenderer.on(channel, (event, ...args) => listener(event, ...args));
     }

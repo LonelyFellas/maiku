@@ -3,10 +3,10 @@ import { App, Button, Divider, Popconfirm, Upload, type UploadProps } from 'antd
 import { InboxOutlined } from '@ant-design/icons';
 import type { RcFile, UploadChangeParam, UploadFile } from 'antd/es/upload';
 import { fileSizeFormat, Table, timeFormatHours } from '@common';
-import './index.css';
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { postsFileQueryOptions } from '/src/routes/data';
 import { GetFilesListResult, postDeleteFileService, postUploadFileService } from '/src/api';
+import './index.css';
 
 const { Dragger } = Upload;
 export default function FileTransferStation() {

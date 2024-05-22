@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import prettyBytes from 'pretty-bytes';
-import { Constants } from '@/common';
+import { Constants, toNumber } from '@/common';
 
 /**
  * Check if an object has a property.
@@ -17,8 +17,8 @@ export const getToken = window.localStorage.getItem(Constants.LOCAL_TOKEN);
  * 转化成 ep: `12KB, 1MB, 1.5MB`这种有单位的
  * @param text 文件number类型
  */
-export const fileSizeFormat = (text: number) => prettyBytes(text);
+export const fileSizeFormat = (text: number) => prettyBytes(text ?? 0);
 /** 时间格式化到天 */
-export const timeFormatDay = (text: number) => dayjs(text).format('YYYY-MM-DD');
+export const timeFormatDay = (text: number) => dayjs(toNumber(text)).format('YYYY-MM-DD');
 /** 时间格式化到秒 */
-export const timeFormatHours = (text: number) => dayjs(text).format('YYY-MM-DD HH:mm:ss');
+export const timeFormatHours = (text: number) => dayjs(toNumber(text)).format('YYYY-MM-DD HH:mm:ss');

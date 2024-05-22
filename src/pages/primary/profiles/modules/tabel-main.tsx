@@ -1,11 +1,12 @@
-import React, { useMemo, useRef, useState } from 'react';
-import { Button, Dropdown, Space, Popconfirm, App, Input, Form } from 'antd';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { App, Button, Dropdown, Form, Input, Popconfirm, Space } from 'antd';
 import { useUpdateEffect } from '@darwish/hooks-core';
 import { isBlanks, isUndef } from '@darwish/utils-is';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { debounce } from 'lodash';
 import { MaskSpin, Table, useMap } from '@common';
-import { getBackupListByEnvIdService, postAddBackupService, postDeleteBackService, type GetBackupParams, postRunBackupService } from '@api';
-import { operationItems, columns as configColumns } from '../config';
+import { getBackupListByEnvIdService, type GetBackupParams, postAddBackupService, postDeleteBackService, postRunBackupService } from '@api';
+import { columns as configColumns, operationItems } from '../config';
 import type { DataType, StartScrcpyParams, States } from '../type';
 
 interface TableMainProps {
@@ -21,6 +22,32 @@ const TableMain = (props: TableMainProps) => {
   const scrollRef = useRef<React.ElementRef<'div'>>(null);
   const [states, { set: setStates }] = useMap<number, States>([]);
   const latestRef = useRef<number>(0);
+  const [stopEnvId, setStopEnvId] = useState<number | null>(null);
+
+  useEffect(() => {
+    // 监听客户端的scrcpy所有线程的状态，这里只监听当前已打开的线程的关闭状态
+    window.ipcRenderer.on('close-device-envId', (_, closeEnvId) => {
+      setStopEnvId(closeEnvId);
+    });
+  }, []);
+
+  // 主要还是上面的进程监听之后的一些逻辑操作，因为上面监听的回调拿到状态都不是最新的
+  // 严格来说上面的回调存在一些闭包的问题。我们通过updateEffect来解决那最新的states进行逻辑处理
+  useUpdateEffect(() => {
+    if (stopEnvId) {
+      const matchState = states.get(stopEnvId);
+      // 如果当前是在切换备份的操作下，杀死的进程。我们保持当前的逻辑，不做任何多余的操作
+      // 只关注手动关闭scrcpy窗口的关闭的逻辑
+      if (matchState && matchState.running !== 'waiting') {
+        setStates(stopEnvId, {
+          loading: false,
+          containerName: '',
+          running: 'stop',
+        });
+      }
+    }
+    setStopEnvId(null);
+  }, [stopEnvId]);
 
   const timeoutRef = useRef<
     Record<
@@ -107,7 +134,6 @@ const TableMain = (props: TableMainProps) => {
     mutationFn: postAddBackupService,
     onSuccess: () => {
       message.success('备份成功');
-
       refetch();
     },
   });
@@ -235,7 +261,7 @@ const TableMain = (props: TableMainProps) => {
     return defaultColumns.map((col) => ({ ...col, isVisible: true }));
   });
 
-  const handleStartScrcpy = ({ deviceId, envId, name, states: startStates, containerName }: StartScrcpyParams) => {
+  const handleStartScrcpy = debounce(({ deviceId, envId, name, states: startStates, containerName }: StartScrcpyParams) => {
     // 如果当前启动的备份和当前页面的备份一致，则停止当前的scrcpy
     if (containerName === name && startStates === 'running') {
       window.ipcRenderer.send('scrcpy:stop', { deviceId });
@@ -288,7 +314,7 @@ const TableMain = (props: TableMainProps) => {
         containerName: name,
       });
     }
-  };
+  }, 500);
 
   const dataSource = useMemo(() => {
     return data?.map((item) =>
