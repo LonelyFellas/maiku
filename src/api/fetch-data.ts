@@ -11,26 +11,23 @@ export const fetchData = async <TData, TParams = null>(url: Api.Url, init: Api.I
     cache: 'no-cache',
     credentials: 'same-origin',
     headers: {
-      'Content-Type': 'application/json',
+      // 'Content-Type': 'application/json',
       'X-Token': window.localStorage.getItem(Constants.LOCAL_TOKEN) || 'null',
-      Accept: 'application/json, text/plain, */*',
     },
     redirect: 'follow',
-    referrerPolicy: 'origin-when-cross-origin',
   };
 
-  // 拼接地址
-  if (isProxy) {
-    url = `mkapi/${url}`;
-  } else {
-    url = `${import.meta.env.VITE_API_URL}/${url}`;
+  url = `${import.meta.env.VITE_API_URL}/${url}`;
+  // contentType
+  if (init.contentType && defaultInit.headers) {
+    defaultInit.headers['Content-Type'] = contentTypeConfig(contentType);
   }
 
   // GET请求参数放地址上
   // 其他请求参数放body上
   if (init.method === 'GET') {
     url = getSerialUrl(url as string, data ?? {});
-  } else if (data !== null) {
+  } else if (data !== null && formData) {
     // 处理formData
     if (formData) {
       const formData = new FormData();
@@ -38,17 +35,13 @@ export const fetchData = async <TData, TParams = null>(url: Api.Url, init: Api.I
         if (hasOwnProperty(data, key)) {
           formData.append(key, data[key] as any);
         }
-        console.log(formData.get(key));
+        console.log(formData);
       }
-
+      delete defaultInit.headers?.['Content-Type'];
       defaultInit.body = formData;
     } else {
       defaultInit.body = JSON.stringify(data);
     }
-  }
-  // contentType
-  if (init.contentType && defaultInit.headers) {
-    defaultInit.headers['Content-Type'] = contentTypeConfig(contentType);
   }
 
   // 合并配置
