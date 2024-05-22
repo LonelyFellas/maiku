@@ -20,11 +20,13 @@ declare global {
     'app:operate': ['close' | 'restart'];
     'loading:done': ['main' | 'loading'];
     'download-update': [];
+    'updated-restart': [];
   };
   type OnChannelMap = {
     error: Darwish.AnyFunc;
     'update-available': GenericsFn<[unknown, { isUpdate: boolean }], void>;
     'update-progress': GenericsFn<[unknown, { progress: number }], void>;
+    'update-downloaded': GenericsFn<[unknown], void>;
     'close-device-envId': GenericsFn<[unknown, number], any>;
     'scrcpy:env-win-exist': GenericsFn<[unknown, string], void>;
     'open-scrcpy-window': Darwish.AnyFunc;

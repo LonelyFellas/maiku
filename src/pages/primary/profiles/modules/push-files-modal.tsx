@@ -4,8 +4,8 @@ import { fileSizeFormat, Modal, PopconfirmButton, Table, timeFormatHours } from 
 import { GetFilesListResult, getFilesListService, postDeleteFileService } from '@api';
 
 interface PushFilesModalProps extends AntdModalProps {
-  adbAddr: string;
-  name: string;
+  adbAddr?: string;
+  name?: string;
 }
 
 const PushFilesModal = (props: PushFilesModalProps) => {

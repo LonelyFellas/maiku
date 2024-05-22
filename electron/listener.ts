@@ -127,7 +127,7 @@ export default function createListener(options: CreateListenerOptions) {
         }
       });
 
-      scrcpyProcessObj[deviceId].on('close', (code, signals) => {
+      scrcpyProcessObj[deviceId].on('close', () => {
         // 通知渲染层当前的scrcpy关闭了
         event.reply('close-device-envId', envId);
       });

@@ -1,13 +1,14 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { App, Badge, Space } from 'antd';
-import { isBlanks } from '@darwish/utils-is';
-import { useQuery } from '@tanstack/react-query';
 import { useLocalStorage, useSessionStorage } from '@darwish/hooks-core';
-import semverCompare from 'semver/functions/compare';
+import { isBlanks } from '@darwish/utils-is';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
+import { useQuery } from '@tanstack/react-query';
+import { toNumber } from 'lodash';
+import semverCompare from 'semver/functions/compare';
+import NotificationCenter from './notification-center';
 import ProfileCenter from './profile-center';
 import UpdateCenter from './update-center';
-import NotificationCenter from './notification-center';
 import { Constants, useRouteMeta, useUpdate } from '@common';
 import { getReleaseService } from '@api';
 import pkg from '/package.json';
@@ -21,6 +22,8 @@ const Header = () => {
   });
   const { modal } = App.useApp();
   const { title, isBack, history } = useRouteMeta();
+  const [updateStatus, setUpdateStatus] = useState<number>(0);
+  const [progress, setProgress] = useState(0);
 
   const { data = [] } = useQuery({
     queryKey: ['get_release'],
@@ -28,9 +31,12 @@ const Header = () => {
     enabled: isUpdate,
   });
   useEffect(() => {
-    console.log('msg1');
     window.ipcRenderer.on('update-progress', (_, msg) => {
       console.log('msg2', msg);
+      setProgress(toNumber(toNumber(msg.progress).toFixed(2)));
+    });
+    window.ipcRenderer.on('update-downloaded', () => {
+      setUpdateStatus(2);
     });
   }, []);
 
@@ -66,7 +72,12 @@ const Header = () => {
   };
   /** 下载更新 */
   const handleDownloadUpdate = () => {
-    window.ipcRenderer.send('download-update');
+    if (updateStatus === 0) {
+      setUpdateStatus(1);
+      window.ipcRenderer.send('download-update');
+    } else if (updateStatus === 2) {
+      window.ipcRenderer.send('updated-restart');
+    }
   };
   return (
     <div className="flex justify-between h-30px ">
@@ -86,6 +97,8 @@ const Header = () => {
           <Badge count={isNewVersion ? '1' : ''} size="small">
             <UpdateCenter
               {...{
+                updateStatus,
+                progress,
                 newVersionData: isBlanks(data) ? [] : data,
                 isNewVersion,
                 handleSkipVersion,
