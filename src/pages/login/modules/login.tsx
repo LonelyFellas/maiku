@@ -1,11 +1,11 @@
-import { Form, Input, Button, Flex, Checkbox, Tooltip, App } from 'antd';
+import { App, Button, Checkbox, Flex, Form, Input, Tooltip } from 'antd';
 import { useLocalStorage } from '@darwish/hooks-core';
 import { isObject } from '@darwish/utils-is';
 import { InfoCircleOutlined, LockOutlined, UserOutlined } from '@ant-design/icons';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { useI18nConfig, Constants } from '@common';
-import { loginService, type LoginParams } from '@api';
+import { Constants, useI18nConfig } from '@common';
+import { type LoginParams, loginService } from '@api';
 import type { LoginProps } from '@/pages/login';
 
 type FormValues = LoginParams & { remember: boolean };
@@ -25,7 +25,6 @@ const Login = (props: LoginProps) => {
       if (isObject(data)) {
         setUserInfo(form.getFieldValue('remember') ? form.getFieldsValue() : null);
         setToken(data.token);
-        window.userInfo = data.userInfo;
         message.success(lang?.login_info);
         navigate({ to: '/layout/profiles' });
       }

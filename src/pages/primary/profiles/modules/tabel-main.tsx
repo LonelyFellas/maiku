@@ -6,6 +6,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { debounce } from 'lodash';
 import { MaskSpin, Table, useMap } from '@common';
 import { getBackupListByEnvIdService, type GetBackupParams, postAddBackupService, postDeleteBackService, postRunBackupService } from '@api';
+import RunButton from '@/pages/primary/profiles/modules/run-button.tsx';
 import { columns as configColumns, operationItems } from '../config';
 import type { DataType, StartScrcpyParams, States } from '../type';
 
@@ -146,17 +147,12 @@ const TableMain = (props: TableMainProps) => {
     },
   });
   useUpdateEffect(() => {
+    /** 如果右边栏的环境发生变化，同时的这里表格数据也将重新刷新 */
     if (props.isRefetching) {
       refetch();
     }
   }, [props.isRefetching]);
 
-  // useUpdateEffect(() => {
-  //   console.log('data', recordData);
-  // }, [recordData]);
-  const handleGetWindowRect = () => {
-    // window.ipcRenderer.send('window:scrcpy-listen', 'SM-F711N');
-  };
   const handleDeleteBackup = (props: GetBackupParams) => {
     deleteMutation.mutate(props);
   };
@@ -186,17 +182,25 @@ const TableMain = (props: TableMainProps) => {
         key: 'operation',
         render: (_: string, record: DataType) => {
           let btnText = '启动';
-          if (record.running === 'running') {
+          const isRunning = record.running === 'running';
+          if (isRunning) {
             btnText = '停止';
           } else if (record.running === 'waiting') {
             btnText = '等待中';
           }
           return (
             <Space size={0}>
-              <Button
+              <RunButton
+                isRunning={isRunning}
                 size="small"
                 type="primary"
-                danger={record.running === 'running'}
+                danger={isRunning}
+                onRestartClick={() =>
+                  handleRestartScrcpy({
+                    deviceId: record.deviceId,
+                    envId: record.envId ?? -1,
+                  })
+                }
                 onClick={() =>
                   handleStartScrcpy({
                     deviceId: record.deviceId,
@@ -208,8 +212,24 @@ const TableMain = (props: TableMainProps) => {
                 }
               >
                 {btnText}
-              </Button>
-              <Button type="text" size="small" onClick={handleGetWindowRect}>
+              </RunButton>
+              {/*<Button*/}
+              {/*  size="small"*/}
+              {/*  type="primary"*/}
+              {/*  danger={record.running === 'running'}*/}
+              {/*  onClick={() =>*/}
+              {/*    handleStartScrcpy({*/}
+              {/*      deviceId: record.deviceId,*/}
+              {/*      envId: record.envId ?? -1,*/}
+              {/*      name: record.Names,*/}
+              {/*      containerName: record.containerName,*/}
+              {/*      states: record.State,*/}
+              {/*    })*/}
+              {/*  }*/}
+              {/*>*/}
+              {/*  {btnText}*/}
+              {/*</Button>*/}
+              <Button type="text" size="small">
                 编辑
               </Button>
               <Popconfirm
@@ -248,11 +268,6 @@ const TableMain = (props: TableMainProps) => {
                   删除
                 </Button>
               </Popconfirm>
-              {/* <TriggerModal title="编辑代理" renderModal={(renderProps) => <BackupProxy {...renderProps} envId={record.envId ?? '0'} />}>
-                <Button type="text" size="small">
-                  代理
-                </Button>
-              </TriggerModal> */}
             </Space>
           );
         },
@@ -261,14 +276,15 @@ const TableMain = (props: TableMainProps) => {
     return defaultColumns.map((col) => ({ ...col, isVisible: true }));
   });
 
+  /**
+   * 启动scrcpy的窗口的逻辑，
+   * 同时增加一个500ms的延时防抖效果
+   *  */
   const handleStartScrcpy = debounce(({ deviceId, envId, name, states: startStates, containerName }: StartScrcpyParams) => {
+    console.log('clicked');
     // 如果当前启动的备份和当前页面的备份一致，则停止当前的scrcpy
     if (containerName === name && startStates === 'running') {
       window.ipcRenderer.send('scrcpy:stop', { deviceId });
-      // setStates({
-      //   containerName: '',
-      //   running: 'stop',
-      // });
       setStates(envId, {
         containerName: '',
         loading: false,
@@ -280,12 +296,6 @@ const TableMain = (props: TableMainProps) => {
     // 当前启动的备份是属于切换的状态，则需要去等待30s后再启动
     // 所以先检查是否打开的是running状态
     if (startStates !== 'running') {
-      // window.adbApi.connect(deviceId);
-      // 如果不是running状态，则是属于切换备份的操作，
-      // 切换备份需要等待30s后再启动。
-      // const newMap = structuredClone(recordData);
-      // newMap.set(envId, new Date().getTime());
-      // setRecordData(newMap);
       setStates(envId, {
         loading: true,
         running: 'waiting',
@@ -315,6 +325,14 @@ const TableMain = (props: TableMainProps) => {
       });
     }
   }, 500);
+
+  const handleRestartScrcpy = ({ deviceId, envId }: Pick<StartScrcpyParams, 'deviceId' | 'envId'>) => {
+    window.ipcRenderer.send('scrcpy:start', {
+      deviceId,
+      envId,
+      type: 'notask',
+    });
+  };
 
   const dataSource = useMemo(() => {
     return data?.map((item) =>

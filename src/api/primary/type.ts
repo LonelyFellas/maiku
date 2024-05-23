@@ -55,6 +55,7 @@ export interface GetBackupParams {
   envId: number;
   containerName: string;
 }
+
 export interface PostSetBackupProxyParams {
   envId: number;
   vpcId: number;
@@ -69,4 +70,9 @@ export interface PostBackupProxyResult {
 
 export interface GetBackupToBackupParams extends GetBackupParams {
   newName: string;
+}
+
+export interface PostPushFileService {
+  envId: number;
+  fileId: number;
 }

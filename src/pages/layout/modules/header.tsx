@@ -32,7 +32,6 @@ const Header = () => {
   });
   useEffect(() => {
     window.ipcRenderer.on('update-progress', (_, msg) => {
-      console.log('msg2', msg);
       setProgress(toNumber(toNumber(msg.progress).toFixed(2)));
     });
     window.ipcRenderer.on('update-downloaded', () => {

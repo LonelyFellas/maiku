@@ -7,7 +7,7 @@ import type { ModalProps } from 'antd';
 declare global {
   type AnyObj = Darwish.AnyObj;
   type EmptyObj = Darwish.EmptyObj;
-  type GenericsFn<P, R> = Darwish.GenericsFn<P, R>;
+  type GenericsFn<P = null, R = null> = Darwish.GenericsFn<P, R>;
   type WindowState = 'close' | 'minimize' | 'maximize';
   type RememberState = '' | 'close' | 'minimizeToTray';
   type InvokeChannelMap = {

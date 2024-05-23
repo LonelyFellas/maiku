@@ -1,14 +1,16 @@
+import { memo } from 'react';
 import { Alert, App, Button, Space } from 'antd';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { fileSizeFormat, Modal, PopconfirmButton, Table, timeFormatHours } from '@common';
-import { GetFilesListResult, getFilesListService, postDeleteFileService } from '@api';
+import { GetFilesListResult, getFilesListService, postDeleteFileService, postPushFileService } from '@api';
 
 interface PushFilesModalProps extends AntdModalProps {
   adbAddr?: string;
   name?: string;
+  envId: number;
 }
 
-const PushFilesModal = (props: PushFilesModalProps) => {
+const PushFilesModal = memo((props: PushFilesModalProps) => {
   const { message } = App.useApp();
   const {
     data,
@@ -28,8 +30,18 @@ const PushFilesModal = (props: PushFilesModalProps) => {
       refetchPostsFile();
     },
   });
+  const pushMutation = useMutation({
+    mutationKey: ['push-files'],
+    mutationFn: postPushFileService,
+    onSuccess: () => {
+      message.success('推送成功');
+    },
+  });
   const handleRemoteRemoveFile = (id: number) => {
     deleteMutation.mutate({ id });
+  };
+  const handlePushFile = (fileId: number) => {
+    pushMutation.mutate({ envId: props.envId, fileId });
   };
   const columns: AntdColumns<GetFilesListResult> = [
     {
@@ -64,7 +76,7 @@ const PushFilesModal = (props: PushFilesModalProps) => {
       width: 120,
       render: (_: unknown, record: GetFilesListResult) => (
         <Space>
-          <Button type="primary" size="small">
+          <Button type="primary" size="small" onClick={() => handlePushFile(record.id)}>
             推送
           </Button>
           <PopconfirmButton onConfirm={() => handleRemoteRemoveFile(record.id)} />
@@ -77,18 +89,19 @@ const PushFilesModal = (props: PushFilesModalProps) => {
       <Alert message="请选择如下文件，推送到 M317M6531 云手机，请在 文件管理 -> Downnoad 下查看推送进度。" type="error" className="-mt-4 text-red-700 p-[0.3rem] px-3" />
       <Table
         size="small"
-        rowKey="key"
+        rowKey="id"
         columns={columns}
+        paginationTop={-25}
         pagination={{
           total: data?.length,
-          defaultPageSize: 5,
+          pageSize: 5,
         }}
         isFetching={isFetching}
         isRefetching={isRefetching}
         dataSource={data}
-        className="mt-2 2xl:mt-4 min-h-[300px] 2xl:min-h-[550px]"
+        className="mt-2 2xl:mt-4 min-h-[150px] max-h-[330px] 2xl:max-h-[550px]"
       />
     </Modal>
   );
-};
+});
 export default PushFilesModal;

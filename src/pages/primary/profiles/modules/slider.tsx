@@ -1,3 +1,4 @@
+import { useDeferredValue } from 'react';
 import { Button, Collapse, Dropdown, Flex } from 'antd';
 import { useSetState } from '@darwish/hooks-core';
 import { Scrollbar } from '@darwish/scrollbar-react';
@@ -27,16 +28,18 @@ const Slider = (props: SliderProps) => {
     pushFilesModalVisible: false,
     backupProxyModalVisible: false,
     collapse: [`${currentKey}`],
+    selectedEnvId: -1,
   });
   const { pushFilesModalVisible, backupProxyModalVisible, collapse } = states;
 
-  const enabled = envList.length > 0 && collapse.length > 0 && (!backupProxyModalVisible || !pushFilesModalVisible);
+  // const enabled = envList.length > 0 && collapse.length > 0 && (!backupProxyModalVisible || !pushFilesModalVisible);
   const { data } = useQuery({
     queryKey: ['env-detail-by-id', currentKey],
     queryFn: () => getEnvByIdService({ id: envList.find((item) => item.id === currentKey)!.id }),
     refetchInterval: 1000 * 5,
-    enabled,
+    enabled: envList.length > 0 && collapse.length > 0,
   });
+  const dataDeferredVal = useDeferredValue(data);
 
   const handleChange = (indexStr: string | string[]) => {
     if (isArray(indexStr)) {
@@ -61,8 +64,8 @@ const Slider = (props: SliderProps) => {
     setStates({ backupProxyModalVisible: false });
   };
   /** 打开推送文件弹窗 */
-  const handleOpenPushFilesModal = () => {
-    setStates({ pushFilesModalVisible: true });
+  const handleOpenPushFilesModal = (envId: number) => {
+    setStates({ pushFilesModalVisible: true, selectedEnvId: envId });
   };
   /** 关闭推送文件弹窗 */
   const handleClosePushFilesModal = () => {
@@ -90,7 +93,7 @@ const Slider = (props: SliderProps) => {
               <div className="flex flex-col items-center p-2">
                 <img
                   // preview={!!data?.screenShot}
-                  src={data?.screenShot ? data.screenShot : emptyImg}
+                  src={dataDeferredVal?.screenShot ? dataDeferredVal.screenShot : emptyImg}
                   className="rounded h-[300px] 2xl:h-[400px]"
                   alt="screen shot"
                 />
@@ -101,7 +104,19 @@ const Slider = (props: SliderProps) => {
                   <Button size="small" onClick={handleOpenDetailModal}>
                     代理
                   </Button>
-                  <Dropdown trigger={['click']} menu={{ items: [{ key: 'push', label: '推送', onClick: handleOpenPushFilesModal }] }} overlayClassName="w-20">
+                  <Dropdown
+                    trigger={['click']}
+                    menu={{
+                      items: [
+                        {
+                          key: 'push',
+                          label: '推送',
+                          onClick: () => handleOpenPushFilesModal(item.id),
+                        },
+                      ],
+                    }}
+                    overlayClassName="w-20"
+                  >
                     <Button size="small" onClick={() => window.adbApi.reboot('bgm8.cn:65341')}>
                       更多
                     </Button>
@@ -119,8 +134,8 @@ const Slider = (props: SliderProps) => {
           }))}
         />
       </ContainerWithEmpty>
-      <BackupProxyModal title="云机代理" open={backupProxyModalVisible} envId={data ? data.id : -1} onCancel={handleCloseDetailModal} onOk={handleCloseDetailModal} />
-      <PushFilesModal adbAddr={data?.adbAddr} name={data?.name} title="推送文件" open={pushFilesModalVisible} onCancel={handleClosePushFilesModal} onOk={handleClosePushFilesModal} />
+      <BackupProxyModal title="云机代理" open={backupProxyModalVisible} envId={dataDeferredVal?.id ?? -1} onCancel={handleCloseDetailModal} onOk={handleCloseDetailModal} />
+      <PushFilesModal envId={states.selectedEnvId} adbAddr={dataDeferredVal?.adbAddr} name={dataDeferredVal?.name} title="推送文件" open={pushFilesModalVisible} onCancel={handleClosePushFilesModal} onOk={handleClosePushFilesModal} />
     </Scrollbar>
   );
 };
