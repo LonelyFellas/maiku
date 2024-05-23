@@ -22,6 +22,7 @@ export default function Profiles() {
   const [currentKey, setCurrentKey] = useState(0);
   const { data: envList, isRefetching, isFetching } = useSuspenseQuery(postsEnvQueryOptions);
   const collapsedItems = envList?.find((li) => li.id === currentKey);
+  console.log(collapsedItems);
   useQuery({
     queryKey: ['connect adb', currentKey, collapsedItems],
     queryFn: () => adbConnect(collapsedItems?.adbAddr ?? ''),
@@ -46,7 +47,7 @@ export default function Profiles() {
         }}
       />
       <div className="flex-1 overflow-hidden">
-        <TableMain isRefetching={isRefetching} deviceId={collapsedItems ? collapsedItems.adbAddr : ''} envId={collapsedItems?.id ?? 0} />
+        <TableMain envName={collapsedItems?.name ?? ''} isRefetching={isRefetching} deviceId={collapsedItems?.adbAddr ?? ''} envId={collapsedItems?.id ?? 0} />
       </div>
     </div>
   );

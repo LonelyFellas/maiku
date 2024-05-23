@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { App, Button, Dropdown, Form, Input, Popconfirm, Space } from 'antd';
-import { useUpdateEffect } from '@darwish/hooks-core';
+import { useSetState, useUpdateEffect } from '@darwish/hooks-core';
 import { isBlanks, isUndef } from '@darwish/utils-is';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { debounce } from 'lodash';
@@ -14,21 +14,30 @@ interface TableMainProps {
   deviceId: string;
   envId: number;
   isRefetching: boolean;
+  envName: string;
 }
 
 const TableMain = (props: TableMainProps) => {
   const { message } = App.useApp();
-  const { deviceId, envId } = props;
+  const { deviceId, envId, envName } = props;
   const [form] = Form.useForm();
   const scrollRef = useRef<React.ElementRef<'div'>>(null);
   const [states, { set: setStates }] = useMap<number, States>([]);
+  const [{ stopEnvId, openEnvId, openBackupName }, setClientStates] = useSetState({
+    stopEnvId: 0,
+    openEnvId: 0,
+    openBackupName: '',
+  });
   const latestRef = useRef<number>(0);
-  const [stopEnvId, setStopEnvId] = useState<number | null>(null);
+  // const [stopEnvId, setStopEnvId] = useState<number | null>(null);
 
   useEffect(() => {
     // 监听客户端的scrcpy所有线程的状态，这里只监听当前已打开的线程的关闭状态
     window.ipcRenderer.on('close-device-envId', (_, closeEnvId) => {
-      setStopEnvId(closeEnvId);
+      setClientStates({ stopEnvId: closeEnvId });
+    });
+    window.ipcRenderer.on('scrcpy:start-window-open', (_, { envId: openEnvId, backupName: openBackupName }) => {
+      setClientStates({ openEnvId, openBackupName });
     });
   }, []);
 
@@ -46,9 +55,18 @@ const TableMain = (props: TableMainProps) => {
           running: 'stop',
         });
       }
+      setClientStates({ stopEnvId: -1 });
     }
-    setStopEnvId(null);
-  }, [stopEnvId]);
+
+    if (openEnvId) {
+      setStates(openEnvId, {
+        loading: false,
+        containerName: openBackupName,
+        running: 'running',
+      });
+      setClientStates({ openEnvId: -1, openBackupName: '' });
+    }
+  }, [stopEnvId, openEnvId]);
 
   const timeoutRef = useRef<
     Record<
@@ -163,7 +181,7 @@ const TableMain = (props: TableMainProps) => {
     });
   };
   const handleBackupPopconfirmOpenChange = (visible: boolean) => {
-    if (visible === false) {
+    if (!visible) {
       form.resetFields();
     }
   };
@@ -207,6 +225,7 @@ const TableMain = (props: TableMainProps) => {
                     envId: record.envId ?? -1,
                     name: record.Names,
                     containerName: record.containerName,
+                    envName: record.envName,
                     states: record.State,
                   })
                 }
@@ -280,7 +299,7 @@ const TableMain = (props: TableMainProps) => {
    * 启动scrcpy的窗口的逻辑，
    * 同时增加一个500ms的延时防抖效果
    *  */
-  const handleStartScrcpy = debounce(({ deviceId, envId, name, states: startStates, containerName }: StartScrcpyParams) => {
+  const handleStartScrcpy = debounce(({ deviceId, envId, name, states: startStates, containerName, envName }: StartScrcpyParams) => {
     console.log('clicked');
     // 如果当前启动的备份和当前页面的备份一致，则停止当前的scrcpy
     if (containerName === name && startStates === 'running') {
@@ -313,16 +332,30 @@ const TableMain = (props: TableMainProps) => {
         timer: new Date().getTime(),
       };
     } else {
+      console.log(envId, 'envId');
       window.ipcRenderer.send('scrcpy:start', {
         deviceId,
         envId,
-        type: 'notask',
+        backupName: name,
+        envName,
+        type: 'run',
       });
       setStates(envId, {
-        running: 'running',
-        loading: false,
+        running: 'waiting',
+        loading: true,
         containerName: name,
+        type: 'run',
       });
+      // window.ipcRenderer.send('scrcpy:start', {
+      //   deviceId,
+      //   envId,
+      //   type: 'notask',
+      // });
+      // setStates(envId, {
+      //   running: 'running',
+      //   loading: false,
+      //   containerName: name,
+      // });
     }
   }, 500);
 
@@ -343,14 +376,20 @@ const TableMain = (props: TableMainProps) => {
             envId,
             running: currentStates?.running,
             containerName: currentStates?.containerName,
+            envName,
           }
-        : { ...item, deviceId, envId, running: 'stop' },
+        : { ...item, deviceId, envId, running: 'stop', envName },
     );
-  }, [deviceId, envId, Object.values(currentStates || {})]);
+  }, [deviceId, envName, envId, Object.values(currentStates || {})]);
+
+  let spinContent = '正在切换备份，请稍后...';
+  if (currentStates && (currentStates.type === 'run' || currentStates.loading)) {
+    spinContent = '正在启动中..';
+  }
 
   return (
     <div ref={scrollRef} className="relative flex flex-col gap-2 flex-1 h-full bg-white rounded-md">
-      <MaskSpin content="正在切换备份，请稍后..." loading={currentStates?.loading || false} />
+      <MaskSpin content={spinContent} loading={currentStates?.loading || false} />
       <Table
         isFetching={isFetching || addBackupMutation.isPending}
         isRefetching={isRefetching}

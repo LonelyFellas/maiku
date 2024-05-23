@@ -45,3 +45,7 @@ declare namespace Electron {
     on: <T extends keyof SendChannelMap>(channel: T, listener: (event: Electron.IpcMainEvent, ...args: SendChannelMap[T]) => void) => Promise<void>;
   }
 }
+
+declare namespace EleApp {
+  type ProcessObj = Record<string, ChildProcessWithoutNullStreams>;
+}
