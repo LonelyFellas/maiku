@@ -1,5 +1,5 @@
 import type { RcFile } from 'antd/es/upload';
-import { GetFilesListResult } from './type';
+import { GetFilesListResult } from '@/api';
 import { fetchData } from '../fetch-data';
 
 /** 上传文件 */
@@ -8,7 +8,6 @@ export const postUploadFileService: Api.IFetch<boolean, { files: RcFile }> = (da
     method: 'POST',
     data,
     formData: true,
-    contentType: 'app-form',
     isProxy: true,
   });
 /** 查询我的全部文件 */

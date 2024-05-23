@@ -1,5 +1,5 @@
 import { BrowserWindow, ipcMain } from 'electron';
-import { autoUpdater, type AppUpdater } from 'electron-updater';
+import { type AppUpdater, autoUpdater } from 'electron-updater';
 
 /**
  * 更新器
@@ -30,19 +30,18 @@ export default class Updater {
     });
 
     this.updater.on('download-progress', (event) => {
-      mainWin?.webContents.send('error', '11111');
-      if (mainWin) {
-        mainWin.webContents.send('update-progress', {
-          progress: event.percent,
-        });
-      }
+      mainWin?.webContents.send('update-progress', {
+        progress: event.percent,
+      });
     });
     this.updater.on('update-downloaded', () => {
-      mainWin?.webContents.send('error', '33333');
+      mainWin?.webContents.send('update-downloaded');
     });
     ipcMain.on('download-update', () => {
-      mainWin?.webContents.send('error', '22222');
       this.updater.downloadUpdate();
+    });
+    ipcMain.on('updated-restart', () => {
+      this.updater.quitAndInstall();
     });
 
     // this.updater.on('update-downloaded', () => {

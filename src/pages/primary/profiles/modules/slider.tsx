@@ -7,10 +7,10 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { cn, ContainerWithEmpty, toNumber } from '@common';
 import { GetAllEnvListResult, getEnvByIdService } from '@api';
+import { emptyImg } from '../config.tsx';
 import BackupProxyModal from './backup-proxy-modal';
 import PushFilesModal from './push-files-modal';
 import '../index.css';
-import { emptyImg } from '../config.tsx';
 
 interface SliderProps {
   isFetching: boolean;
@@ -120,7 +120,7 @@ const Slider = (props: SliderProps) => {
         />
       </ContainerWithEmpty>
       <BackupProxyModal title="云机代理" open={backupProxyModalVisible} envId={data ? data.id : -1} onCancel={handleCloseDetailModal} onOk={handleCloseDetailModal} />
-      <PushFilesModal title="推送文件" open={pushFilesModalVisible} onCancel={handleClosePushFilesModal} onOk={handleClosePushFilesModal} />
+      <PushFilesModal adbAddr={data?.adbAddr} name={data?.name} title="推送文件" open={pushFilesModalVisible} onCancel={handleClosePushFilesModal} onOk={handleClosePushFilesModal} />
     </Scrollbar>
   );
 };

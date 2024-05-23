@@ -1,7 +1,7 @@
 {
   "name": "maiku",
   "private": true,
-  "version": "0.0.3",
+  "version": "0.0.5",
   "type": "module",
   "author": "darwish",
   "description": "maiku app",
@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@darwish/types": "^0.0.10",
+    "@types/lodash": "^4.17.4",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.0",
     "@typescript-eslint/eslint-plugin": "^7.1.1",

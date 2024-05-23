@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { App, Button, Divider, Popconfirm, Upload, type UploadProps } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
-import type { RcFile, UploadChangeParam, UploadFile } from 'antd/es/upload';
+import type { RcFile, UploadFile } from 'antd/es/upload';
 import { fileSizeFormat, Table, timeFormatHours } from '@common';
-import './index.css';
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { postsFileQueryOptions } from '/src/routes/data';
 import { GetFilesListResult, postDeleteFileService, postUploadFileService } from '/src/api';
+import './index.css';
 
 const { Dragger } = Upload;
 export default function FileTransferStation() {
@@ -31,18 +31,18 @@ export default function FileTransferStation() {
     },
   });
 
-  const handleUploadOnChange = (info: UploadChangeParam<UploadFile<any>>) => {
-    setRecordFiles(info.fileList);
-    const { status } = info.file;
-    if (status !== 'uploading') {
-      console.log(info.file, info.fileList);
-    }
-    if (status === 'done') {
-      message.success(`${info.file.name} file uploaded successfully.`);
-    } else if (status === 'error') {
-      message.error(`${info.file.name} file upload failed.`);
-    }
-  };
+  // const handleUploadOnChange = (info: UploadChangeParam<UploadFile<any>>) => {
+  //   setRecordFiles(info.fileList);
+  //   const { status } = info.file;
+  //   if (status !== 'uploading') {
+  //     console.log(info.file, info.fileList);
+  //   }
+  //   if (status === 'done') {
+  //     message.success(`${info.file.name} file uploaded successfully.`);
+  //   } else if (status === 'error') {
+  //     message.error(`${info.file.name} file upload failed.`);
+  //   }
+  // };
   const handleRemove = (file: UploadFile<any>) => {
     console.log('onRemove', file);
   };
@@ -53,9 +53,11 @@ export default function FileTransferStation() {
     maxCount: 9,
     customRequest(options) {
       const file = options.file as RcFile;
+      const formData = new FormData();
+      formData.append('files', file);
       updateMutation.mutate({ files: file });
     },
-    onChange: handleUploadOnChange,
+    // onChange: handleUploadOnChange,
     onDrop(e) {
       console.log('Dropped files', e.dataTransfer.files);
     },
@@ -79,6 +81,7 @@ export default function FileTransferStation() {
       title: '文件大小',
       dataIndex: 'size',
       key: 'size',
+      width: 80,
       render: (text: number) => fileSizeFormat(text),
     },
     {
@@ -111,7 +114,7 @@ export default function FileTransferStation() {
           paginationTop={-35}
           pagination={{
             total: postsFileData?.length,
-            defaultPageSize: 5,
+            defaultPageSize: 10,
           }}
           isFetching={isFetching}
           isRefetching={isRefetching}

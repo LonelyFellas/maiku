@@ -1,5 +1,5 @@
 import type React from 'react';
-import type { OpenDialogOptions, MessageBoxReturnValue } from 'electron';
+import type { MessageBoxReturnValue, OpenDialogOptions } from 'electron';
 import type { Client } from '@devicefarmer/adbkit';
 import type { ColumnsType } from 'antd/es/table';
 import type { ModalProps } from 'antd';
@@ -20,11 +20,14 @@ declare global {
     'app:operate': ['close' | 'restart'];
     'loading:done': ['main' | 'loading'];
     'download-update': [];
+    'updated-restart': [];
   };
   type OnChannelMap = {
     error: Darwish.AnyFunc;
     'update-available': GenericsFn<[unknown, { isUpdate: boolean }], void>;
     'update-progress': GenericsFn<[unknown, { progress: number }], void>;
+    'update-downloaded': GenericsFn<[unknown], void>;
+    'close-device-envId': GenericsFn<[unknown, number], any>;
     'scrcpy:env-win-exist': GenericsFn<[unknown, string], void>;
     'open-scrcpy-window': Darwish.AnyFunc;
   };

@@ -40,7 +40,7 @@ const Table = (props: TableProps) => {
             total,
             showTotal,
             showSizeChanger,
-            showQuickJumper,
+            // showQuickJumper,
             ...restPagination,
           }}
         />

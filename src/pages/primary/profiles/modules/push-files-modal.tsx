@@ -1,19 +1,36 @@
-import { Alert, Button, Popconfirm, Space } from 'antd';
-import { useQuery } from '@tanstack/react-query';
-import dayjs from 'dayjs';
-import prettyBytes from 'pretty-bytes';
-import { Modal, Table } from '@common';
-import { GetFilesListResult, getFilesListService } from '@api';
+import { Alert, App, Button, Space } from 'antd';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { fileSizeFormat, Modal, PopconfirmButton, Table, timeFormatHours } from '@common';
+import { GetFilesListResult, getFilesListService, postDeleteFileService } from '@api';
 
-interface PushFilesModalProps extends AntdModalProps {}
+interface PushFilesModalProps extends AntdModalProps {
+  adbAddr?: string;
+  name?: string;
+}
 
 const PushFilesModal = (props: PushFilesModalProps) => {
-  const { data, isFetching, isRefetching } = useQuery({
+  const { message } = App.useApp();
+  const {
+    data,
+    isFetching,
+    isRefetching,
+    refetch: refetchPostsFile,
+  } = useQuery({
     queryKey: ['posts-file-list'],
     queryFn: getFilesListService,
     enabled: props.open,
   });
-  const handleRemoteRemoveFile = () => {};
+  const deleteMutation = useMutation({
+    mutationKey: ['delete-files'],
+    mutationFn: postDeleteFileService,
+    onSuccess: () => {
+      message.success('文件删除成功！');
+      refetchPostsFile();
+    },
+  });
+  const handleRemoteRemoveFile = (id: number) => {
+    deleteMutation.mutate({ id });
+  };
   const columns: AntdColumns<GetFilesListResult> = [
     {
       title: '文件名',
@@ -31,13 +48,13 @@ const PushFilesModal = (props: PushFilesModalProps) => {
       dataIndex: 'size',
       key: 'size',
       width: 80,
-      render: (text: number) => prettyBytes(text ?? 0),
+      render: (text: number) => fileSizeFormat(text),
     },
     {
       title: '上传时间',
       dataIndex: 'create_at',
       key: 'create_at',
-      render: (text: string) => dayjs(text).format('YYYY-MM-DD HH:mm:ss'),
+      render: (text: number) => timeFormatHours(text),
     },
     {
       title: '操作',
@@ -45,16 +62,12 @@ const PushFilesModal = (props: PushFilesModalProps) => {
       key: 'operation',
       fixed: 'right',
       width: 120,
-      render: (_: unknown) => (
+      render: (_: unknown, record: GetFilesListResult) => (
         <Space>
           <Button type="primary" size="small">
             推送
           </Button>
-          <Popconfirm title="确认删除？" onConfirm={() => handleRemoteRemoveFile()}>
-            <Button type="link" danger>
-              删除
-            </Button>
-          </Popconfirm>
+          <PopconfirmButton onConfirm={() => handleRemoteRemoveFile(record.id)} />
         </Space>
       ),
     },
@@ -73,7 +86,7 @@ const PushFilesModal = (props: PushFilesModalProps) => {
         isFetching={isFetching}
         isRefetching={isRefetching}
         dataSource={data}
-        className="mt-2 2xl:mt-4 min-h-[200px]"
+        className="mt-2 2xl:mt-4 min-h-[300px] 2xl:min-h-[550px]"
       />
     </Modal>
   );

@@ -2,9 +2,9 @@ import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import * as process from 'node:process';
-import { BrowserWindow, dialog, ipcMain, app } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import type Store from 'electron-store';
-import { isMac, getScrcpyCwd, killProcessWithWindows } from '/electron/utils';
+import { getScrcpyCwd, isMac, killProcessWithWindows } from '/electron/utils';
 import { scrcpyProcessObj } from './main';
 
 interface CreateListenerOptions {
@@ -127,8 +127,9 @@ export default function createListener(options: CreateListenerOptions) {
         }
       });
 
-      scrcpyProcessObj[deviceId].on('close', (code) => {
-        console.log(`child process exited with code ${code}`);
+      scrcpyProcessObj[deviceId].on('close', () => {
+        // 通知渲染层当前的scrcpy关闭了
+        event.reply('close-device-envId', envId);
       });
     };
     const handleCheckProcessExists = (deviceId: string) => Object.prototype.hasOwnProperty.call(scrcpyProcessObj, deviceId);
