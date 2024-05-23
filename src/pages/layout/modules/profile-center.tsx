@@ -1,20 +1,22 @@
 import { Flex, Menu, Popover, Space } from 'antd';
 import { AndroidFilled, CaretDownOutlined, GlobalOutlined, LogoutOutlined } from '@ant-design/icons';
 import { useNavigate } from '@tanstack/react-router';
-import { useI18nConfig, getItem } from '@common';
+import { Constants, getItem, useI18nConfig } from '@common';
 import { MenuItem } from '@common/utils/get-item';
 import '../style.css';
+import { useLocalStorage } from '@darwish/hooks-core';
 
 const ProfileCenter = () => {
+  const [{ username }] = useLocalStorage<UserInfo>(Constants.LOCAL_LOGIN_INFO);
   const [lang] = useI18nConfig('config.layout.header.profile');
   return (
-    <Popover overlayClassName="card_profile" content={<ContentView />} arrow={false} placement="bottomLeft">
+    <Popover overlayClassName="card_profile" content={<ContentView name={username} />} arrow={false} placement="bottomLeft">
       <Space className="all_flex p-2 h-9 bg-bg_secondary/20 rounded-md shadow-sm hover:shadow-lg transition-shadow duration-200">
         <div className="all_flex bg-bg_secondary rounded-full w-6 h-6">
           <AndroidFilled className="text-white" />
         </div>
         <Flex vertical gap={6}>
-          <span className="text-sm text-[12px] leading-[12px]">15257294120</span>
+          <span className="text-sm text-[12px] leading-[12px]">{username}</span>
           <span className="text-gray-900/50 text-[10px] leading-[10px]">{lang.role}</span>
         </Flex>
         <div className="-mt-1">
@@ -26,12 +28,12 @@ const ProfileCenter = () => {
 };
 export default ProfileCenter;
 
-const ContentView = () => {
+const ContentView = (props: { name: string }) => {
   const navigator = useNavigate();
   const [config, setI81n] = useI18nConfig();
   const lang = config.config.layout.header.profile;
   const items: MenuItem[] = [
-    getItem('15257294120', 'sub1', <AndroidFilled />),
+    getItem(props.name ?? 'user', 'sub1', <AndroidFilled />),
 
     getItem(config.lang, 'lang', <GlobalOutlined />, [getItem('简体中文', 'lang-zh'), getItem('English', 'lang-en')]),
 
