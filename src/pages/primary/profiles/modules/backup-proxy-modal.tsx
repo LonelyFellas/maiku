@@ -1,7 +1,7 @@
-import { Descriptions, Button, Popconfirm, App } from 'antd';
-import { useQueries, useMutation } from '@tanstack/react-query';
+import { App, Button, Descriptions, Popconfirm } from 'antd';
+import { useMutation, useQueries } from '@tanstack/react-query';
 import { ContainerWithEmpty, Modal, PROXY_TYPE, Table } from '@common';
-import { GetProxyListResult, postBackupProxyService, getProxyListService, postSetBackupProxyService, postClearBackupProxyService, PostBackupProxyResult } from '@api';
+import { GetProxyListResult, getProxyListService, PostBackupProxyResult, postBackupProxyService, postClearBackupProxyService, postSetBackupProxyService } from '@api';
 
 interface BackupProxyModalProps extends AntdModalProps {
   envId: number;
@@ -12,7 +12,7 @@ const BackupProxyModal = (props: BackupProxyModalProps) => {
   const { envId, ...restProps } = props;
   const results = useQueries({
     queries: [`detail-proxy ${envId || 0}`, 'proxy-list'].map((key) => ({
-      queryKey: [key],
+      queryKey: [key, envId],
       queryFn: () => {
         if (key.includes('detail-proxy')) {
           return postBackupProxyService({ envId });
@@ -20,7 +20,7 @@ const BackupProxyModal = (props: BackupProxyModalProps) => {
           return getProxyListService();
         }
       },
-      enabled: props.open,
+      enabled: props.open && envId !== undefined && envId !== -1,
     })),
   });
   const setMutation = useMutation({

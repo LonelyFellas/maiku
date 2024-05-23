@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Pagination, type TableProps as AntdTableProps } from 'antd';
+import { type TableProps as AntdTableProps } from 'antd';
 import { cn, useTableScroll } from '@/common';
 import { TableFetch } from '../table-fetch';
 
@@ -18,7 +18,7 @@ interface TableProps extends AntdTableProps {
  */
 const Table = (props: TableProps) => {
   const { tableClassName, pagination, className, paginationTop = 0, ...restProps } = props;
-  const { defaultPageSize = 10, total, showTotal = (total: number) => `总共${total}条`, showSizeChanger = true, showQuickJumper = true, ...restPagination } = pagination || {};
+  const { defaultPageSize = 10, total, showTotal = (total: number) => `总共${total}条`, showSizeChanger = true, ...restPagination } = pagination || {};
   const scrollRef = useRef<HTMLDivElement>(null);
   const scroll = useTableScroll({
     scrollRef,
@@ -27,25 +27,23 @@ const Table = (props: TableProps) => {
   });
 
   return (
-    <>
-      <div className={cn('flex-1 overflow-hidden h-full', className)} ref={scrollRef}>
-        <TableFetch className={tableClassName} pagination={false} size="small" virtual scroll={scroll} {...restProps} />
-      </div>
-      {pagination && (
-        <Pagination
-          className="flex justify-end pt-1"
-          style={{ marginTop: `${paginationTop}px` }}
-          {...{
-            defaultPageSize,
-            total,
-            showTotal,
-            showSizeChanger,
-            // showQuickJumper,
-            ...restPagination,
-          }}
-        />
-      )}
-    </>
+    <div className={cn('overflow-hidden h-full', className)} ref={scrollRef}>
+      <TableFetch
+        className={tableClassName}
+        pagination={{
+          defaultPageSize,
+          total,
+          showTotal,
+          showSizeChanger,
+          // showQuickJumper,
+          ...restPagination,
+        }}
+        size="small"
+        virtual
+        scroll={scroll}
+        {...restProps}
+      />
+    </div>
   );
 };
 export default Table;

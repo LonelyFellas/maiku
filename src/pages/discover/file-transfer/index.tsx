@@ -106,20 +106,18 @@ export default function FileTransferStation() {
   ];
   return (
     <div className="flex flex-col h-full p-2 2xl:p-4">
-      <div className="flex-1">
-        <Table
-          columns={columns}
-          rowKey="id"
-          dataSource={postsFileData}
-          paginationTop={-35}
-          pagination={{
-            total: postsFileData?.length,
-            defaultPageSize: 10,
-          }}
-          isFetching={isFetching}
-          isRefetching={isRefetching}
-        />
-      </div>
+      <Table
+        columns={columns}
+        rowKey="id"
+        dataSource={postsFileData}
+        paginationTop={-45}
+        pagination={{
+          total: postsFileData?.length,
+          pageSize: 10,
+        }}
+        isFetching={isFetching}
+        isRefetching={isRefetching}
+      />
       <Divider className="my-2 2xl:my-4" />
       <div className="relative h-[150px]">
         <Dragger {...props} className={recordFiles.length > 0 ? `file-transfer-has-file` : 'file-transfer-no-file'}>

@@ -11,13 +11,13 @@ export const fetchData = async <TData, TParams = null>(url: Api.Url, init: Api.I
     cache: 'no-cache',
     credentials: 'same-origin',
     headers: {
-      // 'Content-Type': 'application/json',
+      'Content-Type': 'application/json',
       'X-Token': window.localStorage.getItem(Constants.LOCAL_TOKEN) || 'null',
     },
     redirect: 'follow',
   };
 
-  url = `${import.meta.env.VITE_API_URL}/${url}`;
+  url = `${import.meta.env[isProxy ? 'VITE_API_URL_PROXY' : 'VITE_API_URL']}/${url}`;
   // contentType
   if (init.contentType && defaultInit.headers) {
     defaultInit.headers['Content-Type'] = contentTypeConfig(contentType);
@@ -28,20 +28,20 @@ export const fetchData = async <TData, TParams = null>(url: Api.Url, init: Api.I
   if (init.method === 'GET') {
     url = getSerialUrl(url as string, data ?? {});
   } else if (data !== null && formData) {
+    console.log('222');
     // 处理formData
-    if (formData) {
-      const formData = new FormData();
-      for (const key in data) {
-        if (hasOwnProperty(data, key)) {
-          formData.append(key, data[key] as any);
-        }
-        console.log(formData);
+    const formData = new FormData();
+    for (const key in data) {
+      if (hasOwnProperty(data, key)) {
+        formData.append(key, data[key] as any);
       }
-      delete defaultInit.headers?.['Content-Type'];
-      defaultInit.body = formData;
-    } else {
-      defaultInit.body = JSON.stringify(data);
+      console.log(formData);
     }
+    delete defaultInit.headers?.['Content-Type'];
+    defaultInit.body = formData;
+  } else {
+    console.log(data);
+    defaultInit.body = JSON.stringify(data);
   }
 
   // 合并配置
@@ -49,7 +49,7 @@ export const fetchData = async <TData, TParams = null>(url: Api.Url, init: Api.I
     ...defaultInit,
     ...restInit,
   };
-  if (formData) {
+  if (restInit.method === 'POST') {
     console.log(options);
   }
 
@@ -96,7 +96,7 @@ function contentTypeConfig(contentType: keyof Api.ContentType | undefined) {
     case 'app-form':
       return 'application/x-www-form-urlencoded';
     case 'mul-form':
-      return `multipart/form-data`;
+      return 'multipart/form-data';
     default:
       return 'application/json';
   }

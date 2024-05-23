@@ -44,5 +44,5 @@ export default function ContainerWithEmpty(props: React.PropsWithChildren<Contai
     return <LoadingView tip="正在获取数据" />;
   }
 
-  return <div className={className}>{hasData === false || children === null || children === undefined ? <Empty {...restProps} description={emptyDescription} className="all_flex_col h-full w-full" /> : children}</div>;
+  return <div className={className}>{!hasData || children === null || children === undefined ? <Empty {...restProps} description={emptyDescription} className="all_flex_col h-full w-full" /> : children}</div>;
 }
