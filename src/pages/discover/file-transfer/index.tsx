@@ -41,10 +41,6 @@ export default function FileTransferStation() {
     action: `#`,
     maxCount: 9,
     customRequest({ file, onSuccess, onError, onProgress }) {
-      if (recordFiles.length === 9) {
-        onError?.(new Error('最多只能上传9个文件！'));
-        return;
-      }
       axiosUpload({
         data: { files: file },
         onSuccess,
@@ -113,7 +109,7 @@ export default function FileTransferStation() {
       />
       <Divider className="my-2 2xl:my-4" />
       <div className="relative h-[150px]">
-        <Dragger {...props} className={recordFiles.length > 0 ? `file-transfer-has-file` : 'file-transfer-no-file'}>
+        <Dragger {...props} className={'file-transfer-files ' + (recordFiles.length > 0 ? `file-transfer-has-file` : 'file-transfer-no-file')}>
           <p className="ant-upload-drag-icon !mb-2">
             <InboxOutlined />
           </p>

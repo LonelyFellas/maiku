@@ -12,3 +12,24 @@
         width: 50%;
     }
 }
+
+.file-transfer-files {
+    .ant-upload-list {
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .ant-upload-list::-webkit-scrollbar {
+        width: 7px;
+    }
+
+    .ant-upload-list::-webkit-scrollbar-thumb {
+        background-color: #868686;
+        border-radius: 10px;
+    }
+
+    .ant-upload-list::-webkit-scrollbar-track {
+        border-radius: 10px;
+        background-color: #b8b8b8;
+    }
+}
