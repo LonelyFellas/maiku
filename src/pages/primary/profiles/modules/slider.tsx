@@ -1,3 +1,4 @@
+import { useDeferredValue } from 'react';
 import { Button, Collapse, Dropdown, Flex } from 'antd';
 import { useSetState } from '@darwish/hooks-core';
 import { Scrollbar } from '@darwish/scrollbar-react';
@@ -38,6 +39,7 @@ const Slider = (props: SliderProps) => {
     refetchInterval: 1000 * 5,
     enabled: envList.length > 0 && collapse.length > 0,
   });
+  const dataDeferredVal = useDeferredValue(data);
 
   const handleChange = (indexStr: string | string[]) => {
     if (isArray(indexStr)) {
@@ -91,7 +93,7 @@ const Slider = (props: SliderProps) => {
               <div className="flex flex-col items-center p-2">
                 <img
                   // preview={!!data?.screenShot}
-                  src={data?.screenShot ? data.screenShot : emptyImg}
+                  src={dataDeferredVal?.screenShot ? dataDeferredVal.screenShot : emptyImg}
                   className="rounded h-[300px] 2xl:h-[400px]"
                   alt="screen shot"
                 />
@@ -132,8 +134,8 @@ const Slider = (props: SliderProps) => {
           }))}
         />
       </ContainerWithEmpty>
-      <BackupProxyModal title="云机代理" open={backupProxyModalVisible} envId={data ? data.id : -1} onCancel={handleCloseDetailModal} onOk={handleCloseDetailModal} />
-      <PushFilesModal envId={states.selectedEnvId} adbAddr={data?.adbAddr} name={data?.name} title="推送文件" open={pushFilesModalVisible} onCancel={handleClosePushFilesModal} onOk={handleClosePushFilesModal} />
+      <BackupProxyModal title="云机代理" open={backupProxyModalVisible} envId={dataDeferredVal?.id ?? -1} onCancel={handleCloseDetailModal} onOk={handleCloseDetailModal} />
+      <PushFilesModal envId={states.selectedEnvId} adbAddr={dataDeferredVal?.adbAddr} name={dataDeferredVal?.name} title="推送文件" open={pushFilesModalVisible} onCancel={handleClosePushFilesModal} onOk={handleClosePushFilesModal} />
     </Scrollbar>
   );
 };

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { App, Button, Descriptions, Popconfirm } from 'antd';
 import { useMutation, useQueries } from '@tanstack/react-query';
 import { ContainerWithEmpty, Modal, PROXY_TYPE, Table } from '@common';
@@ -7,7 +8,7 @@ interface BackupProxyModalProps extends AntdModalProps {
   envId: number;
 }
 
-const BackupProxyModal = (props: BackupProxyModalProps) => {
+const BackupProxyModal = memo((props: BackupProxyModalProps) => {
   const { message } = App.useApp();
   const { envId, ...restProps } = props;
   const results = useQueries({
@@ -103,6 +104,6 @@ const BackupProxyModal = (props: BackupProxyModalProps) => {
       </div>
     </Modal>
   );
-};
+});
 
 export default BackupProxyModal;

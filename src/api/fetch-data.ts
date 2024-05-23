@@ -28,19 +28,16 @@ export const fetchData = async <TData, TParams = null>(url: Api.Url, init: Api.I
   if (init.method === 'GET') {
     url = getSerialUrl(url as string, data ?? {});
   } else if (data !== null && formData) {
-    console.log('222');
     // 处理formData
     const formData = new FormData();
     for (const key in data) {
       if (hasOwnProperty(data, key)) {
         formData.append(key, data[key] as any);
       }
-      console.log(formData);
     }
     delete defaultInit.headers?.['Content-Type'];
     defaultInit.body = formData;
   } else {
-    console.log(data);
     defaultInit.body = JSON.stringify(data);
   }
 
@@ -49,9 +46,6 @@ export const fetchData = async <TData, TParams = null>(url: Api.Url, init: Api.I
     ...defaultInit,
     ...restInit,
   };
-  if (restInit.method === 'POST') {
-    console.log(options);
-  }
 
   return fetch(url, options)
     .then((response) => response.json())

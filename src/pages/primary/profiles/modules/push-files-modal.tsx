@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Alert, App, Button, Space } from 'antd';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { fileSizeFormat, Modal, PopconfirmButton, Table, timeFormatHours } from '@common';
@@ -9,7 +10,7 @@ interface PushFilesModalProps extends AntdModalProps {
   envId: number;
 }
 
-const PushFilesModal = (props: PushFilesModalProps) => {
+const PushFilesModal = memo((props: PushFilesModalProps) => {
   const { message } = App.useApp();
   const {
     data,
@@ -102,5 +103,5 @@ const PushFilesModal = (props: PushFilesModalProps) => {
       />
     </Modal>
   );
-};
+});
 export default PushFilesModal;
