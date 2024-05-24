@@ -80,6 +80,7 @@ const BackupProxyModal = memo((props: BackupProxyModalProps) => {
         </Descriptions>
       </ContainerWithEmpty>
       <Table
+        bordered
         isRefetching={results[1].isRefetching}
         isFetching={results[1].isFetching}
         className="mt-4"

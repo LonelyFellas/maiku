@@ -88,6 +88,7 @@ const PushFilesModal = memo((props: PushFilesModalProps) => {
     <Modal {...props} title="请从文件中转站推送到云手机（云手机默认存储路径：/sdcard/Download/）" width={700}>
       <Alert message={`请选择如下文件，推送到 ${props.name} 云手机，请在 文件管理 -> Downnoad 下查看推送进度。`} type="error" className="-mt-4 text-red-700 p-[0.3rem] px-3" />
       <Table
+        bordered
         size="small"
         rowKey="id"
         columns={columns}
