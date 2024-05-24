@@ -86,7 +86,7 @@ const PushFilesModal = memo((props: PushFilesModalProps) => {
   ];
   return (
     <Modal {...props} title="请从文件中转站推送到云手机（云手机默认存储路径：/sdcard/Download/）" width={700}>
-      <Alert message="请选择如下文件，推送到 M317M6531 云手机，请在 文件管理 -> Downnoad 下查看推送进度。" type="error" className="-mt-4 text-red-700 p-[0.3rem] px-3" />
+      <Alert message={`请选择如下文件，推送到 ${props.name} 云手机，请在 文件管理 -> Downnoad 下查看推送进度。`} type="error" className="-mt-4 text-red-700 p-[0.3rem] px-3" />
       <Table
         size="small"
         rowKey="id"
@@ -99,7 +99,7 @@ const PushFilesModal = memo((props: PushFilesModalProps) => {
         isFetching={isFetching}
         isRefetching={isRefetching}
         dataSource={data}
-        className="mt-2 2xl:mt-4 min-h-[150px] max-h-[330px] 2xl:max-h-[550px]"
+        className="mt-2 2xl:mt-4 h-[330px] 2xl:h-[550px]"
       />
     </Modal>
   );

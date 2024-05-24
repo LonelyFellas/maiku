@@ -1,10 +1,5 @@
-import {
-  Tray,
-  nativeImage,
-  Menu,
-  type BrowserWindow,
-  type App,
-} from 'electron';
+import path from 'node:path';
+import { Tray, nativeImage, Menu, type BrowserWindow, type App } from 'electron';
 
 /**
  * 创建托盘
@@ -14,7 +9,7 @@ import {
  */
 export function createTray(mainWindow: BrowserWindow, app: App) {
   // 创建系统托盘图标
-  const icon = nativeImage.createFromPath('public/favicon.ico');
+  const icon = nativeImage.createFromPath(path.join(process.env.VITE_PUBLIC, '/favicon.ico'));
   const tray = new Tray(icon);
   const contextMenu = Menu.buildFromTemplate([
     {
