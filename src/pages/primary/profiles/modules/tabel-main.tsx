@@ -29,7 +29,6 @@ const TableMain = (props: TableMainProps) => {
     openBackupName: '',
   });
   const latestRef = useRef<number>(0);
-  // const [stopEnvId, setStopEnvId] = useState<number | null>(null);
 
   useEffect(() => {
     // 监听客户端的scrcpy所有线程的状态，这里只监听当前已打开的线程的关闭状态
@@ -125,6 +124,8 @@ const TableMain = (props: TableMainProps) => {
       setTimeout(() => {
         switchSomeThing(startScrcpyRef.current);
       }, computedTimer);
+    } else {
+      // handleScrcpyWindowOpen(startScrcpyRef.current, 'start');
     }
   }, [props.envId]);
 
@@ -144,16 +145,16 @@ const TableMain = (props: TableMainProps) => {
   const addBackupMutation = useMutation({
     mutationKey: ['addBackup', envId],
     mutationFn: postAddBackupService,
-    onSuccess: () => {
-      message.success('备份成功');
+    onSuccess: (data) => {
+      message.success(data);
       refetch();
     },
   });
   const runBackupMutation = useMutation({
     mutationKey: ['runBackup', envId],
     mutationFn: postRunBackupService,
-    onSuccess: () => {
-      message.success('启动中...');
+    onSuccess: (data) => {
+      message.success(data);
       refetch();
     },
   });

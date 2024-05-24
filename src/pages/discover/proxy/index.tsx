@@ -11,6 +11,7 @@ export default function Proxy() {
   const navigate = useNavigate();
   const { data, refetch, isLoading } = useSuspenseQuery(postsProxyQueryOptions);
   const deleteMutation = useMutation({
+    mutationKey: ['delete-proxy'],
     mutationFn: postDeleteProxyService,
   });
   const defaultColumns: AntdColumns<GetProxyListResult> = [

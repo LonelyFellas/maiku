@@ -1,6 +1,9 @@
 {
   "basic": {
-    "project_name": "迈库网络"
+    "project_name": "迈库网络",
+    "pagination_items": "总数：",
+    "cmp_popconfirm_button_title": "确认删除",
+    "cmp_popconfirm_button_text": "删除"
   },
   "login": {
     "login": {
@@ -163,5 +166,17 @@
     "column_address_title": "出口地址",
     "column_order_title": "序号",
     "column_remark_title": "备注"
+  },
+  "file_transfer": {
+    "tb_col_fileName": "文件名",
+    "tb_col_customName": "自定义名称",
+    "tb_col_fileSize": "文件大小",
+    "tb_col_uploadTime": "上传时间",
+    "tb_col_operation": "操作",
+    "delete_msg": "文件删除成功！",
+    "upload_success_msg": "上传成功",
+    "upload_fail_msg": "上传失败",
+    "upload_h1": "点击文件或拖拽文件到此区域进行上传",
+    "upload_h2": "严谨上传公司数据，用户数据或其他机密文件！单个文件大小不超过100M，每次上传不超过9个文件！"
   }
 }

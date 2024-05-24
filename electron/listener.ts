@@ -3,8 +3,7 @@ import path from 'node:path';
 import * as process from 'node:process';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import type Store from 'electron-store';
-import { isMac, killProcessWithWindows } from '/electron/utils';
-import { scrcpy, scrcpyProcessObj } from './main';
+import { scrcpy } from './main';
 
 interface CreateListenerOptions {
   store: Store<typeof import('./config/electron-store-schema.json')>;
@@ -71,73 +70,6 @@ export default function createListener(options: CreateListenerOptions) {
   /** 启动scrcpy **/
   im.on('scrcpy:start', async (event, params) => {
     scrcpy.startWindow(params, (channel, channelData) => event.reply(channel, channelData));
-    // const title = `Test-${envId}`;
-    //
-    // /**
-    //  * 开启scrcpy窗口的逻辑:
-    //  * 首先检测环境id是否存在，如果存在，则杀掉进程,开启新的进程
-    //  * 如果不存在则直接开启新的进程
-    //  * 错误处理需要手动处理，
-    //  * 错误日志需要发送给渲染层
-    //  * 同时在主函数中，也要监听主窗口的关闭事件，如果当前的主窗口关闭，同时也要关闭scrcpy所有窗口
-    //  * @param title 窗口的标题
-    //  */
-    // const handleOpenScrcpyWindow = (title: string) => {
-    //   const scrcpyCwd = getScrcpyCwd();
-    //   if (handleCheckProcessExists(deviceId)) {
-    //     killProcess(deviceId);
-    //   }
-    //
-    //   /**
-    //    * `--window-title`: 设置窗口的标题
-    //    * `--window-width`：设置窗口的宽度
-    //    * `--window-height`: 设置窗口的高度
-    //    */
-    //   // console.log('open scrcpy window1', ['-s', deviceId, '--window-title', title, '--window-width', '381', '--window-height', '675']);
-    //   // console.log('open scrcpy window2', scrcpyCwd);
-    //   scrcpyProcessObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', title, '--window-width', '381', '--window-height', '675'], {
-    //     cwd: scrcpyCwd,
-    //     shell: true,
-    //   });
-    //   scrcpyProcessObj[deviceId].stdout.on('data', (data) => {
-    //     const strData = data.toString();
-    //     console.error(`stdout: ${strData}`);
-    //
-    //     if (strData.includes('ERROR')) {
-    //       event.reply('error', strData);
-    //       event.reply('scrcpy:stop', {
-    //         isSuccess: false,
-    //         envId,
-    //       });
-    //     }
-    //   });
-    //   scrcpyProcessObj[deviceId].stderr.on('data', (data) => {
-    //     const strData = data.toString();
-    //     console.log(`stdrr: ${strData}`);
-    //
-    //     if (strData.includes('ERROR')) {
-    //       event.reply('error', strData);
-    //     }
-    //   });
-    //
-    //   scrcpyProcessObj[deviceId].on('close', () => {
-    //     // 通知渲染层当前的scrcpy关闭了
-    //     event.reply('close-device-envId', envId);
-    //   });
-    // };
-    // const handleCheckProcessExists = (deviceId: string) => Object.prototype.hasOwnProperty.call(scrcpyProcessObj, deviceId);
-    //
-    // if (type === 'notask') {
-    //   console.log('notask');
-    //   handleOpenScrcpyWindow(title);
-    // }
-    // if (type === 'task') {
-    //   // 开启任务器的逻辑:
-    //   // 首先开一个5秒任务器，来检查窗口是否存在
-    //   // 1. 如果任务器失败，说明环境窗口不存在，直接打开scrcpy窗口 （打开scrcpy窗口还有其他逻辑）
-    //   // 2. 如果任务其成功，关闭当前窗口, defer 30s 再打开新的窗口（关闭窗口和给渲染层发送消息）
-    //   handleOpenScrcpyWindow(title);
-    // }
   });
   im.on('scrcpy:stop', async (_, { deviceId }) => scrcpy.closeWindow(deviceId));
   // im.on('scrcpy:restart', async (event, { deviceId }) => scrcpy.restartWindow(deviceId, (channel, channelData) => event.reply(channel, channelData)));

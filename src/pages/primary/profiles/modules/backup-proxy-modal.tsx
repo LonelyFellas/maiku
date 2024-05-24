@@ -1,8 +1,9 @@
 import { memo } from 'react';
-import { App, Button, Descriptions, Popconfirm } from 'antd';
+import { App, Button, Descriptions, Popconfirm, Space } from 'antd';
 import { useMutation, useQueries } from '@tanstack/react-query';
-import { ContainerWithEmpty, Modal, PROXY_TYPE, Table } from '@common';
-import { GetProxyListResult, getProxyListService, PostBackupProxyResult, postBackupProxyService, postClearBackupProxyService, postSetBackupProxyService } from '@api';
+import { useNavigate } from '@tanstack/react-router';
+import { ContainerWithEmpty, Modal, PopconfirmButton, PROXY_TYPE, Table } from '@common';
+import { GetProxyListResult, getProxyListService, PostBackupProxyResult, postBackupProxyService, postClearBackupProxyService, postDeleteProxyService, postSetBackupProxyService } from '@api';
 
 interface BackupProxyModalProps extends AntdModalProps {
   envId: number;
@@ -10,6 +11,7 @@ interface BackupProxyModalProps extends AntdModalProps {
 
 const BackupProxyModal = memo((props: BackupProxyModalProps) => {
   const { message } = App.useApp();
+  const navigate = useNavigate();
   const { envId, ...restProps } = props;
   const results = useQueries({
     queries: [`detail-proxy ${envId || 0}`, 'proxy-list'].map((key) => ({
@@ -32,6 +34,14 @@ const BackupProxyModal = memo((props: BackupProxyModalProps) => {
       results[0].refetch();
     },
   });
+  const deleteMutation = useMutation({
+    mutationKey: ['delete-proxy'],
+    mutationFn: postDeleteProxyService,
+    onSuccess: () => {
+      message.success('删除成功');
+      results[1].refetch();
+    },
+  });
   const clearMutation = useMutation({
     mutationKey: ['clear-proxy'],
     mutationFn: postClearBackupProxyService,
@@ -40,11 +50,21 @@ const BackupProxyModal = memo((props: BackupProxyModalProps) => {
       results[0].refetch();
     },
   });
+  console.log(results[1].isRefetching);
+  /** 设置当前代理 */
   const handleSetVpc = (vpcId: number) => {
     setMutation.mutate({ envId, vpcId });
   };
+  /** 删除当前代理 */
+  const handleDeleteVpc = (vpcId: number) => {
+    deleteMutation.mutate({ id: vpcId });
+  };
+  /** 清空当前代理 */
   const handleClearVpc = () => {
     clearMutation.mutate({ envId });
+  };
+  const handleGoToProxy = () => {
+    navigate({ to: '/layout/proxy' });
   };
   const detailData = results[0].data as unknown as PostBackupProxyResult;
   const proxyList = results[1].data as unknown as GetProxyListResult[];
@@ -60,8 +80,10 @@ const BackupProxyModal = memo((props: BackupProxyModalProps) => {
         </Descriptions>
       </ContainerWithEmpty>
       <Table
+        bordered
+        isRefetching={results[1].isRefetching}
+        isFetching={results[1].isFetching}
         className="mt-4"
-        loading={results[1].isLoading}
         dataSource={proxyList}
         pagination={false}
         scroll={{ y: 200 }}
@@ -85,22 +107,28 @@ const BackupProxyModal = memo((props: BackupProxyModalProps) => {
             title: '操作',
             dataIndex: 'operation',
             render: (_: unknown, record: GetProxyListResult) => (
-              <Popconfirm title="确定要切换当前代理" onConfirm={() => handleSetVpc(record.id)}>
-                <Button type="text" className="text-text_primary hover:!text-text_secondary">
-                  切换
-                </Button>
-              </Popconfirm>
+              <Space>
+                <Popconfirm title="确定要切换当前代理" onConfirm={() => handleSetVpc(record.id)}>
+                  <Button type="text" className="text-text_primary hover:!text-text_secondary">
+                    切换
+                  </Button>
+                </Popconfirm>
+                <PopconfirmButton onConfirm={() => handleDeleteVpc(record.id)} />
+              </Space>
             ),
           },
         ]}
       />
 
-      <div className="mt-4 text-center">
+      <div className="mt-4 text-center absolute top-10 right-6 flex flex-col gap-2">
         <Popconfirm title="确定清空该云机代理？" onConfirm={handleClearVpc}>
           <Button type="primary" danger>
             清空当前代理
           </Button>
         </Popconfirm>
+        <Button type="primary" onClick={handleGoToProxy}>
+          去添加代理
+        </Button>
       </div>
     </Modal>
   );
