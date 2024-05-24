@@ -77,26 +77,23 @@ const TableMain = (props: TableMainProps) => {
       }
     >
   >({});
-  const startScrcpyRef = useRef<{ envId: number; deviceId: string }>({
-    envId: -1,
+  const startScrcpyRef = useRef<StartScrcpyParams>({
     deviceId: '',
+    envId: -1,
+    name: '',
+    states: '',
+    containerName: '',
+    envName: '',
   });
 
   const currentStates = states.get(envId);
 
-  const switchSomeThing = async ({ deviceId, envId, name }: Omit<StartScrcpyParams, 'states' | 'containerName'>) => {
+  const switchSomeThing = async (params: StartScrcpyParams) => {
+    const { deviceId } = params;
     await window.adbApi.disconnect(deviceId);
     await window.adbApi.connect(deviceId);
-    setStates(envId, { loading: false, running: 'running', containerName: name });
-    startScrcpyRef.current = {
-      envId,
-      deviceId,
-    };
-    window.ipcRenderer.send('scrcpy:start', {
-      deviceId: startScrcpyRef.current.deviceId,
-      envId: startScrcpyRef.current.envId,
-      type: 'task',
-    });
+    startScrcpyRef.current = params;
+    handleScrcpyWindowOpen(params, 'switch');
   };
   useUpdateEffect(() => {
     if (isUndef(currentStates)) {
@@ -126,11 +123,7 @@ const TableMain = (props: TableMainProps) => {
     const computedTimer = nowTimer - timer;
     if (computedTimer < 30000) {
       setTimeout(() => {
-        switchSomeThing({
-          envId: props.envId,
-          deviceId: props.deviceId,
-          name: currentStates?.containerName || '',
-        });
+        switchSomeThing(startScrcpyRef.current);
       }, computedTimer);
     }
   }, [props.envId]);
@@ -217,6 +210,10 @@ const TableMain = (props: TableMainProps) => {
                   handleRestartScrcpy({
                     deviceId: record.deviceId,
                     envId: record.envId ?? -1,
+                    name: record.Names,
+                    containerName: record.containerName,
+                    envName: record.envName,
+                    states: record.State,
                   })
                 }
                 onClick={() =>
@@ -232,22 +229,6 @@ const TableMain = (props: TableMainProps) => {
               >
                 {btnText}
               </RunButton>
-              {/*<Button*/}
-              {/*  size="small"*/}
-              {/*  type="primary"*/}
-              {/*  danger={record.running === 'running'}*/}
-              {/*  onClick={() =>*/}
-              {/*    handleStartScrcpy({*/}
-              {/*      deviceId: record.deviceId,*/}
-              {/*      envId: record.envId ?? -1,*/}
-              {/*      name: record.Names,*/}
-              {/*      containerName: record.containerName,*/}
-              {/*      states: record.State,*/}
-              {/*    })*/}
-              {/*  }*/}
-              {/*>*/}
-              {/*  {btnText}*/}
-              {/*</Button>*/}
               <Button type="text" size="small">
                 编辑
               </Button>
@@ -299,7 +280,8 @@ const TableMain = (props: TableMainProps) => {
    * 启动scrcpy的窗口的逻辑，
    * 同时增加一个500ms的延时防抖效果
    *  */
-  const handleStartScrcpy = debounce(({ deviceId, envId, name, states: startStates, containerName, envName }: StartScrcpyParams) => {
+  const handleStartScrcpy = debounce((params: StartScrcpyParams) => {
+    const { deviceId, envId, name, states: startStates, containerName } = params;
     console.log('clicked');
     // 如果当前启动的备份和当前页面的备份一致，则停止当前的scrcpy
     if (containerName === name && startStates === 'running') {
@@ -319,6 +301,7 @@ const TableMain = (props: TableMainProps) => {
         loading: true,
         running: 'waiting',
         containerName: name,
+        type: 'switch',
       });
       window.ipcRenderer.send('scrcpy:stop', { deviceId });
       runBackupMutation.mutate({
@@ -327,43 +310,34 @@ const TableMain = (props: TableMainProps) => {
       });
       timeoutRef.current[envId] = {
         timeId: setTimeout(async () => {
-          switchSomeThing({ envId, deviceId, name });
+          switchSomeThing(params);
         }, 30000),
         timer: new Date().getTime(),
       };
     } else {
-      console.log(envId, 'envId');
-      window.ipcRenderer.send('scrcpy:start', {
-        deviceId,
-        envId,
-        backupName: name,
-        envName,
-        type: 'run',
-      });
-      setStates(envId, {
-        running: 'waiting',
-        loading: true,
-        containerName: name,
-        type: 'run',
-      });
-      // window.ipcRenderer.send('scrcpy:start', {
-      //   deviceId,
-      //   envId,
-      //   type: 'notask',
-      // });
-      // setStates(envId, {
-      //   running: 'running',
-      //   loading: false,
-      //   containerName: name,
-      // });
+      handleScrcpyWindowOpen(params, 'start');
     }
   }, 500);
 
-  const handleRestartScrcpy = ({ deviceId, envId }: Pick<StartScrcpyParams, 'deviceId' | 'envId'>) => {
+  /** 点击重启按钮的逻辑 */
+  const handleRestartScrcpy = (params: StartScrcpyParams) => {
+    handleScrcpyWindowOpen(params, 'restart');
+  };
+  /** 打开scrcpy窗口的逻辑, 同时发送到客户端启动或重启scrcpy窗口 */
+  const handleScrcpyWindowOpen = (params: StartScrcpyParams, type: States['type'] = 'start') => {
+    const { deviceId, envId, name, envName } = params;
     window.ipcRenderer.send('scrcpy:start', {
       deviceId,
       envId,
-      type: 'notask',
+      backupName: name,
+      envName,
+      type,
+    });
+    setStates(envId, {
+      running: 'waiting',
+      loading: true,
+      containerName: name,
+      type,
     });
   };
 
@@ -383,8 +357,21 @@ const TableMain = (props: TableMainProps) => {
   }, [deviceId, envName, envId, Object.values(currentStates || {})]);
 
   let spinContent = '正在切换备份，请稍后...';
-  if (currentStates && (currentStates.type === 'run' || currentStates.loading)) {
-    spinContent = '正在启动中..';
+  if (currentStates && currentStates.loading) {
+    switch (currentStates.type) {
+      case 'start':
+        spinContent = '正在启动备份，请稍后...';
+        break;
+      case 'restart':
+        spinContent = '正在重启备份，请稍后...';
+        break;
+      case 'switch':
+        spinContent = '正在切换备份，请稍后...';
+        break;
+      default:
+        spinContent = '正在切换备份，请稍后...';
+        break;
+    }
   }
 
   return (

@@ -1,16 +1,15 @@
-// @ts-nocheck
-import { scrcpyProcessObj } from '/electron/main.ts';
 import { spawn } from 'node:child_process';
-import { getScrcpyCwd } from '/electron/utils';
-import { checkWindowExists } from './utils/getActiveWindowRect';
+import { getScrcpyCwd, isMac, killProcessWithWindows } from '/electron/utils';
 import { BrowserWindow } from 'electron';
+import { checkWindowExists } from './utils/getActiveWindowRect';
 
 export default class Scrcpy<T extends EleApp.ProcessObj> {
-  progressObj = {};
+  processObj: EleApp.ProcessObj = {};
+  processInfo: Record<string, SendChannelMap['scrcpy:start'][0]> = {};
   mainWindow: BrowserWindow | null = null;
 
   constructor(obj: T) {
-    this.progressObj = obj;
+    this.processObj = obj;
   }
 
   /**
@@ -21,19 +20,25 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    * @param params.name 环境名字
    * @param replyCallback 对渲染层通信的回调函数
    */
-  public startWindow(params: SendChannelMap['scrcpy:start'][0], replyCallback: GenericsFn<[string, any]>) {
-    const { deviceId, envId, backupName, envName } = params;
+  public async startWindow(params: SendChannelMap['scrcpy:start'][0], replyCallback: GenericsFn<[string, any]>) {
+    const { deviceId, envId, backupName, envName, type: paramsType } = params;
     const title = `${envName}-(${backupName})`;
-    console.log('envId', envId);
     const scrcpyCwd = getScrcpyCwd();
 
+    // 重启
+    if (paramsType === 'restart') {
+      await this.killProcess(deviceId);
+    }
+
     this.taskFindWindow(title, envId, backupName);
+
     // const listenWindowTimeId: NodeJS.Timeout | null = null;
-    scrcpyProcessObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', title, '--window-width', '381', '--window-height', '675'], {
+    this.processObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', title, '--window-width', '381', '--window-height', '675'], {
       cwd: scrcpyCwd,
       shell: true,
     });
-    scrcpyProcessObj[deviceId].stdout.on('data', (data: AnyObj) => {
+    this.processInfo[deviceId] = params;
+    this.processObj[deviceId].stdout.on('data', (data: AnyObj) => {
       const strData = data.toString();
       console.error(`stdout: ${strData}`);
 
@@ -45,7 +50,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
         });
       }
     });
-    scrcpyProcessObj[deviceId].stderr.on('data', (data: AnyObj) => {
+    this.processObj[deviceId].stderr.on('data', (data: AnyObj) => {
       const strData = data.toString();
       console.log(`stdrr: ${strData}`);
 
@@ -53,15 +58,40 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
         replyCallback('error', strData);
       }
     });
-    scrcpyProcessObj[deviceId].on('close', () => {
+    this.processObj[deviceId].on('close', () => {
       // 通知渲染层当前的scrcpy关闭了
       replyCallback('close-device-envId', envId);
     });
   }
 
+  /**
+   * 停止scrcpy窗口
+   */
+  public async closeWindow(deviceId: string) {
+    if (this.processObj[deviceId]) {
+      await this.killProcess(deviceId);
+      delete this.processInfo[deviceId];
+    }
+  }
+
   /** 设置主窗口 */
   public setMainWindow(mainWin: BrowserWindow) {
     this.mainWindow = mainWin;
+  }
+
+  /**
+   * 杀死进程
+   * @param deviceId
+   * @private
+   */
+  private async killProcess(deviceId: string) {
+    if (isMac) {
+      this.processObj[deviceId].kill('SIGTERM');
+      delete this.processObj[deviceId];
+    } else {
+      killProcessWithWindows(this.processObj[deviceId].pid!);
+      delete this.processObj[deviceId];
+    }
   }
 
   /**
@@ -83,16 +113,28 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    * @private
    */
   private taskFindWindow(winName: string, envId: number, backupName: string) {
+    const maxAttempt = 10;
+    let attempt = 0;
     const findWinTimeId = setInterval(() => {
-      const checkRes = this.checkCurrentWindowExist(winName);
-      if (checkRes && findWinTimeId) {
+      if (attempt >= maxAttempt) {
         clearInterval(findWinTimeId);
-        console.log(envId, 'envId');
         this.mainWindow?.webContents.send('scrcpy:start-window-open', {
           envId,
           backupName,
+          isSuccess: false,
         });
       }
+      const checkRes = this.checkCurrentWindowExist(winName);
+      console.log('checkres', checkRes);
+      if (checkRes && findWinTimeId) {
+        clearInterval(findWinTimeId);
+        this.mainWindow?.webContents.send('scrcpy:start-window-open', {
+          envId,
+          backupName,
+          isSuccess: true,
+        });
+      }
+      attempt++;
     }, 1000);
   }
 }

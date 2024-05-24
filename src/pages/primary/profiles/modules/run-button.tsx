@@ -23,7 +23,6 @@ const RunButton: React.FC<RunButtonProps> = (props) => {
           items: items,
           onClick: onRestartClick,
         }}
-        onClick={() => null}
       >
         {children}
       </Dropdown.Button>

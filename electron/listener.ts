@@ -68,15 +68,6 @@ export default function createListener(options: CreateListenerOptions) {
     return window?.isMaximized();
   });
 
-  const killProcess = (deviceId: string) => {
-    if (isMac) {
-      scrcpyProcessObj[deviceId].kill('SIGTERM');
-      delete scrcpyProcessObj[deviceId];
-    } else {
-      killProcessWithWindows(scrcpyProcessObj[deviceId].pid!);
-      delete scrcpyProcessObj[deviceId];
-    }
-  };
   /** 启动scrcpy **/
   im.on('scrcpy:start', async (event, params) => {
     scrcpy.startWindow(params, (channel, channelData) => event.reply(channel, channelData));
@@ -148,11 +139,8 @@ export default function createListener(options: CreateListenerOptions) {
     //   handleOpenScrcpyWindow(title);
     // }
   });
-  im.on('scrcpy:stop', async (_, { deviceId }) => {
-    console.log('stop scrcpy');
-    killProcess(deviceId);
-  });
-
+  im.on('scrcpy:stop', async (_, { deviceId }) => scrcpy.closeWindow(deviceId));
+  // im.on('scrcpy:restart', async (event, { deviceId }) => scrcpy.restartWindow(deviceId, (channel, channelData) => event.reply(channel, channelData)));
   /** 关闭和重启 */
   im.on('app:operate', (_, operation) => {
     if (operation === 'close') {

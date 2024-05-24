@@ -11,9 +11,9 @@ async function adbConnect(deviceId: string) {
     console.error('No device found');
     window.adbApi.connect(deviceId);
   } else if (findDevice.type === 'offline') {
-    window.adbApi.disconnect(deviceId);
-    window.adbApi.connect(deviceId);
+    window.adbApi.reconnect(deviceId);
   }
+
   return null;
 }
 

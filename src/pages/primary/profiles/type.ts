@@ -4,7 +4,7 @@ export interface States {
   loading: boolean;
   running: 'running' | 'waiting' | 'stop';
   containerName: string;
-  type?: 'run';
+  type?: 'start' | 'restart' | 'switch';
 }
 
 export interface DataType {

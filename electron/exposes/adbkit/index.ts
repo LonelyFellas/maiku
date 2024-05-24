@@ -11,6 +11,10 @@ export default function adbkit(): Partial<Window['adbApi']> {
     // shellAdb: (command) => exec(command),
     connect: async (...params) => client.connect(...params),
     disconnect: async (...params) => client.disconnect(...params),
+    reconnect: async (...params) => {
+      client.disconnect(...params);
+      client.connect(...params);
+    },
     reboot: async (serial: string) => client.getDevice(serial).reboot(),
     getDevice: (serial) => client.getDevice(serial),
     listDevices: async () => client.listDevices(),
