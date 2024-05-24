@@ -11,7 +11,6 @@ async function adbConnect(deviceId: string) {
     console.error('No device found');
     window.adbApi.connect(deviceId);
   } else if (findDevice.type === 'offline') {
-    window.adbApi.reboot(deviceId);
     window.adbApi.disconnect(deviceId);
     window.adbApi.connect(deviceId);
   }
@@ -22,7 +21,6 @@ export default function Profiles() {
   const [currentKey, setCurrentKey] = useState(0);
   const { data: envList, isRefetching, isFetching } = useSuspenseQuery(postsEnvQueryOptions);
   const collapsedItems = envList?.find((li) => li.id === currentKey);
-  console.log(collapsedItems);
   useQuery({
     queryKey: ['connect adb', currentKey, collapsedItems],
     queryFn: () => adbConnect(collapsedItems?.adbAddr ?? ''),

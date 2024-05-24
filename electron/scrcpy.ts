@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { scrcpyProcessObj } from '/electron/main.ts';
 import { spawn } from 'node:child_process';
 import { getScrcpyCwd } from '/electron/utils';
@@ -27,7 +28,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     const scrcpyCwd = getScrcpyCwd();
 
     this.taskFindWindow(title, envId, backupName);
-    const listenWindowTimeId: NodeJS.Timeout | null = null;
+    // const listenWindowTimeId: NodeJS.Timeout | null = null;
     scrcpyProcessObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', title, '--window-width', '381', '--window-height', '675'], {
       cwd: scrcpyCwd,
       shell: true,

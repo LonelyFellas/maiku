@@ -2,7 +2,10 @@ import path from 'node:path';
 import { Adb } from '@devicefarmer/adbkit';
 
 export default function adbkit(): Partial<Window['adbApi']> {
-  const client = Adb.createClient();
+  const getAdbPath = import.meta.env.DEV ? 'electron/resources/extra/win/scrcpy/adb.exe' : path.join(__dirname, '../../../lib/extra/win/scrcpy/adb.exe');
+  const client = Adb.createClient({
+    bin: getAdbPath,
+  });
   // console.log(import.meta);
   return {
     // shellAdb: (command) => exec(command),
@@ -10,10 +13,7 @@ export default function adbkit(): Partial<Window['adbApi']> {
     disconnect: async (...params) => client.disconnect(...params),
     reboot: async (serial: string) => client.getDevice(serial).reboot(),
     getDevice: (serial) => client.getDevice(serial),
-    listDevices: async () => {
-      const list = await client.listDevices();
-      return list;
-    },
+    listDevices: async () => client.listDevices(),
     // getStatus: () => client.(),
     getPackages: (serial: string) => client.getDevice(serial).getPackages(),
     kill: () => client.kill(),
@@ -43,10 +43,7 @@ export default function adbkit(): Partial<Window['adbApi']> {
         });
       });
     },
-    readdir: async (id, filePath) => {
-      const files = await client.getDevice(id).readdir(filePath);
-      return files;
-    },
+    readdir: async (id, filePath) => client.getDevice(id).readdir(filePath),
     shellResult: async (id, command) => {
       return client
         .getDevice(id)
