@@ -3,8 +3,7 @@ import path from 'node:path';
 import * as process from 'node:process';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import type Store from 'electron-store';
-import { isMac, killProcessWithWindows } from '/electron/utils';
-import { scrcpy, scrcpyProcessObj } from './main';
+import { scrcpy } from './main';
 
 interface CreateListenerOptions {
   store: Store<typeof import('./config/electron-store-schema.json')>;
