@@ -50,7 +50,6 @@ const BackupProxyModal = memo((props: BackupProxyModalProps) => {
       results[0].refetch();
     },
   });
-  console.log(results[1].isRefetching);
   /** 设置当前代理 */
   const handleSetVpc = (vpcId: number) => {
     setMutation.mutate({ envId, vpcId });
