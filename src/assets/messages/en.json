@@ -1,6 +1,9 @@
 {
   "basic": {
-    "project_name": "maiku-net"
+    "project_name": "maiku-net",
+    "pagination_items": "Total: ",
+    "cmp_popconfirm_button_title": "Confirm Delete",
+    "cmp_popconfirm_button_text": "Delete"
   },
   "login": {
     "login": {
@@ -163,5 +166,18 @@
     "column_address_title": "Proxy Address",
     "column_order_title": "Order",
     "column_remark_title": "Remarks"
+  },
+  "file_transfer": {
+    "tb_col_fileName": "File Name",
+    "tb_col_customName": "Custom Name",
+    "tb_col_fileSize": "File Size",
+    "tb_col_uploadTime": "Upload Time",
+    "tb_col_operation": "Operation",
+    "tb_col_operation_text": "Delete",
+    "delete_msg": "File deleted successfully!",
+    "upload_success_msg": "-Upload successful",
+    "upload_fail_msg": "-Upload failed",
+    "upload_h1": "Click the file or drag the file to this area to upload",
+    "upload_h2": "Strictly prohibit uploading company data, user data, or other confidential files! The size of a single file should not exceed 100M, and no more than 9 files should be uploaded at a time!"
   }
 }

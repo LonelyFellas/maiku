@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { type TableProps as AntdTableProps } from 'antd';
-import { cn, useTableScroll } from '@/common';
+import { cn, useI18nConfig, useTableScroll } from '@/common';
 import { TableFetch } from '../table-fetch';
 
 interface TableProps extends AntdTableProps {
@@ -17,8 +17,9 @@ interface TableProps extends AntdTableProps {
  * @constructor
  */
 const Table = (props: TableProps) => {
+  const [lang] = useI18nConfig('config.basic');
   const { tableClassName, pagination, className, paginationTop = 0, ...restProps } = props;
-  const { defaultPageSize = 10, total, showTotal = (total: number) => `总共${total}条`, showSizeChanger = true, ...restPagination } = pagination || {};
+  const { defaultPageSize = 10, total, showTotal = (total: number) => `${lang.pagination_items}${total}`, showSizeChanger = true, ...restPagination } = pagination || {};
   const scrollRef = useRef<HTMLDivElement>(null);
   const scroll = useTableScroll({
     scrollRef,

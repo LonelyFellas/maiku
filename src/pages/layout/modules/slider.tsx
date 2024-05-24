@@ -3,7 +3,22 @@ import { App, Button, Menu, type MenuProps, Tooltip } from 'antd';
 import { useNavigate } from '@tanstack/react-router';
 import { useLocalStorage } from '@darwish/hooks-core';
 import { Scrollbar } from '@darwish/scrollbar-react';
-import { AppstoreOutlined, CalendarOutlined, ExclamationCircleOutlined, GiftOutlined, LinkOutlined, MailOutlined, MenuFoldOutlined, MenuUnfoldOutlined, PlusOutlined, SettingOutlined, TikTokOutlined, FolderOpenOutlined } from '@ant-design/icons';
+import {
+  AppstoreOutlined,
+  CalendarOutlined,
+  ContainerOutlined,
+  DesktopOutlined,
+  ExclamationCircleOutlined,
+  GiftOutlined,
+  LinkOutlined,
+  MailOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  PlusOutlined,
+  SettingOutlined,
+  TikTokOutlined,
+  FolderOpenOutlined,
+} from '@ant-design/icons';
 import { useI18nConfig, isMacFunc, useRouteMeta, getItem } from '@common';
 import type { ItemType, MenuItemType } from 'antd/es/menu/hooks/useItems';
 import avatar from '/public/electron-vite.animate.svg';
@@ -23,7 +38,7 @@ const Slider = () => {
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   const [openKeys, setOpenKeys] = useState<string[]>([]);
   const items: ItemType<MenuItemType>[] = [
-    getItem(lang.menu_name_1, 'primary', <MailOutlined />, [getItem(lang.menu_name_1_1, 'profiles', <MailOutlined />), getItem(lang.menu_name_1_2, '1-2', <MailOutlined />)]),
+    getItem(lang.menu_name_1, 'primary', <DesktopOutlined />, [getItem(lang.menu_name_1_1, 'profiles', <ContainerOutlined />), getItem(lang.menu_name_1_2, '1-2', <MailOutlined />)]),
     getItem(lang.menu_name_2, 'discover', <CalendarOutlined />, [
       getItem(lang.menu_name_2_1, 'proxy', <AppstoreOutlined />),
       getItem(lang.menu_name_2_2, 'file_transfer', <FolderOpenOutlined />),
