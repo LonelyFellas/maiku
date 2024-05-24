@@ -1,11 +1,11 @@
-import { app, BrowserWindow, ipcMain, screen } from 'electron';
 import path from 'node:path';
-import { isProd, createLoadWindow, createBrowserWindow, createTray, isMac, __dirname, closeAllScrcpyDevices } from './utils';
+import { app, BrowserWindow, ipcMain, screen } from 'electron';
 import Store from 'electron-store';
-import type { ChildProcessWithoutNullStreams } from 'node:child_process';
 import schema from './config/electron-store-schema.json';
 import createListener from '/electron/listener';
 import Updater from './updater';
+import { __dirname, closeAllScrcpyDevices, createBrowserWindow, createLoadWindow, createTray, isMac, isProd } from './utils';
+import Scrcpy from '/electron/scrcpy.ts';
 
 process.env.APP_ROOT = path.join(__dirname, '..');
 
@@ -14,7 +14,8 @@ export const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL'];
 export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron');
 export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist');
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST;
-export const scrcpyProcessObj: Record<string, ChildProcessWithoutNullStreams> = {};
+export const scrcpyProcessObj: EleApp.ProcessObj = {};
+export const scrcpy = new Scrcpy(scrcpyProcessObj || {});
 
 // 初始化electron-store
 export const store = new Store({ defaults: schema });
@@ -28,7 +29,7 @@ function createMainWindow() {
   mainWin = createBrowserWindow({
     frame: isMac,
     show: false,
-    icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
+    icon: path.join(process.env.VITE_PUBLIC ?? '', 'electron-vite.svg'),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: true,
@@ -79,6 +80,11 @@ function createMainWindow() {
       }
     }
   });
+  if (mainWin) {
+    // 给主窗口设置scrcpy实例
+    // 后续scrcpy窗口进行操作时有可能需要的对渲染层发消息
+    scrcpy.setMainWindow(mainWin);
+  }
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -99,6 +105,7 @@ app.on('ready', () => {
     loading: true,
   });
   loadingWin = createLoadWindow(loadingWin);
+
   createMainWindow();
 });
 

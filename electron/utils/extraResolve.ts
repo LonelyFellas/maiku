@@ -1,6 +1,6 @@
-import path, { resolve} from "node:path"
-import { app } from "electron";
-import {fileURLToPath} from "node:url";
+import path, { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { app } from 'electron';
 
 /**
  * Resolve the path of the extra resource.

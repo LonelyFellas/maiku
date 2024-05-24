@@ -11,10 +11,9 @@ async function adbConnect(deviceId: string) {
     console.error('No device found');
     window.adbApi.connect(deviceId);
   } else if (findDevice.type === 'offline') {
-    window.adbApi.reboot(deviceId);
-    window.adbApi.disconnect(deviceId);
-    window.adbApi.connect(deviceId);
+    window.adbApi.reconnect(deviceId);
   }
+
   return null;
 }
 
@@ -46,7 +45,7 @@ export default function Profiles() {
         }}
       />
       <div className="flex-1 overflow-hidden">
-        <TableMain isRefetching={isRefetching} deviceId={collapsedItems ? collapsedItems.adbAddr : ''} envId={collapsedItems?.id ?? 0} />
+        <TableMain envName={collapsedItems?.name ?? ''} isRefetching={isRefetching} deviceId={collapsedItems?.adbAddr ?? ''} envId={collapsedItems?.id ?? 0} />
       </div>
     </div>
   );

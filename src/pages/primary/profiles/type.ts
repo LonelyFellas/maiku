@@ -4,6 +4,7 @@ export interface States {
   loading: boolean;
   running: 'running' | 'waiting' | 'stop';
   containerName: string;
+  type?: 'start' | 'restart' | 'switch';
 }
 
 export interface DataType {
@@ -24,6 +25,7 @@ export interface DataType {
   envId?: number;
   running: States['running'];
   containerName: States['containerName'];
+  envName: string;
 }
 
 export interface StartScrcpyParams {
@@ -32,4 +34,5 @@ export interface StartScrcpyParams {
   name: string;
   states: string;
   containerName: string;
+  envName: string;
 }

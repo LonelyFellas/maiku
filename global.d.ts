@@ -15,7 +15,15 @@ declare global {
     'dialog:open': [OpenDialogOptions, string[] | { url: string; name: string; size: number }[]];
   };
   type SendChannelMap = {
-    'scrcpy:start': [{ deviceId: string; envId: number; type: 'task' | 'notask' }];
+    'scrcpy:start': [
+      {
+        deviceId: string;
+        envId: number;
+        type: 'start' | 'restart' | 'switch';
+        backupName: string;
+        envName: string;
+      },
+    ];
     'scrcpy:stop': [{ deviceId: string }];
     'app:operate': ['close' | 'restart'];
     'loading:done': ['main' | 'loading'];
@@ -30,6 +38,9 @@ declare global {
     'close-device-envId': GenericsFn<[unknown, number], any>;
     'scrcpy:env-win-exist': GenericsFn<[unknown, string], void>;
     'open-scrcpy-window': Darwish.AnyFunc;
+    // prettier-ignore
+    'scrcpy:start-window-open': GenericsFn<[unknown, { envId: number, backupName: string, isSuccess?: boolean }]
+    >;
   };
 
   interface IpcRenderer extends Omit<IpcRenderer, 'invoke' | 'send'> {
@@ -65,6 +76,7 @@ declare global {
     adbApi: {
       connect: Client['connect'];
       disconnect: Client['disconnect'];
+      reconnect: Client['connect'];
       reboot: Client['reboot'];
       getDevice: Client['getDevice'];
       listDevices: () => Promise<{ type: 'device' | 'offline'; id: string }[]>;
