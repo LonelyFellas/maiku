@@ -7,7 +7,7 @@ import '../style.css';
 const NotificationCenter = () => {
   const [lang] = useI18nConfig('config.layout.header.notification');
   return (
-    <Popover overlayClassName="header_btn" placement="bottomRight" title={lang.title} content={<ContentView emptyTitle={lang.empty_title} />} trigger="click">
+    <Popover overlayClassName="header_btn" placement="bottomRight" title={lang?.title} content={<ContentView emptyTitle={lang?.empty_title} />} trigger="click">
       <>
         <OptionItem icon={BellOutlined} />
       </>

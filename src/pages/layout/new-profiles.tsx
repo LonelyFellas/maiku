@@ -69,10 +69,10 @@ export default function NewProfiles() {
     mutationKey: ['add-env'],
     onSuccess: () => {
       modal.confirm({
-        title: lang.add_confirm_title,
-        content: lang.add_confirm_content,
-        okText: lang.add_confirm_okText,
-        cancelText: lang.add_confirm_cancelText,
+        title: lang?.add_confirm_title,
+        content: lang?.add_confirm_content,
+        okText: lang?.add_confirm_okText,
+        cancelText: lang?.add_confirm_cancelText,
         onOk: () => {
           form.resetFields();
         },
@@ -90,10 +90,10 @@ export default function NewProfiles() {
     mutationKey: ['add-edit-env', id],
     onSuccess: () => {
       modal.confirm({
-        title: lang.edit_confirm_title,
-        content: lang.edit_confirm_content,
-        okText: lang.edit_confirm_okText,
-        cancelText: lang.edit_confirm_cancelText,
+        title: lang?.edit_confirm_title,
+        content: lang?.edit_confirm_content,
+        okText: lang?.edit_confirm_okText,
+        cancelText: lang?.edit_confirm_cancelText,
         onCancel: () => {
           history.go(-1);
           form.resetFields();
@@ -117,11 +117,11 @@ export default function NewProfiles() {
 
   const handleCancel = () => {
     modal.confirm({
-      title: lang.cancel_confirm_title,
+      title: lang?.cancel_confirm_title,
       icon: <ExclamationCircleOutlined />,
-      content: lang.cancel_confirm_content,
-      okText: lang.cancel_confirm_okText,
-      cancelText: lang.cancel_confirm_cancelText,
+      content: lang?.cancel_confirm_content,
+      okText: lang?.cancel_confirm_okText,
+      cancelText: lang?.cancel_confirm_cancelText,
       onOk: () => {
         history.go(-1);
       },
@@ -167,9 +167,9 @@ export default function NewProfiles() {
               px_type: 1,
             }}
           >
-            <h1 className="font-bold border-b-[1px] pl-3 py-1 rounded-sm mb-6 pb-3">{lang.form_title1}</h1>
-            <Form.Item label={lang.form_title1_item1Env} name="name" className="mb-4" required rules={[{ required: true, message: lang.form_title1_item1Env_placeholder }]}>
-              <Input placeholder={lang.form_title1_item1Env_placeholder} style={inputStyle} />
+            <h1 className="font-bold border-b-[1px] pl-3 py-1 rounded-sm mb-6 pb-3">{lang?.form_title1}</h1>
+            <Form.Item label={lang?.form_title1_item1Env} name="name" className="mb-4" required rules={[{ required: true, message: lang?.form_title1_item1Env_placeholder }]}>
+              <Input placeholder={lang?.form_title1_item1Env_placeholder} style={inputStyle} />
             </Form.Item>
             {/*<h1 className={titleStyle}>云手机信息:</h1>*/}
 
@@ -177,17 +177,17 @@ export default function NewProfiles() {
               defaultActiveKey={['1']}
               items={[
                 {
-                  label: lang.form_title2,
+                  label: lang?.form_title2,
                   key: '1',
                   children: (
                     <>
-                      <Form.Item label={lang.form_title2_item1Disk} name="disk" className="mt-4">
-                        <InputNumber placeholder={lang.form_title2_item1Disk_placeholder} style={inputStyle} />
+                      <Form.Item label={lang?.form_title2_item1Disk} name="disk" className="mt-4">
+                        <InputNumber placeholder={lang?.form_title2_item1Disk_placeholder} style={inputStyle} />
                       </Form.Item>
-                      <Form.Item label={lang.form_title2_item2Memory} name="memory">
-                        <InputNumber placeholder={lang.form_title2_item2Memory_placeholder} style={inputStyle} />
+                      <Form.Item label={lang?.form_title2_item2Memory} name="memory">
+                        <InputNumber placeholder={lang?.form_title2_item2Memory_placeholder} style={inputStyle} />
                       </Form.Item>
-                      <Form.Item label={lang.form_title2_item3DPI} className="new_profiles_compact h-[32px] mb-0" required>
+                      <Form.Item label={lang?.form_title2_item3DPI} className="new_profiles_compact h-[32px] mb-0" required>
                         <Resolution pxType={pxType} />
                       </Form.Item>
                     </>
@@ -199,15 +199,15 @@ export default function NewProfiles() {
               defaultActiveKey={['1']}
               items={[
                 {
-                  label: lang.form_title3,
+                  label: lang?.form_title3,
                   key: '1',
                   children: (
                     <>
                       {!isEdit ? (
-                        <Form.Item label={lang.form_title3_item1Type} className="mt-4" name="formProxyType">
+                        <Form.Item label={lang?.form_title3_item1Type} className="mt-4" name="formProxyType">
                           <Radio.Group value={proxyType}>
-                            <Radio.Button value="custom">{lang.form_title3_item1Type_custom}</Radio.Button>
-                            <Radio.Button value="list">{lang.form_title3_item1Type_list}</Radio.Button>
+                            <Radio.Button value="custom">{lang?.form_title3_item1Type_custom}</Radio.Button>
+                            <Radio.Button value="list">{lang?.form_title3_item1Type_list}</Radio.Button>
                           </Radio.Group>
                         </Form.Item>
                       ) : null}
@@ -224,9 +224,9 @@ export default function NewProfiles() {
         </Scrollbar>
         <Divider className="mt-0 my-4" />
         <Space>
-          <Button onClick={handleCancel}>{lang.form_cancel_btn}</Button>
+          <Button onClick={handleCancel}>{lang?.form_cancel_btn}</Button>
           <Button type="primary" onClick={handleSubmit} loading={addMutation.isPending || editMutation.isPending}>
-            {lang.form_submit_btn}
+            {lang?.form_submit_btn}
           </Button>
         </Space>
       </div>

@@ -19,7 +19,7 @@ interface TableProps extends AntdTableProps {
 const Table = (props: TableProps) => {
   const [lang] = useI18nConfig('config.basic');
   const { tableClassName, pagination, className, paginationTop = 0, ...restProps } = props;
-  const { defaultPageSize = 10, total, showTotal = (total: number) => `${lang.pagination_items}${total}`, showSizeChanger = true, ...restPagination } = pagination || {};
+  const { defaultPageSize = 10, total, showTotal = (total: number) => `${lang?.pagination_items}${total}`, showSizeChanger = true, ...restPagination } = pagination || {};
   const scrollRef = useRef<HTMLDivElement>(null);
   const scroll = useTableScroll({
     scrollRef,

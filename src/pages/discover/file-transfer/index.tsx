@@ -20,7 +20,7 @@ export default function FileTransferStation() {
     mutationKey: ['delete-files'],
     mutationFn: postDeleteFileService,
     onSuccess: () => {
-      message.success(lang.delete_msg);
+      message.success(lang?.delete_msg);
       refetchPostsFile();
     },
   });
@@ -29,10 +29,10 @@ export default function FileTransferStation() {
     setRecordFiles(info.fileList);
     const { status } = info.file;
     if (status === 'done') {
-      message.success(`${info.file.name} ${lang.upload_success_msg}.`);
+      message.success(`${info.file.name} ${lang?.upload_success_msg}.`);
       refetchPostsFile();
     } else if (status === 'error') {
-      message.error(`${info.file.name} ${lang.upload_fail_msg}.`);
+      message.error(`${info.file.name} ${lang?.upload_fail_msg}.`);
     }
   };
 
@@ -57,30 +57,30 @@ export default function FileTransferStation() {
   };
   const columns: AntdColumns<GetFilesListResult> = [
     {
-      title: lang.tb_col_fileName,
+      title: lang?.tb_col_fileName,
       dataIndex: 'name',
       key: 'name',
     },
     {
-      title: lang.tb_col_customName,
+      title: lang?.tb_col_customName,
       dataIndex: 'customName',
       key: 'customName',
     },
     {
-      title: lang.tb_col_fileSize,
+      title: lang?.tb_col_fileSize,
       dataIndex: 'size',
       key: 'size',
       width: 80,
       render: (text: number) => fileSizeFormat(text),
     },
     {
-      title: lang.tb_col_uploadTime,
+      title: lang?.tb_col_uploadTime,
       dataIndex: 'create_at',
       key: 'create_at',
       render: (text: number) => timeFormatHours(text),
     },
     {
-      title: lang.tb_col_operation,
+      title: lang?.tb_col_operation,
       dataIndex: 'operation',
       key: 'operation',
       fixed: 'right',
@@ -108,8 +108,8 @@ export default function FileTransferStation() {
           <p className="ant-upload-drag-icon !mb-0">
             <InboxOutlined />
           </p>
-          <p className="ant-upload-text">{lang.upload_h1}</p>
-          <p className="ant-upload-hint !text-12sm 2xl:!text-[14px]">{lang.upload_h2}</p>
+          <p className="ant-upload-text">{lang?.upload_h1}</p>
+          <p className="ant-upload-hint !text-12sm 2xl:!text-[14px]">{lang?.upload_h2}</p>
         </Dragger>
       </div>
     </div>
