@@ -1,7 +1,9 @@
-import { spawn } from 'node:child_process';
+import { spawn, execFile } from 'node:child_process';
 import { getScrcpyCwd, isMac, killProcessWithWindows } from '/electron/utils';
+import path from 'node:path';
 import { BrowserWindow } from 'electron';
 import { checkWindowExists } from './utils/getActiveWindowRect';
+import { __dirname } from '/electron/utils';
 
 export default class Scrcpy<T extends EleApp.ProcessObj> {
   processObj: EleApp.ProcessObj = {};
@@ -77,6 +79,20 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
   /** 设置主窗口 */
   public setMainWindow(mainWin: BrowserWindow) {
     this.mainWindow = mainWin;
+  }
+
+  public setupPythonWindow() {
+    const devPyPath = path.join(__dirname, '../electron/resources/extra/win/scrcpy/py-main.exe');
+    execFile(devPyPath, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`stderr: ${error}`);
+        return;
+      }
+      console.log(`Output: ${stdout}`);
+      if (stderr) {
+        console.error(`Error: ${stderr}`);
+      }
+    });
   }
 
   /**
