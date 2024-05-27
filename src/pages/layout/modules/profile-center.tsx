@@ -1,10 +1,10 @@
 import { Flex, Menu, Popover, Space } from 'antd';
+import { useLocalStorage } from '@darwish/hooks-core';
 import { AndroidFilled, CaretDownOutlined, GlobalOutlined, LogoutOutlined } from '@ant-design/icons';
 import { useNavigate } from '@tanstack/react-router';
 import { Constants, getItem, useI18nConfig } from '@common';
 import { MenuItem } from '@common/utils/get-item';
 import '../style.css';
-import { useLocalStorage } from '@darwish/hooks-core';
 
 const ProfileCenter = () => {
   const [{ username }] = useLocalStorage<UserInfo>(Constants.LOCAL_LOGIN_INFO);
@@ -17,7 +17,7 @@ const ProfileCenter = () => {
         </div>
         <Flex vertical gap={6}>
           <span className="text-sm text-[12px] leading-[12px]">{username}</span>
-          <span className="text-gray-900/50 text-[10px] leading-[10px]">{lang.role}</span>
+          <span className="text-gray-900/50 text-[10px] leading-[10px]">{lang?.role}</span>
         </Flex>
         <div className="-mt-1">
           <CaretDownOutlined className="text-[12px] text-text_secondary/40" />
@@ -37,7 +37,7 @@ const ContentView = (props: { name: string }) => {
 
     getItem(config.lang, 'lang', <GlobalOutlined />, [getItem('简体中文', 'lang-zh'), getItem('English', 'lang-en')]),
 
-    getItem(lang.exit_system, 'exit system', <LogoutOutlined />),
+    getItem(lang?.exit_system, 'exit system', <LogoutOutlined />),
   ];
 
   /** Menu item 点击事件的处理 */

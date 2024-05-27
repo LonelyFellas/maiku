@@ -38,17 +38,17 @@ const Slider = () => {
   const [selectedKeys, setSelectedKeys] = useState<string[]>([]);
   const [openKeys, setOpenKeys] = useState<string[]>([]);
   const items: ItemType<MenuItemType>[] = [
-    getItem(lang.menu_name_1, 'primary', <DesktopOutlined />, [getItem(lang.menu_name_1_1, 'profiles', <ContainerOutlined />), getItem(lang.menu_name_1_2, '1-2', <MailOutlined />)]),
-    getItem(lang.menu_name_2, 'discover', <CalendarOutlined />, [
-      getItem(lang.menu_name_2_1, 'proxy', <AppstoreOutlined />),
-      getItem(lang.menu_name_2_2, 'file_transfer', <FolderOpenOutlined />),
-      getItem(lang.menu_name_2_3, '2-3', <GiftOutlined />),
-      getItem(lang.menu_name_2_4, '2-4', <LinkOutlined />, [getItem(lang.menu_name_2_4_1, '2-4-1', <LinkOutlined />)]),
+    getItem(lang?.menu_name_1, 'primary', <DesktopOutlined />, [getItem(lang?.menu_name_1_1, 'profiles', <ContainerOutlined />), getItem(lang?.menu_name_1_2, '1-2', <MailOutlined />)]),
+    getItem(lang?.menu_name_2, 'discover', <CalendarOutlined />, [
+      getItem(lang?.menu_name_2_1, 'proxy', <AppstoreOutlined />),
+      getItem(lang?.menu_name_2_2, 'file_transfer', <FolderOpenOutlined />),
+      getItem(lang?.menu_name_2_3, '2-3', <GiftOutlined />),
+      getItem(lang?.menu_name_2_4, '2-4', <LinkOutlined />, [getItem(lang?.menu_name_2_4_1, '2-4-1', <LinkOutlined />)]),
     ]),
-    getItem(lang.menu_name_3, '3', <AppstoreOutlined />, [getItem(lang.menu_name_3_1, '3-1', <TikTokOutlined />)]),
-    getItem(lang.menu_name_4, '4', <SettingOutlined />, [
-      getItem(lang.menu_name_4_1, '4-1', <SettingOutlined />),
-      getItem(lang.menu_name_4_2, '4-2', <SettingOutlined />, [getItem(lang.menu_name_4_2_1, '4-2-1', <SettingOutlined />), getItem(lang.menu_name_4_2_2, '4-2-2', <SettingOutlined />)]),
+    getItem(lang?.menu_name_3, '3', <AppstoreOutlined />, [getItem(lang?.menu_name_3_1, '3-1', <TikTokOutlined />)]),
+    getItem(lang?.menu_name_4, '4', <SettingOutlined />, [
+      getItem(lang?.menu_name_4_1, '4-1', <SettingOutlined />),
+      getItem(lang?.menu_name_4_2, '4-2', <SettingOutlined />, [getItem(lang?.menu_name_4_2_1, '4-2-1', <SettingOutlined />), getItem(lang?.menu_name_4_2_2, '4-2-2', <SettingOutlined />)]),
     ]),
   ];
   const isMac = isMacFunc();
@@ -147,9 +147,9 @@ const Slider = () => {
         </span>
       </div>
       <div className="relative">
-        <Tooltip title={lang.new_project} {...(collapsed ? {} : { open: false })}>
+        <Tooltip title={lang?.new_project} {...(collapsed ? {} : { open: false })}>
           <Button icon={<PlusOutlined />} className="h-10 rounded-lg mt-2 shadow-3xl transition-all" type="primary" style={{ width: collapsed ? '43px' : '180px' }} onClick={handleGoToNewProfiles}>
-            {collapsed ? '' : lang.new_project}
+            {collapsed ? '' : lang?.new_project}
           </Button>
         </Tooltip>
         <div
@@ -199,15 +199,15 @@ export const SliderFooterUnCollapse = () => {
         <div className="flex justify-between items-center">
           <span className="text-bold text-white text-lg">Free</span>
           <button className="btn_outside" onClick={handleGoToUpgrade}>
-            {lang.first_subs}
+            {lang?.first_subs}
           </button>
         </div>
         <div className="flex justify-between items-center pr-5 text-sm mt-1 text-[#272f74]">
-          <span>{lang.project_quantity}</span>
+          <span>{lang?.project_quantity}</span>
           <span>1/2</span>
         </div>
         <div className="flex justify-between items-center text-sm pr-5 text-[#272f74]">
-          <span>{lang.user_quantity}</span>
+          <span>{lang?.user_quantity}</span>
           <span>1/1</span>
         </div>
       </div>
@@ -223,7 +223,7 @@ export const SliderFooterCollapse = () => {
   };
   return (
     <div className="w-full h-[125px] pt-6 cursor-pointer">
-      <Tooltip open={true} overlayClassName="slider_tooltip" title={lang.first_subs} placement="topLeft" trigger="click">
+      <Tooltip open={true} overlayClassName="slider_tooltip" title={lang?.first_subs} placement="topLeft" trigger="click">
         <div className="btn_outside all_flex w-14 h-14 !bg-bg_primary" style={{ borderRadius: '1.2rem' }} onClick={handleGoToUpgrade}>
           <GiftOutlined className="text-3xl text-gray-700" />
         </div>

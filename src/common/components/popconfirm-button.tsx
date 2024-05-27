@@ -14,7 +14,7 @@ interface PopconfirmButtonProps {
  */
 export function PopconfirmButton(props: PopconfirmButtonProps) {
   const [lang] = useI18nConfig('config.basic');
-  const { title = lang.cmp_popconfirm_button_title, text = lang.cmp_popconfirm_button_text, onConfirm, ...rest } = props;
+  const { title = lang?.cmp_popconfirm_button_title, text = lang?.cmp_popconfirm_button_text, onConfirm, ...rest } = props;
 
   return (
     <Popconfirm title={title} onConfirm={onConfirm} {...rest}>

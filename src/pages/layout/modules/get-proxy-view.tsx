@@ -21,8 +21,8 @@ const GetProxyView = (props: GetProxyViewProps) => {
     label: `${PROXY_TYPE[item.type]}://${item.address}:${item.port} ${item.username ? `(${item.username})` : ''}`,
   }));
   return (
-    <Form.Item label={lang.form_title3_item2Ty} name="vpc_id">
-      <Select loading={proxyMutation.isPending} onDropdownVisibleChange={handleDropdownVisibleChange} className="!w-[240px]" placeholder={lang.form_title3_item2Ty_placeholder} options={filterSelectData} />
+    <Form.Item label={lang?.form_title3_item2Ty} name="vpc_id">
+      <Select loading={proxyMutation.isPending} onDropdownVisibleChange={handleDropdownVisibleChange} className="!w-[240px]" placeholder={lang?.form_title3_item2Ty_placeholder} options={filterSelectData} />
     </Form.Item>
   );
 };

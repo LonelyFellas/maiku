@@ -9,7 +9,6 @@ import './index.css';
 import '@darwish/scrollbar-react/dist/style.css';
 
 window.env = import.meta.env;
-
 const rootElement = document.getElementById('app')!;
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);

@@ -11,7 +11,7 @@ export default function Layout() {
 
   return (
     <ConfigProvider
-      locale={lang.lang === '简体中文' ? zhCN : enUS}
+      locale={lang?.lang === '简体中文' ? zhCN : enUS}
       theme={{
         components: {
           Table: {

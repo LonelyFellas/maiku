@@ -16,20 +16,20 @@ const Resolution = (props: { pxType: PXType }) => {
           <Radio.Group value={props.pxType}>
             <Radio.Button value="1">720P</Radio.Button>
             <Radio.Button value="2">1080P</Radio.Button>
-            <Radio.Button value="100">{lang.form_title2_item3DPI_diy}</Radio.Button>
+            <Radio.Button value="100">{lang?.form_title2_item3DPI_diy}</Radio.Button>
           </Radio.Group>
         </Form.Item>
 
         {props.pxType === '100' ? (
           <Space.Compact>
             <Form.Item name="width" className="w-20">
-              <InputNumber placeholder={lang.form_title2_item3DPI_width} />
+              <InputNumber placeholder={lang?.form_title2_item3DPI_width} />
             </Form.Item>
             <Form.Item name="height" className="w-20">
-              <InputNumber placeholder={lang.form_title2_item3DPI_height} />
+              <InputNumber placeholder={lang?.form_title2_item3DPI_height} />
             </Form.Item>
             <Form.Item name="dpi" className="w-20">
-              <InputNumber placeholder={lang.form_title2_item3DPI_dpi} />
+              <InputNumber placeholder={lang?.form_title2_item3DPI_dpi} />
             </Form.Item>
           </Space.Compact>
         ) : null}

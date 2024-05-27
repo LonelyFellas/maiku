@@ -39,7 +39,7 @@ const UpdateCenter = (props: UpdateCenterProps) => {
       open={open}
       overlayClassName="header_btn"
       placement="bottomRight"
-      title={lang.title}
+      title={lang?.title}
       content={
         isNewVersion ? (
           <div className="w-[400px] min-h-[120px]">
@@ -78,7 +78,7 @@ const UpdateCenter = (props: UpdateCenterProps) => {
             </div>
           </div>
         ) : (
-          <NoReleaseView emptyTitle={lang.empty_title} />
+          <NoReleaseView emptyTitle={lang?.empty_title} />
         )
       }
       trigger="click"
