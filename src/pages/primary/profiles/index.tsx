@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { useLoadingDone } from '@common';
 import { postsEnvQueryOptions } from '@/routes/data';
 import Slider from './modules/slider';
 import TableMain from './modules/tabel-main';
@@ -18,6 +19,7 @@ async function adbConnect(deviceId: string) {
 }
 
 export default function Profiles() {
+  useLoadingDone();
   const [currentKey, setCurrentKey] = useState(0);
   const { data: envList, isRefetching, isFetching } = useSuspenseQuery(postsEnvQueryOptions);
   const collapsedItems = envList?.find((li) => li.id === currentKey);

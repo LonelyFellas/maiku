@@ -1,14 +1,17 @@
 import { spawn, execFile } from 'node:child_process';
-import { getScrcpyCwd, isMac, killProcessWithWindows } from '/electron/utils';
+import { createBrowserWindow, getScrcpyCwd, isMac, killProcessWithWindows } from '/electron/utils';
 import path from 'node:path';
 import { BrowserWindow } from 'electron';
-import { checkWindowExists } from './utils/getActiveWindowRect';
 import { __dirname } from '/electron/utils';
+import { findWindow, getElectronWindow, checkWindowExists, embedWindow } from '/electron/utils/scrcpy-koffi.ts';
+import { RENDERER_DIST, VITE_DEV_SERVER_URL } from '/electron/main.ts';
+import { isDev } from '@darwish/utils-is';
 
 export default class Scrcpy<T extends EleApp.ProcessObj> {
   processObj: EleApp.ProcessObj = {};
   processInfo: Record<string, SendChannelMap['scrcpy:start'][0]> = {};
   mainWindow: BrowserWindow | null = null;
+  scrcpyWindows: Record<number, BrowserWindow> = {};
 
   constructor(obj: T) {
     this.processObj = obj;
@@ -131,6 +134,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
   private taskFindWindow(winName: string, envId: number, backupName: string) {
     const maxAttempt = 10;
     let attempt = 0;
+
     const findWinTimeId = setInterval(() => {
       if (attempt >= maxAttempt) {
         clearInterval(findWinTimeId);
@@ -141,7 +145,6 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
         });
       }
       const checkRes = this.checkCurrentWindowExist(winName);
-      console.log('checkres', checkRes);
       if (checkRes && findWinTimeId) {
         clearInterval(findWinTimeId);
         this.mainWindow?.webContents.send('scrcpy:start-window-open', {
@@ -149,8 +152,56 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
           backupName,
           isSuccess: true,
         });
+        this.createEleScrcpyWindow(winName, envId);
       }
       attempt++;
     }, 1000);
+  }
+
+  /**
+   *
+   * @param winName 窗口名字
+   * @param title scrcpy窗口的标题
+   * @param envId 环境id ，考虑多环境打开窗口需要传入环境id
+   * @private
+   */
+  private createEleScrcpyWindow(winName: string, envId: number) {
+    const scrcpyWindows = createBrowserWindow({
+      width: 430,
+      height: 702,
+      frame: false,
+      resizable: false,
+      show: true,
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: true,
+        preload: path.join(__dirname, 'preload.mjs'),
+      },
+      title: 'scrcpy-window',
+    });
+    this.setScrcpyWindow(scrcpyWindows, envId);
+    scrcpyWindows.setParentWindow(this.mainWindow);
+    if (isDev) {
+      scrcpyWindows.loadURL(`${VITE_DEV_SERVER_URL}scrcpy?title=${winName}&envId=${envId}`);
+    } else {
+      scrcpyWindows.loadFile(path.join(RENDERER_DIST, `index.html#/scrcpy?title=${winName}&envId=${envId}`));
+    }
+    const scrcpyHwnd = findWindow(winName);
+    setTimeout(() => {
+      const parentScrcpyHwnd = getElectronWindow(scrcpyWindows.getNativeWindowHandle().readInt32LE());
+      embedWindow(parentScrcpyHwnd, scrcpyHwnd);
+    }, 1000);
+  }
+
+  private setScrcpyWindow(scrcpyWindows: BrowserWindow, envId: number) {
+    this.scrcpyWindows[envId] = scrcpyWindows;
+  }
+
+  public scrcpyWindowStatesMini(envId: number) {
+    this.scrcpyWindows[envId]?.minimize();
+  }
+
+  public scrcpyWindowStatesClose(envId: number) {
+    this.scrcpyWindows[envId]?.destroy();
   }
 }

@@ -67,6 +67,15 @@ export default function createListener(options: CreateListenerOptions) {
     return window?.isMaximized();
   });
 
+  /** 处理scrcpyWindows的窗口的状态按钮*/
+  im.on('scrcpy:window-state', (...args) => {
+    const [, chnannel, envId] = args;
+    if (chnannel === 'minimize') {
+      scrcpy.scrcpyWindowStatesMini(envId);
+    } else {
+      scrcpy.scrcpyWindowStatesClose(envId);
+    }
+  });
   /** 启动scrcpy **/
   im.on('scrcpy:start', async (event, params) => {
     scrcpy.startWindow(params, (channel, channelData) => event.reply(channel, channelData));
