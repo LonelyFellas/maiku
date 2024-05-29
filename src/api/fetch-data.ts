@@ -55,6 +55,7 @@ export const fetchData = async <TData, TParams = null>(url: Api.Url, init: Api.I
        */
       if (res.errno === 101) {
         message.error('登录失效，请重新登录').then(() => {
+          window.localStorage.setItem(Constants.LOCAL_TOKEN, '');
           window.location.href = '/login';
         });
         return null;
