@@ -15,6 +15,7 @@ declare global {
     'dialog:open': [OpenDialogOptions, string[] | { url: string; name: string; size: number }[]];
   };
   type SendChannelMap = {
+    'scrcpy:window-state': [WindowState, number];
     'scrcpy:start': [
       {
         deviceId: string;

@@ -10,7 +10,7 @@ export function hasOwnProperty(obj: any, prop: string): boolean {
 }
 
 /** 检查是否有token */
-export const hasToken = !['undefined', 'null'].includes(window.localStorage.getItem(Constants.LOCAL_TOKEN) || 'null');
+export const hasToken = !['undefined', 'null', ''].includes(window.localStorage.getItem(Constants.LOCAL_TOKEN) || 'null');
 /** 获取token */
 export const getToken = window.localStorage.getItem(Constants.LOCAL_TOKEN);
 /** 获取登录信息 */
@@ -26,3 +26,5 @@ export const fileSizeFormat = (text: number) => prettyBytes(text ?? 0);
 export const timeFormatDay = (text: number) => dayjs(toNumber(text)).format('YYYY-MM-DD');
 /** 时间格式化到秒 */
 export const timeFormatHours = (text: number) => dayjs(toNumber(text)).format('YYYY-MM-DD HH:mm:ss');
+
+export const isScrcpyWindow = window.location.href.includes('scrcpy');
