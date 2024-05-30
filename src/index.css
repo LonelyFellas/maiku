@@ -3,7 +3,7 @@
 @tailwind utilities;
 @font-face {
     font-family: "PingFang SC";
-    src: url("../electron/resources/font/sc.ttf") format("truetype");
+    src: url("/sc.ttf") format("truetype");
 }
 
 body {

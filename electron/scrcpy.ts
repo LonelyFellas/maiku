@@ -172,6 +172,8 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       frame: false,
       resizable: false,
       show: true,
+      alwaysOnTop: true,
+      skipTaskbar: false,
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: true,
@@ -180,7 +182,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       title: 'scrcpy-window',
     });
     this.setScrcpyWindow(scrcpyWindows, envId);
-    scrcpyWindows.setParentWindow(this.mainWindow);
+    // scrcpyWindows.setParentWindow(this.mainWindow);
     if (isDev) {
       scrcpyWindows.loadURL(`${VITE_DEV_SERVER_URL}scrcpy?title=${winName}&envId=${envId}`);
     } else {

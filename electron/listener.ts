@@ -3,7 +3,7 @@ import path from 'node:path';
 import * as process from 'node:process';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import type Store from 'electron-store';
-import { scrcpy } from './main';
+import { scrcpy, mainWin } from './main';
 
 interface CreateListenerOptions {
   store: Store<typeof import('./config/electron-store-schema.json')>;
@@ -17,12 +17,12 @@ export default function createListener(options: CreateListenerOptions) {
   /** 处理windows的窗口的状态按钮 */
   im.handle('window:state', async (...args) => {
     const [event, channel, windowClose] = args;
-    const window = BrowserWindow.getFocusedWindow();
+    // const window = BrowserWindow.getFocusedWindow();
     if (channel === 'minimize') {
-      window?.minimize();
+      mainWin?.minimize();
     }
     if (channel === 'maximize') {
-      window?.isMaximized() ? window?.unmaximize() : window?.maximize();
+      mainWin?.isMaximized() ? mainWin?.unmaximize() : mainWin?.maximize();
     }
     if (channel === 'close') {
       const windowCloseVal = store.get('window_close');
@@ -64,7 +64,7 @@ export default function createListener(options: CreateListenerOptions) {
         }
       }
     }
-    return window?.isMaximized();
+    return mainWin?.isMaximized();
   });
 
   /** 处理scrcpyWindows的窗口的状态按钮*/
