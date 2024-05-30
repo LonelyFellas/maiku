@@ -1,9 +1,11 @@
 import fs from 'node:fs';
+import * as https from 'node:https';
 import path from 'node:path';
 import * as process from 'node:process';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import type Store from 'electron-store';
 import { scrcpy, mainWin } from './main';
+import { __dirname } from '/electron/utils';
 
 interface CreateListenerOptions {
   store: Store<typeof import('./config/electron-store-schema.json')>;
@@ -148,4 +150,30 @@ export default function createListener(options: CreateListenerOptions) {
   //   const rect = getWindowRect(winName);
   //   console.log('rect', rect);
   // });
+  /** 下载文件资源 */
+  im.on('download-file', async (_, url, options) => {
+    const { isDialog = false, ...dialogOptions } = options;
+    if (isDialog) {
+      const { canceled, filePaths } = await dialog.showOpenDialog(dialogOptions);
+    }
+    // if (!canceled) {
+    //   return filePaths[0]
+    // }
+
+    // const resourcePath = path.join(__dirname, '');
+    // const file = fs.createWriteStream(savePath);
+    // https
+    //   .get(url, (response) => {
+    //     response.pipe(file);
+    //     file.on('finish', () => {
+    //       file.close(() => {
+    //         console.log('File downloaded successfully');
+    //       });
+    //     });
+    //   })
+    //   .on('error', (err) => {
+    //     fs.unlink(savePath, () => {});
+    //     console.error(err);
+    //   });
+  });
 }

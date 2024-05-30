@@ -11,7 +11,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
   processObj: EleApp.ProcessObj = {};
   processInfo: Record<string, SendChannelMap['scrcpy:start'][0]> = {};
   mainWindow: BrowserWindow | null = null;
-  scrcpyWindows: Record<number, BrowserWindow> = {};
+  scrcpyWindows: Record<string, BrowserWindow> = {};
 
   constructor(obj: T) {
     this.processObj = obj;
@@ -27,7 +27,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    */
   public async startWindow(params: SendChannelMap['scrcpy:start'][0], replyCallback: GenericsFn<[string, any]>) {
     const { deviceId, envId, backupName, envName, type: paramsType } = params;
-    const title = `${envName}-(${backupName})`;
+    const title = `[${envName}]-${backupName}`;
     const scrcpyCwd = getScrcpyCwd();
 
     // 重启
@@ -35,7 +35,12 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       await this.killProcess(deviceId);
     }
 
-    this.taskFindWindow(title, envId, backupName);
+    this.taskFindWindow({
+      winName: title,
+      deviceAddr: deviceId,
+      backupName,
+      envId,
+    });
 
     // const listenWindowTimeId: NodeJS.Timeout | null = null;
     this.processObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', title, '--window-width', '381', '--window-height', '675'], {
@@ -131,7 +136,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    * @param backupName 备份名字
    * @private
    */
-  private taskFindWindow(winName: string, envId: number, backupName: string) {
+  private taskFindWindow({ winName, deviceAddr, backupName, envId }: { winName: string; deviceAddr: string; backupName: string; envId: number }) {
     const maxAttempt = 10;
     let attempt = 0;
 
@@ -152,7 +157,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
           backupName,
           isSuccess: true,
         });
-        this.createEleScrcpyWindow(winName, envId);
+        this.createEleScrcpyWindow(winName, deviceAddr, envId);
       }
       attempt++;
     }, 1000);
@@ -165,15 +170,15 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    * @param envId 环境id ，考虑多环境打开窗口需要传入环境id
    * @private
    */
-  private createEleScrcpyWindow(winName: string, envId: number) {
+  private createEleScrcpyWindow(winName: string, deviceAddr: string, envId: number) {
     const scrcpyWindows = createBrowserWindow({
-      width: 430,
+      width: 700,
       height: 702,
       frame: false,
       resizable: false,
       show: true,
-      alwaysOnTop: true,
       skipTaskbar: false,
+      transparent: true,
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: true,
@@ -181,12 +186,12 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       },
       title: 'scrcpy-window',
     });
-    this.setScrcpyWindow(scrcpyWindows, envId);
+    this.setScrcpyWindow(scrcpyWindows, deviceAddr);
     // scrcpyWindows.setParentWindow(this.mainWindow);
     if (isDev) {
-      scrcpyWindows.loadURL(`${VITE_DEV_SERVER_URL}scrcpy?title=${winName}&envId=${envId}`);
+      scrcpyWindows.loadURL(`${VITE_DEV_SERVER_URL}scrcpy?title=${winName}&deviceAddr=${deviceAddr}&envId=${envId}`);
     } else {
-      scrcpyWindows.loadFile(path.join(RENDERER_DIST, `index.html#/scrcpy?title=${winName}&envId=${envId}`));
+      scrcpyWindows.loadFile(path.join(RENDERER_DIST, `index.html#/scrcpy?title=${winName}&deviceAddr=${deviceAddr}&envId=${envId}`));
     }
     const scrcpyHwnd = findWindow(winName);
     setTimeout(() => {
@@ -195,15 +200,15 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     }, 1000);
   }
 
-  private setScrcpyWindow(scrcpyWindows: BrowserWindow, envId: number) {
-    this.scrcpyWindows[envId] = scrcpyWindows;
+  private setScrcpyWindow(scrcpyWindows: BrowserWindow, deviceAddr: string) {
+    this.scrcpyWindows[deviceAddr] = scrcpyWindows;
   }
 
-  public scrcpyWindowStatesMini(envId: number) {
-    this.scrcpyWindows[envId]?.minimize();
+  public scrcpyWindowStatesMini(deviceAddr: string) {
+    this.scrcpyWindows[deviceAddr]?.minimize();
   }
 
-  public scrcpyWindowStatesClose(envId: number) {
-    this.scrcpyWindows[envId]?.destroy();
+  public scrcpyWindowStatesClose(deviceAddr: string) {
+    this.scrcpyWindows[deviceAddr]?.destroy();
   }
 }

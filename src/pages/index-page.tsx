@@ -5,12 +5,10 @@ import { hasToken } from '@common';
 export function IndexPage() {
   const navigate = useNavigate({ from: '/' });
   useEffect(() => {
-    if (document.title === '迈库网络') {
-      if (hasToken) {
-        navigate({ to: '/layout/profiles' });
-      } else {
-        navigate({ to: '/login' });
-      }
+    if (hasToken) {
+      navigate({ to: '/layout/profiles' });
+    } else {
+      navigate({ to: '/login' });
     }
 
     setTimeout(() => {

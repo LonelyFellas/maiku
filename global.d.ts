@@ -15,7 +15,7 @@ declare global {
     'dialog:open': [OpenDialogOptions, string[] | { url: string; name: string; size: number }[]];
   };
   type SendChannelMap = {
-    'scrcpy:window-state': [WindowState, number];
+    'scrcpy:window-state': [WindowState, string];
     'scrcpy:start': [
       {
         deviceId: string;
@@ -30,6 +30,13 @@ declare global {
     'loading:done': ['main' | 'loading'];
     'download-update': [];
     'updated-restart': [];
+    'download-file': [
+      string,
+      {
+        /** 是否打开文件弹出框 */
+        isDialog?: boolean;
+      } & Electron.OpenDialogOptions,
+    ];
   };
   type OnChannelMap = {
     error: Darwish.AnyFunc;

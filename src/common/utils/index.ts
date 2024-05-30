@@ -4,6 +4,6 @@ export { default as isReactFragment } from './is-react-fragment';
 export { default as sleep } from './sleep';
 export { default as toNumber } from './to-number';
 export { default as getItem } from './get-item';
-export { default as onlyTrueObj } from './only-true-obj.ts';
-export { default as timeTask } from './time-task.ts';
+export { default as onlyTrueObj } from './only-true-obj';
+export { default as getParamsUrl } from './get-params-url';
 export * from './share';
