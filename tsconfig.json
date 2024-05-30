@@ -2,10 +2,13 @@
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
-
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -23,6 +26,9 @@
       "/*": [
         "./*"
       ],
+      "@public/*": [
+        "public/*"
+      ],
       "@/*": [
         "src/*"
       ],
@@ -34,7 +40,7 @@
         "src/common/index"
       ],
       "@img/*": [
-        "src/assets/images/*"
+        "public/images/*"
       ],
       "@sty/*": [
         "src/assets/styles/*"
@@ -50,7 +56,17 @@
       ]
     }
   },
-  "include": ["src", "electron", "global.d.ts"],
-  "exclude": ["node_modules"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": [
+    "src",
+    "electron",
+    "global.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
 }

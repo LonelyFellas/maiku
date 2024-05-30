@@ -1,4 +1,5 @@
 import { Flex, Spin } from 'antd';
+import IconRotary from '@public/images/rotary-phone.svg?react';
 
 export default function ScrcpyWindow() {
   return (
@@ -9,9 +10,12 @@ export default function ScrcpyWindow() {
           <h1 className="mt-2 text-primary">正在启动云机 ...</h1>
         </div>
       </div>
-      <div className="h-full flex flex-col justify-between text-[14px] items-center flex-1 text-sc">
+      <div className="h-full flex flex-col justify-between text-[14px] items-center flex-1">
         <Flex vertical className="w-full text-center">
-          <div className="hover:bg-white text-sc">旋转</div>
+          <div className="hover:bg-white">
+            <IconRotary />
+            旋转
+          </div>
           <div className="hover:bg-white">截图</div>
           <div className="hover:bg-white">上传</div>
           <div className="hover:bg-white">音量</div>
