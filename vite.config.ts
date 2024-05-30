@@ -29,6 +29,7 @@ export default defineConfig({
     preserveSymlinks: true,
     alias: {
       '@': '/src',
+      '@public': '/public',
       '@common': '/src/common',
       '@img': '/src/assets/images',
       '@sty': '/src/assets/styles',

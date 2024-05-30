@@ -1,5 +1,5 @@
-import BGSVG from '@img/bg.svg?inline';
 import BGLIGHTJPG from '@img/bg-light.jpg?inline';
+import BGSVG from '@img/bg.svg?inline';
 import { isMacFunc } from '@common';
 
 interface BgWrapperProps {

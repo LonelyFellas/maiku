@@ -1,12 +1,10 @@
+import { Fragment, useState } from 'react';
 import { Checkbox, Modal, type ModalProps } from 'antd';
-// import { MacScrollbar } from 'mac-scrollbar';
 import { Scrollbar } from '@darwish/scrollbar-react';
 import { DndContext, type DragEndEvent, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core';
-import { Fragment, useState } from 'react';
 import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import IconMove from '@img/move.svg?react';
-// import type { CustomColumn } from '/src/pages/primary/profiles';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 
 type CustomColumn = Darwish.AnyObj;

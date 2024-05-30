@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { Form, Input, Button, Tooltip, Select, App } from 'antd';
 import { isNumber } from '@darwish/utils-is';
 import { InfoCircleOutlined, LockOutlined, MailOutlined, MobileOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import imgMail from '@img/mail.png?url';
+import imgPhone from '@img/phone.png?url';
 import { useMutation } from '@tanstack/react-query';
 import { useI18nConfig } from '@common';
 import { registerService, type RegisterParams } from '@api';
-import imgMail from '@img/mail.png?url';
-import imgPhone from '@img/phone.png?url';
 import type { LoginProps } from '@/pages/login';
 
 const prefixSelector = (

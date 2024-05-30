@@ -1,4 +1,4 @@
-import { spawn, execFile } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { createBrowserWindow, getScrcpyCwd, isMac, killProcessWithWindows } from '/electron/utils';
 import path from 'node:path';
 import { BrowserWindow } from 'electron';
@@ -84,19 +84,19 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     this.mainWindow = mainWin;
   }
 
-  public setupPythonWindow() {
-    const devPyPath = path.join(__dirname, '../electron/resources/extra/win/scrcpy/py-main.exe');
-    execFile(devPyPath, (error, stdout, stderr) => {
-      if (error) {
-        console.error(`stderr: ${error}`);
-        return;
-      }
-      console.log(`Output: ${stdout}`);
-      if (stderr) {
-        console.error(`Error: ${stderr}`);
-      }
-    });
-  }
+  // public setupPythonWindow() {
+  //   const devPyPath = path.join(__dirname, '../electron/resources/extra/win/scrcpy/py-main.exe');
+  //   execFile(devPyPath, (error, stdout, stderr) => {
+  //     if (error) {
+  //       console.error(`stderr: ${error}`);
+  //       return;
+  //     }
+  //     console.log(`Output: ${stdout}`);
+  //     if (stderr) {
+  //       console.error(`Error: ${stderr}`);
+  //     }
+  //   });
+  // }
 
   /**
    * 杀死进程

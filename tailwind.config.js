@@ -35,8 +35,12 @@ module.exports = {
         border_info: '#adbeff',
       },
       fontSize: {
-        '12sm': '12px'
-      }
+        '12sm': '12px',
+      },
+    },
+    fontFamily: {
+      helvetica: ['Helvetica', 'Arial', 'sans-serif'],
+      sc: ['PingFang SC', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
     },
   },
   variants: {

@@ -21,7 +21,7 @@ import {
 } from '@ant-design/icons';
 import { useI18nConfig, isMacFunc, useRouteMeta, getItem } from '@common';
 import type { ItemType, MenuItemType } from 'antd/es/menu/hooks/useItems';
-import avatar from '/public/electron-vite.animate.svg';
+import avatar from '/electron-vite.animate.svg';
 import '@sty/button.css';
 import '../style.css';
 
