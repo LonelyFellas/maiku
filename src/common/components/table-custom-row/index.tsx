@@ -4,7 +4,7 @@ import { Scrollbar } from '@darwish/scrollbar-react';
 import { DndContext, type DragEndEvent, KeyboardSensor, PointerSensor, closestCenter, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import IconMove from '@public/images/move.svg?react';
+import IconMove from '@img/move.svg?react';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 
 type CustomColumn = Darwish.AnyObj;

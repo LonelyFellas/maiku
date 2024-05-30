@@ -40,7 +40,7 @@
         "src/common/index"
       ],
       "@img/*": [
-        "public/images/*"
+        "src/images/*"
       ],
       "@sty/*": [
         "src/assets/styles/*"

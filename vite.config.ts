@@ -31,7 +31,7 @@ export default defineConfig({
       '@': '/src',
       '@public': '/public',
       '@common': '/src/common',
-      '@img': '/public/images',
+      '@img': '/src/assets/images',
       '@sty': '/src/assets/styles',
       '@assets': '/src/assets',
       '@api': '/src/api',

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useLocalStorage } from '@darwish/hooks-core';
-import IconClose from '@public/images/close.svg?react';
-import IconMax from '@public/images/maximize.svg?react';
-import IconMin from '@public/images/minimize.svg?react';
-import IconRestore from '@public/images/restore.svg?react';
+import IconClose from '@img/close.svg?react';
+import IconMax from '@img/maximize.svg?react';
+import IconMin from '@img/minimize.svg?react';
+import IconRestore from '@img/restore.svg?react';
 import { toNumber } from 'lodash';
 import { useI18nConfig, isMacFunc, Constants, isScrcpyWindow } from '@common';
 import pkg from '/package.json';

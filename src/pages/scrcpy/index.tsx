@@ -1,5 +1,5 @@
 import { Flex, Spin } from 'antd';
-import IconRotary from '@public/images/rotary-phone.svg?react';
+import IconRotary from '@img/rotary-phone.svg?react';
 
 export default function ScrcpyWindow() {
   return (
