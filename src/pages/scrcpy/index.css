@@ -1,0 +1,10 @@
+.scrcpy-transparent-area {
+    .ant-notification {
+        top: 40px !important;
+        right: -5px !important;
+
+        .ant-notification-notice {
+            padding: 10px !important;
+        }
+    }
+}

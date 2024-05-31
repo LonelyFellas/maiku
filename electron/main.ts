@@ -19,7 +19,7 @@ export const scrcpy = new Scrcpy(scrcpyProcessObj || {});
 
 // 初始化electron-store
 export const store = new Store({ defaults: schema });
-let mainWin: BrowserWindow | null = null;
+export let mainWin: BrowserWindow | null = null;
 let loadingWin: Electron.BrowserWindow | null = null;
 const updater = new Updater();
 

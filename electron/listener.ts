@@ -1,9 +1,11 @@
 import fs from 'node:fs';
+import * as http from 'node:http';
 import path from 'node:path';
 import * as process from 'node:process';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import type Store from 'electron-store';
-import { scrcpy } from './main';
+import { scrcpy, mainWin } from './main';
+import { __dirname } from '/electron/utils';
 
 interface CreateListenerOptions {
   store: Store<typeof import('./config/electron-store-schema.json')>;
@@ -17,12 +19,12 @@ export default function createListener(options: CreateListenerOptions) {
   /** 处理windows的窗口的状态按钮 */
   im.handle('window:state', async (...args) => {
     const [event, channel, windowClose] = args;
-    const window = BrowserWindow.getFocusedWindow();
+    // const window = BrowserWindow.getFocusedWindow();
     if (channel === 'minimize') {
-      window?.minimize();
+      mainWin?.minimize();
     }
     if (channel === 'maximize') {
-      window?.isMaximized() ? window?.unmaximize() : window?.maximize();
+      mainWin?.isMaximized() ? mainWin?.unmaximize() : mainWin?.maximize();
     }
     if (channel === 'close') {
       const windowCloseVal = store.get('window_close');
@@ -64,7 +66,7 @@ export default function createListener(options: CreateListenerOptions) {
         }
       }
     }
-    return window?.isMaximized();
+    return mainWin?.isMaximized();
   });
 
   /** 处理scrcpyWindows的窗口的状态按钮*/
@@ -148,4 +150,44 @@ export default function createListener(options: CreateListenerOptions) {
   //   const rect = getWindowRect(winName);
   //   console.log('rect', rect);
   // });
+  /** 下载文件资源 */
+  im.on('download-file', async (_, url, options) => {
+    const { isDialog = false, ...dialogOptions } = options;
+    if (isDialog) {
+      const { filePath, canceled } = await dialog.showSaveDialog(dialogOptions);
+      if (!canceled) {
+        downloadImage(url, filePath ?? path.join(__dirname, 'downloads', path.basename(url)));
+      }
+    }
+  });
+  /** 打开scrcpy窗口额外透明栏 */
+  im.on('scrcpy:show-toast', (_, type, params) => {
+    const { isExpended, deviceAddr } = params;
+    if (type === 'transparent') {
+      scrcpy.setScrcpyWindowSize(deviceAddr, isExpended ? 730 : 430);
+    } else if (type === 'fileUpload') {
+      scrcpy.setScrcpyWindowSize(deviceAddr, isExpended ? 930 : 430);
+    }
+  });
+}
+
+function downloadImage(url: string, filePath: string) {
+  // 发送 HTTPS GET 请求获取图片数据
+  http.get(url, (response) => {
+    // 创建可写流
+    const file = fs.createWriteStream(filePath);
+    // 将相应数据管道到文件流
+    response.pipe(file);
+    // 监听文件流关闭事件
+    file
+      .on('finish', () => {
+        file.close(() => {
+          console.log('Image downloaded successfully');
+        });
+      })
+      .on('error', (err) => {
+        console.error('Error downloading image:', err);
+        mainWin?.webContents.send('error', err.message);
+      });
+  });
 }

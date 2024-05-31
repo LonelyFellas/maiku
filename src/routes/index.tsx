@@ -19,7 +19,7 @@ const rootRoute = createRootRouteWithContext<{
 }>()({
   component: () => (
     <App>
-      <div className="h-full bg-gray-100">
+      <div className="h-full">
         <Outlet />
       </div>
     </App>
