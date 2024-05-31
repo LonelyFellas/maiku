@@ -4,13 +4,12 @@ import { GlobalOutlined as GlobalIcon } from '@ant-design/icons/lib/icons';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { useNavigate } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
-import { useI18nConfig, Wrapper, useUpdate, useScrcpyRecord, isScrcpyWindow, getParamsUrl } from '@common';
+import { useI18nConfig, Wrapper, useUpdate, isScrcpyWindow, getParamsUrl } from '@common';
 import ScrcpyHeader from '@common/components/wrapper/scrcpy-header.tsx';
 
 const App = (props: PropsWithChildren<object>) => {
   const navagate = useNavigate();
   const { setIsUpdate } = useUpdate();
-  const { setData, data } = useScrcpyRecord(); // const { message } = AntdApp.useApp();
   const [, setLang] = useI18nConfig();
 
   useEffect(() => {
@@ -32,12 +31,6 @@ const App = (props: PropsWithChildren<object>) => {
     // scrcpy窗口打开成功
     window.ipcRenderer.on('open-scrcpy-window', (args: any) => {
       console.info('open-scrcpy-window: ', args);
-    });
-
-    // 监听scrcpy窗口是否存在
-    window.ipcRenderer.on('scrcpy:env-win-exist', (_, envId) => {
-      const newMap = structuredClone(data);
-      newMap.set(envId, new Date().getTime()), setData(newMap);
     });
   }, [message]);
 

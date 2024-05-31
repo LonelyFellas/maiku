@@ -1,5 +1,5 @@
 import React from 'react';
-import { useI18nConfig, getParamsUrl } from '@common';
+import { useI18nConfig, getParamsUrl, useDeviceToast } from '@common';
 import IconClose from '@img/close.svg?react';
 import IconMin from '@img/minimize.svg?react';
 import pkg from '/package.json';
@@ -7,6 +7,7 @@ import Space from '../space';
 
 export default function ScrcpyHeader(props: React.PropsWithChildren<object>) {
   const [title] = useI18nConfig('config.basic.project_name');
+  const toastRecord = useDeviceToast().toastRecord;
 
   const [titleParam, deviceAddrParam] = getParamsUrl(['title', 'deviceAddr']);
   let urlTitle = titleParam ?? `${title} ${pkg.version}`;
@@ -25,8 +26,8 @@ export default function ScrcpyHeader(props: React.PropsWithChildren<object>) {
 
   return (
     <div className="w-screen h-screen flex flex-col">
-      <div className="z-[10000] drag flex h-[30px] w-full">
-        <div className="flex justify-between items-center bg-bg_primary w-[430px]">
+      <div className="z-[10000] flex h-[30px] w-full">
+        <div className="drag flex justify-between items-center bg-bg_primary w-[430px]">
           <div className="h-full py-1 px-3 flex items-center">
             <img className="h-full border-white rounded-full" src="https://avatars.githubusercontent.com/u/38754760?v=4" alt="avatar" />
             <span className="ml-2 text-sm">{urlTitle}</span>
@@ -40,8 +41,7 @@ export default function ScrcpyHeader(props: React.PropsWithChildren<object>) {
             </div>
           </Space>
         </div>
-
-        <div className="flex-1 bg-transparent"></div>
+        {toastRecord[deviceAddr] ? <div className="bg-toast w-[300px] bg-transparent"></div> : null}
       </div>
       <main className="flex-1">{props.children}</main>
     </div>

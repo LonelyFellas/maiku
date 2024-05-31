@@ -1,7 +1,7 @@
-import { App, Button, Flex, message, notification, Spin } from 'antd';
+import { Button, Flex, notification, Spin } from 'antd';
 import { useMutation } from '@tanstack/react-query';
 import dayjs from 'dayjs';
-import { getParamsUrl, toNumber } from '@common';
+import { getParamsUrl, toNumber, useDeviceToast } from '@common';
 import { getEnvByIdService } from '@api';
 import IconAllPid from '@img/all-pid.svg?react';
 import IconApp from '@img/app-store.svg?react';
@@ -18,23 +18,25 @@ import './index.css';
 
 export default function ScrcpyWindow() {
   const [deviceAddr, envId] = getParamsUrl(['deviceAddr', 'envId']);
+  const { setToastRecord, toastRecord } = useDeviceToast();
   const [api, contextHolder] = notification.useNotification({
     getContainer: () => document.querySelector('.scrcpy-transparent-area') as HTMLElement,
     maxCount: 1,
   });
 
   const handleDownloadScreenPic = (url: string) => {
+    const time = dayjs().format('YYYY-MM-DD_HH-mm-ss');
     window.ipcRenderer.send('download-file', url, {
       isDialog: true,
       title: '保存截图',
-      message: '正在下载...',
+      defaultPath: `./截图-${time}.png`,
     });
   };
   const detailMutation = useMutation({
     mutationKey: ['env-detail-by-id'],
     mutationFn: getEnvByIdService,
     onSuccess: (data) => {
-      console.log(data);
+      console.log(111);
       api.open({
         message: ``,
         description: (
@@ -44,11 +46,15 @@ export default function ScrcpyWindow() {
           </div>
         ),
         placement: 'topRight',
-        duration: 3000,
+        duration: 3,
         closeIcon: null,
         style: {
           width: '250px',
           borderRadius: '5px',
+        },
+        onClose: () => {
+          setToastRecord({ [deviceAddr!]: false });
+          window.ipcRenderer.send('scrcpy:show-toast', deviceAddr!, false);
         },
       });
     },
@@ -59,6 +65,8 @@ export default function ScrcpyWindow() {
    */
   const handleScreenshot = () => {
     if (deviceAddr) {
+      setToastRecord({ [deviceAddr]: true });
+      window.ipcRenderer.send('scrcpy:show-toast', deviceAddr, true);
       const formatedTime = dayjs().format('YYYY_MM_DD_HH_mm_ss');
       const command = `screencap /sdcard/Pictures/scrrenshot_${formatedTime}.png`;
       detailMutation.mutate({ id: toNumber(envId) });
@@ -78,6 +86,7 @@ export default function ScrcpyWindow() {
       window.adbApi.shell(deviceAddr, `input keyevent ${keycode}`);
     }
   };
+  console.log('addd', toastRecord[deviceAddr!]);
   return (
     <div className="flex h-full w-full">
       <div className="all_flex bg-[#d7dae3] w-[381px]">
@@ -93,8 +102,22 @@ export default function ScrcpyWindow() {
           <OperationButton text="上传" IconFC={IconUpload} />
           <OperationButton text="音+" IconFC={IconVolumeUp} onClick={() => handlerSystemFeature('KEYCODE_VOLUME_UP')} />
           <OperationButton text="音-" IconFC={IconVolumeDown} onClick={() => handlerSystemFeature('KEYCODE_VOLUME_DOWN')} />
-          <OperationButton text="加速" IconFC={IconSpeedUp} />
-          <OperationButton text="更多" IconFC={IconMore} />
+          <OperationButton
+            text="加速"
+            IconFC={IconSpeedUp}
+            onClick={() => {
+              setToastRecord({ [deviceAddr!]: true });
+              window.ipcRenderer.send('scrcpy:show-toast', deviceAddr!, true);
+            }}
+          />
+          <OperationButton
+            text="更多"
+            IconFC={IconMore}
+            onClick={() => {
+              setToastRecord({ [deviceAddr!]: false });
+              window.ipcRenderer.send('scrcpy:show-toast', deviceAddr!, false);
+            }}
+          />
         </Flex>
         <Flex vertical className="w-full gap-3">
           <OperationButton text="" IconFC={IconBack} padding="4px 0px" onClick={() => handlerSystemFeature('4')} />
@@ -103,7 +126,8 @@ export default function ScrcpyWindow() {
         </Flex>
         <OperationButton text="应用" gap={2} color="orange" IconFC={IconApp} />
       </div>
-      <div className="scrcpy-transparent-area bg-transparent">{contextHolder}</div>
+      {contextHolder}
+      {toastRecord[deviceAddr!] && <div className="bg-transparent w-[300px]"></div>}
     </div>
   );
 }

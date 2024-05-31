@@ -1,5 +1,4 @@
 import { createRequire } from 'node:module';
-import { BrowserWindow } from 'electron';
 
 const require = createRequire(import.meta.url);
 const koffi = require('koffi');
@@ -64,7 +63,7 @@ export function checkWindowExists(winName: string) {
 }
 
 export function embedWindow(parentWindowHwnd: number, childWindowHwnd: number) {
-  console.log(`"parentWindow HWND：${parentWindowHwnd}, childWindow HWND：${childWindowHwnd}`);
+  /** 这里加定时器，是为了防止嵌入的窗口聚焦丢失，导致无法鼠标控制云机 */
   const winW = GetWindowLongW(parentWindowHwnd, -16);
   if (!(winW & GW_STYLE.WS_CLIPCHILDREN)) {
     SetWindowLongW(parentWindowHwnd, -16, winW ^ GW_STYLE.WS_CLIPCHILDREN ^ GW_STYLE.WS_CLIPSIBLINGS);

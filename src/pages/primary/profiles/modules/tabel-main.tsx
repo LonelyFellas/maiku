@@ -4,7 +4,7 @@ import { useSetState, useUpdateEffect } from '@darwish/hooks-core';
 import { isBlanks, isUndef } from '@darwish/utils-is';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { debounce } from 'lodash';
-import { MaskSpin, Table, useMap } from '@common';
+import { MaskSpin, Table, useDeviceToast, useMap } from '@common';
 import { getBackupListByEnvIdService, type GetBackupParams, postAddBackupService, postDeleteBackService, postRunBackupService } from '@api';
 import RunButton from '@/pages/primary/profiles/modules/run-button.tsx';
 import { columns as configColumns, operationItems } from '../config';
@@ -283,7 +283,6 @@ const TableMain = (props: TableMainProps) => {
    *  */
   const handleStartScrcpy = debounce((params: StartScrcpyParams) => {
     const { deviceId, envId, name, states: startStates, containerName } = params;
-    console.log('clicked');
     // 如果当前启动的备份和当前页面的备份一致，则停止当前的scrcpy
     if (containerName === name && startStates === 'running') {
       window.ipcRenderer.send('scrcpy:stop', { deviceId });

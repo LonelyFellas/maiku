@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import * as https from 'node:https';
+import * as http from 'node:http';
 import path from 'node:path';
 import * as process from 'node:process';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
@@ -154,26 +154,35 @@ export default function createListener(options: CreateListenerOptions) {
   im.on('download-file', async (_, url, options) => {
     const { isDialog = false, ...dialogOptions } = options;
     if (isDialog) {
-      const { canceled, filePaths } = await dialog.showOpenDialog(dialogOptions);
+      const { filePath, canceled } = await dialog.showSaveDialog(dialogOptions);
+      if (!canceled) {
+        downloadImage(url, filePath ?? path.join(__dirname, 'downloads', path.basename(url)));
+      }
     }
-    // if (!canceled) {
-    //   return filePaths[0]
-    // }
+  });
+  /** 打开scrcpy窗口额外透明栏 */
+  im.on('scrcpy:show-toast', (_, deviceAddr, isTransparent) => {
+    scrcpy.setScrcpyWindowTransparent(deviceAddr, isTransparent);
+  });
+}
 
-    // const resourcePath = path.join(__dirname, '');
-    // const file = fs.createWriteStream(savePath);
-    // https
-    //   .get(url, (response) => {
-    //     response.pipe(file);
-    //     file.on('finish', () => {
-    //       file.close(() => {
-    //         console.log('File downloaded successfully');
-    //       });
-    //     });
-    //   })
-    //   .on('error', (err) => {
-    //     fs.unlink(savePath, () => {});
-    //     console.error(err);
-    //   });
+function downloadImage(url: string, filePath: string) {
+  // 发送 HTTPS GET 请求获取图片数据
+  http.get(url, (response) => {
+    // 创建可写流
+    const file = fs.createWriteStream(filePath);
+    // 将相应数据管道到文件流
+    response.pipe(file);
+    // 监听文件流关闭事件
+    file
+      .on('finish', () => {
+        file.close(() => {
+          console.log('Image downloaded successfully');
+        });
+      })
+      .on('error', (err) => {
+        console.error('Error downloading image:', err);
+        mainWin?.webContents.send('error', err.message);
+      });
   });
 }

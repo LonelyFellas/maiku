@@ -4,7 +4,7 @@ import path from 'node:path';
 import { BrowserWindow } from 'electron';
 import { __dirname } from '/electron/utils';
 import { findWindow, getElectronWindow, checkWindowExists, embedWindow } from '/electron/utils/scrcpy-koffi.ts';
-import { RENDERER_DIST, VITE_DEV_SERVER_URL } from '/electron/main.ts';
+import { mainWin, RENDERER_DIST, VITE_DEV_SERVER_URL } from '/electron/main.ts';
 import { isDev } from '@darwish/utils-is';
 
 export default class Scrcpy<T extends EleApp.ProcessObj> {
@@ -172,12 +172,13 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    */
   private createEleScrcpyWindow(winName: string, deviceAddr: string, envId: number) {
     const scrcpyWindows = createBrowserWindow({
-      width: 700,
+      width: 430,
       height: 702,
       frame: false,
       resizable: false,
       show: true,
       skipTaskbar: false,
+      alwaysOnTop: true,
       transparent: true,
       webPreferences: {
         nodeIntegration: true,
@@ -186,18 +187,59 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       },
       title: 'scrcpy-window',
     });
+    // 解决打开窗口在主窗口前面，后面去掉窗口置顶
+    setTimeout(() => {
+      scrcpyWindows.setAlwaysOnTop(false);
+    }, 2000);
     this.setScrcpyWindow(scrcpyWindows, deviceAddr);
-    // scrcpyWindows.setParentWindow(this.mainWindow);
     if (isDev) {
       scrcpyWindows.loadURL(`${VITE_DEV_SERVER_URL}scrcpy?title=${winName}&deviceAddr=${deviceAddr}&envId=${envId}`);
     } else {
       scrcpyWindows.loadFile(path.join(RENDERER_DIST, `index.html#/scrcpy?title=${winName}&deviceAddr=${deviceAddr}&envId=${envId}`));
     }
     const scrcpyHwnd = findWindow(winName);
+
     setTimeout(() => {
-      const parentScrcpyHwnd = getElectronWindow(scrcpyWindows.getNativeWindowHandle().readInt32LE());
-      embedWindow(parentScrcpyHwnd, scrcpyHwnd);
+      this.getScrcpyWindow(scrcpyHwnd, scrcpyWindows);
     }, 1000);
+
+    this.restoreScrcpyWindow(scrcpyHwnd, scrcpyWindows);
+  }
+
+  public setScrcpyWindowTransparent(deviceAddr: string, isTransparent: boolean) {
+    console.log(isTransparent);
+    this.scrcpyWindows[deviceAddr].resizable = true;
+    this.scrcpyWindows[deviceAddr].setSize(isTransparent ? 730 : 430, 702);
+    this.scrcpyWindows[deviceAddr].resizable = false;
+  }
+
+  /**
+   * 监听窗口关闭事件
+   * 重新激活的时候，轮询三次获取scrcpywindow嵌入
+   * @param scrcpyHwnd
+   * @param scrcpyWindows
+   * @private
+   */
+  private restoreScrcpyWindow(scrcpyHwnd: number, scrcpyWindows: BrowserWindow) {
+    let blurWindow = false;
+    scrcpyWindows.on('minimize', () => {
+      blurWindow = true;
+    });
+    scrcpyWindows.on('focus', () => {
+      if (blurWindow) {
+        const id = setInterval(() => {
+          this.getScrcpyWindow(scrcpyHwnd, scrcpyWindows);
+        }, 120);
+        setTimeout(() => {
+          clearInterval(id);
+        }, 360);
+      }
+    });
+  }
+
+  private getScrcpyWindow(scrcpyHwnd: number, scrcpyWindows: BrowserWindow) {
+    const parentScrcpyHwnd = getElectronWindow(scrcpyWindows.getNativeWindowHandle().readInt32LE());
+    embedWindow(parentScrcpyHwnd, scrcpyHwnd);
   }
 
   private setScrcpyWindow(scrcpyWindows: BrowserWindow, deviceAddr: string) {

@@ -35,8 +35,9 @@ declare global {
       {
         /** 是否打开文件弹出框 */
         isDialog?: boolean;
-      } & Electron.OpenDialogOptions,
+      } & Electron.SaveDialogOptions,
     ];
+    'scrcpy:show-toast': [string, boolean];
   };
   type OnChannelMap = {
     error: Darwish.AnyFunc;
