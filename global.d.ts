@@ -37,7 +37,13 @@ declare global {
         isDialog?: boolean;
       } & Electron.SaveDialogOptions,
     ];
-    'scrcpy:show-toast': [string, boolean];
+    'scrcpy:show-toast': [
+      'transparent' | 'fileUpload',
+      {
+        deviceAddr: string;
+        isExpended: boolean;
+      },
+    ];
   };
   type OnChannelMap = {
     error: Darwish.AnyFunc;

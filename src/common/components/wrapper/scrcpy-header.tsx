@@ -27,7 +27,7 @@ export default function ScrcpyHeader(props: React.PropsWithChildren<object>) {
   return (
     <div className="w-screen h-screen flex flex-col">
       <div className="z-[10000] flex h-[30px] w-full">
-        <div className="drag flex justify-between items-center bg-bg_primary w-[430px]">
+        <div className="drag flex justify-between items-center bg-bg_primary flex-1 min-w-[430px]">
           <div className="h-full py-1 px-3 flex items-center">
             <img className="h-full border-white rounded-full" src="https://avatars.githubusercontent.com/u/38754760?v=4" alt="avatar" />
             <span className="ml-2 text-sm">{urlTitle}</span>

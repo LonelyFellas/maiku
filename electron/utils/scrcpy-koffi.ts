@@ -48,7 +48,7 @@ export const findWindow = (title: string) => {
   return null;
 };
 
-export const getElectronWindow = (id: number) => {
+const getElectronWindow = (id: number) => {
   return FindWindowExW(id, 0, 'Intermediate D3D Window', 0);
 };
 
@@ -62,7 +62,9 @@ export function checkWindowExists(winName: string) {
   return win !== null;
 }
 
-export function embedWindow(parentWindowHwnd: number, childWindowHwnd: number) {
+export function embedWindow(winName: string, id: number) {
+  const childWindowHwnd = findWindow(winName);
+  const parentWindowHwnd = getElectronWindow(id);
   /** 这里加定时器，是为了防止嵌入的窗口聚焦丢失，导致无法鼠标控制云机 */
   const winW = GetWindowLongW(parentWindowHwnd, -16);
   if (!(winW & GW_STYLE.WS_CLIPCHILDREN)) {

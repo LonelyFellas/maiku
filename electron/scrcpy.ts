@@ -11,7 +11,14 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
   processObj: EleApp.ProcessObj = {};
   processInfo: Record<string, SendChannelMap['scrcpy:start'][0]> = {};
   mainWindow: BrowserWindow | null = null;
-  scrcpyWindows: Record<string, BrowserWindow> = {};
+  scrcpyWindows: Record<
+    string,
+    {
+      window: BrowserWindow;
+      winName: string;
+      int32LE: number;
+    }
+  > = {};
 
   constructor(obj: T) {
     this.processObj = obj;
@@ -171,7 +178,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    * @private
    */
   private createEleScrcpyWindow(winName: string, deviceAddr: string, envId: number) {
-    const scrcpyWindows = createBrowserWindow({
+    const scrcpyWindow = createBrowserWindow({
       width: 430,
       height: 702,
       frame: false,
@@ -189,68 +196,80 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     });
     // 解决打开窗口在主窗口前面，后面去掉窗口置顶
     setTimeout(() => {
-      scrcpyWindows.setAlwaysOnTop(false);
+      scrcpyWindow.setAlwaysOnTop(false);
     }, 2000);
-    this.setScrcpyWindow(scrcpyWindows, deviceAddr);
     if (isDev) {
-      scrcpyWindows.loadURL(`${VITE_DEV_SERVER_URL}scrcpy?title=${winName}&deviceAddr=${deviceAddr}&envId=${envId}`);
+      scrcpyWindow.loadURL(`${VITE_DEV_SERVER_URL}scrcpy?title=${winName}&deviceAddr=${deviceAddr}&envId=${envId}`);
     } else {
-      scrcpyWindows.loadFile(path.join(RENDERER_DIST, `index.html#/scrcpy?title=${winName}&deviceAddr=${deviceAddr}&envId=${envId}`));
+      scrcpyWindow.loadFile(path.join(RENDERER_DIST, `index.html#/scrcpy?title=${winName}&deviceAddr=${deviceAddr}&envId=${envId}`));
     }
-    const scrcpyHwnd = findWindow(winName);
-
+    const int32LE = scrcpyWindow.getNativeWindowHandle().readInt32LE();
+    this.scrcpyWindows[deviceAddr] = {
+      winName,
+      window: scrcpyWindow,
+      int32LE: int32LE,
+    };
     setTimeout(() => {
-      this.getScrcpyWindow(scrcpyHwnd, scrcpyWindows);
+      embedWindow(winName, int32LE);
     }, 1000);
 
-    this.restoreScrcpyWindow(scrcpyHwnd, scrcpyWindows);
-  }
-
-  public setScrcpyWindowTransparent(deviceAddr: string, isTransparent: boolean) {
-    console.log(isTransparent);
-    this.scrcpyWindows[deviceAddr].resizable = true;
-    this.scrcpyWindows[deviceAddr].setSize(isTransparent ? 730 : 430, 702);
-    this.scrcpyWindows[deviceAddr].resizable = false;
-  }
-
-  /**
-   * 监听窗口关闭事件
-   * 重新激活的时候，轮询三次获取scrcpywindow嵌入
-   * @param scrcpyHwnd
-   * @param scrcpyWindows
-   * @private
-   */
-  private restoreScrcpyWindow(scrcpyHwnd: number, scrcpyWindows: BrowserWindow) {
     let blurWindow = false;
-    scrcpyWindows.on('minimize', () => {
+    scrcpyWindow.on('minimize', () => {
       blurWindow = true;
     });
-    scrcpyWindows.on('focus', () => {
+    scrcpyWindow.on('focus', () => {
       if (blurWindow) {
         const id = setInterval(() => {
-          this.getScrcpyWindow(scrcpyHwnd, scrcpyWindows);
-        }, 120);
+          embedWindow(winName, int32LE);
+        }, 1000);
         setTimeout(() => {
           clearInterval(id);
-        }, 360);
+        }, 3000);
       }
     });
   }
 
-  private getScrcpyWindow(scrcpyHwnd: number, scrcpyWindows: BrowserWindow) {
-    const parentScrcpyHwnd = getElectronWindow(scrcpyWindows.getNativeWindowHandle().readInt32LE());
-    embedWindow(parentScrcpyHwnd, scrcpyHwnd);
+  public setScrcpyWindowSize(deviceAddr: string, width: number) {
+    this.scrcpyWindows[deviceAddr].window.resizable = true;
+    this.scrcpyWindows[deviceAddr].window.setSize(width, 702);
+    this.scrcpyWindows[deviceAddr].window.resizable = false;
+    // embedWindow(parentScrcpyHwnd, scrcpyHwnd);
+    // this.refocusScrcpyWindow();
   }
 
-  private setScrcpyWindow(scrcpyWindows: BrowserWindow, deviceAddr: string) {
-    this.scrcpyWindows[deviceAddr] = scrcpyWindows;
-  }
+  // private refocusScrcpyWindow = (scrcpyHwnd: number, scrcpyWindows: BrowserWindow) => {
+  //   const id = setInterval(() => {
+  //     embedWindow(winName, scrcpyWindows.getNativeWindowHandle().readInt32LE());
+  //   }, 1000);
+  //   setTimeout(() => {
+  //     clearInterval(id);
+  //   }, 3000);
+  // };
+  //
+  // private getScrcpyWindow(scrcpyHwnd: number, scrcpyWindows: BrowserWindow, deviceAddr?: string) {
+  //   const parentScrcpyHwnd = getElectronWindow(scrcpyWindows.getNativeWindowHandle().readInt32LE());
+  //   if (deviceAddr) {
+  //     this.setScrcpyWindow(scrcpyWindows, parentScrcpyHwnd);
+  //     this.scrcpyWindows[deviceAddr] = {
+  //       window: scrcpyWindows,
+  //       hwnd: parentScrcpyHwnd,
+  //     };
+  //   }
+  //
+  //   embedWindow(parentScrcpyHwnd, scrcpyHwnd);
+  // }
+  //
+  // private setScrcpyWindow(scrcpyWindows: BrowserWindow, deviceAddr: string) {
+  //   // @ts-ignore
+  //   if (this.scrcpyWindows[deviceAddr] === undefined) this.scrcpyWindows[deviceAddr] = { window: null, hwnd: -1 };
+  //   this.scrcpyWindows[deviceAddr].window = scrcpyWindows;
+  // }
 
   public scrcpyWindowStatesMini(deviceAddr: string) {
-    this.scrcpyWindows[deviceAddr]?.minimize();
+    this.scrcpyWindows[deviceAddr].window?.minimize();
   }
 
   public scrcpyWindowStatesClose(deviceAddr: string) {
-    this.scrcpyWindows[deviceAddr]?.destroy();
+    this.scrcpyWindows[deviceAddr].window?.destroy();
   }
 }

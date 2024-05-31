@@ -161,8 +161,13 @@ export default function createListener(options: CreateListenerOptions) {
     }
   });
   /** 打开scrcpy窗口额外透明栏 */
-  im.on('scrcpy:show-toast', (_, deviceAddr, isTransparent) => {
-    scrcpy.setScrcpyWindowTransparent(deviceAddr, isTransparent);
+  im.on('scrcpy:show-toast', (_, type, params) => {
+    const { isExpended, deviceAddr } = params;
+    if (type === 'transparent') {
+      scrcpy.setScrcpyWindowSize(deviceAddr, isExpended ? 730 : 430);
+    } else if (type === 'fileUpload') {
+      scrcpy.setScrcpyWindowSize(deviceAddr, isExpended ? 930 : 430);
+    }
   });
 }
 

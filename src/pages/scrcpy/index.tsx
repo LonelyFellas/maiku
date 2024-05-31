@@ -17,8 +17,9 @@ import IconVolumeUp from '@img/volume-up.svg?react';
 import './index.css';
 
 export default function ScrcpyWindow() {
-  const [deviceAddr, envId] = getParamsUrl(['deviceAddr', 'envId']);
-  const { setToastRecord, toastRecord } = useDeviceToast();
+  const [deviceAddrParams, envId] = getParamsUrl(['deviceAddr', 'envId']);
+  const deviceAddr = deviceAddrParams || '';
+  const { setToastRecord, toastRecord, setFilesRecord, filesRecord } = useDeviceToast();
   const [api, contextHolder] = notification.useNotification({
     getContainer: () => document.querySelector('.scrcpy-transparent-area') as HTMLElement,
     maxCount: 1,
@@ -54,7 +55,10 @@ export default function ScrcpyWindow() {
         },
         onClose: () => {
           setToastRecord({ [deviceAddr!]: false });
-          window.ipcRenderer.send('scrcpy:show-toast', deviceAddr!, false);
+          window.ipcRenderer.send('scrcpy:show-toast', 'transparent', {
+            deviceAddr: deviceAddr,
+            isExpended: false,
+          });
         },
       });
     },
@@ -66,12 +70,24 @@ export default function ScrcpyWindow() {
   const handleScreenshot = () => {
     if (deviceAddr) {
       setToastRecord({ [deviceAddr]: true });
-      window.ipcRenderer.send('scrcpy:show-toast', deviceAddr, true);
+      window.ipcRenderer.send('scrcpy:show-toast', 'transparent', {
+        deviceAddr,
+        isExpended: true,
+      });
       const formatedTime = dayjs().format('YYYY_MM_DD_HH_mm_ss');
       const command = `screencap /sdcard/Pictures/scrrenshot_${formatedTime}.png`;
       detailMutation.mutate({ id: toNumber(envId) });
       window.adbApi.shell(deviceAddr, command);
     }
+  };
+
+  const handleFileUpload = () => {
+    const fileRecordDeviceAddrBool = !filesRecord[deviceAddr];
+    setFilesRecord({ [deviceAddr]: fileRecordDeviceAddrBool });
+    window.ipcRenderer.send('scrcpy:show-toast', 'fileUpload', {
+      deviceAddr,
+      isExpended: fileRecordDeviceAddrBool,
+    });
   };
   /**
    * 功能按钮点击事件
@@ -86,7 +102,6 @@ export default function ScrcpyWindow() {
       window.adbApi.shell(deviceAddr, `input keyevent ${keycode}`);
     }
   };
-  console.log('addd', toastRecord[deviceAddr!]);
   return (
     <div className="flex h-full w-full">
       <div className="all_flex bg-[#d7dae3] w-[381px]">
@@ -99,7 +114,7 @@ export default function ScrcpyWindow() {
         <Flex vertical className="w-full text-center pt-3 gap-3">
           <OperationButton text="旋转" IconFC={IconRotary} />
           <OperationButton text="截屏" IconFC={IconScreenShot} onClick={handleScreenshot} />
-          <OperationButton text="上传" IconFC={IconUpload} />
+          <OperationButton text="上传" IconFC={IconUpload} onClick={handleFileUpload} />
           <OperationButton text="音+" IconFC={IconVolumeUp} onClick={() => handlerSystemFeature('KEYCODE_VOLUME_UP')} />
           <OperationButton text="音-" IconFC={IconVolumeDown} onClick={() => handlerSystemFeature('KEYCODE_VOLUME_DOWN')} />
           <OperationButton
@@ -107,15 +122,13 @@ export default function ScrcpyWindow() {
             IconFC={IconSpeedUp}
             onClick={() => {
               setToastRecord({ [deviceAddr!]: true });
-              window.ipcRenderer.send('scrcpy:show-toast', deviceAddr!, true);
             }}
           />
           <OperationButton
             text="更多"
             IconFC={IconMore}
             onClick={() => {
-              setToastRecord({ [deviceAddr!]: false });
-              window.ipcRenderer.send('scrcpy:show-toast', deviceAddr!, false);
+              setToastRecord({ [deviceAddr]: false });
             }}
           />
         </Flex>
@@ -127,7 +140,8 @@ export default function ScrcpyWindow() {
         <OperationButton text="应用" gap={2} color="orange" IconFC={IconApp} />
       </div>
       {contextHolder}
-      {toastRecord[deviceAddr!] && <div className="bg-transparent w-[300px]"></div>}
+      {toastRecord[deviceAddr] ? <div className="bg-transparent w-[300px]"></div> : null}
+      {filesRecord[deviceAddr] ? <div className="bg-white w-[500px]"></div> : null}
     </div>
   );
 }
