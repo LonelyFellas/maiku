@@ -11,7 +11,6 @@ import NewProfiles from '@/pages/layout/new-profiles.tsx';
 import UpgradePkg from '@/pages/layout/upgrade-pkg.tsx';
 import Login from '@/pages/login';
 import Profiles from '@/pages/primary/profiles';
-import ScrcpyWindow from '@/pages/scrcpy';
 import { postsEnvQueryOptions, postsFileQueryOptions, postsProxyQueryOptions } from './data.ts';
 
 const rootRoute = createRootRouteWithContext<{
@@ -38,12 +37,6 @@ const loginRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/login',
   component: Login,
-});
-/** scrcpy 页面 */
-const scrcpyRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/scrcpy',
-  component: ScrcpyWindow,
 });
 
 /** home */
@@ -116,7 +109,7 @@ const upgradePkg = createRoute({
   ],
 });
 
-const routeTree = rootRoute.addChildren([indexRoute, scrcpyRoute, loginRoute, layoutRoute.addChildren([profiles, newProfiles, proxy, upgradePkg, addBatchesProxy, fileTransfer])]);
+const routeTree = rootRoute.addChildren([indexRoute, loginRoute, layoutRoute.addChildren([profiles, newProfiles, proxy, upgradePkg, addBatchesProxy, fileTransfer])]);
 
 export const queryClient = new QueryClient();
 export const router = createRouter({
