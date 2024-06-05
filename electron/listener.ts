@@ -69,15 +69,15 @@ export default function createListener(options: CreateListenerOptions) {
     return mainWin?.isMaximized();
   });
 
-  /** 处理scrcpyWindows的窗口的状态按钮*/
-  im.on('scrcpy:window-state', (...args) => {
-    const [, chnannel, envId] = args;
-    if (chnannel === 'minimize') {
-      scrcpy.scrcpyWindowStatesMini(envId);
-    } else {
-      scrcpy.scrcpyWindowStatesClose(envId);
-    }
-  });
+  // /** 处理scrcpyWindows的窗口的状态按钮*/
+  // im.on('scrcpy:window-state', (...args) => {
+  //   const [, chnannel, envId] = args;
+  //   if (chnannel === 'minimize') {
+  //     scrcpy.scrcpyWindowStatesMini(envId);
+  //   } else {
+  //     scrcpy.scrcpyWindowStatesClose(envId);
+  //   }
+  // });
   /** 启动scrcpy **/
   im.on('scrcpy:start', async (event, params) => {
     scrcpy.startWindow(params, (channel, channelData) => event.reply(channel, channelData));
@@ -160,15 +160,15 @@ export default function createListener(options: CreateListenerOptions) {
       }
     }
   });
-  /** 打开scrcpy窗口额外透明栏 */
-  im.on('scrcpy:show-toast', (_, type, params) => {
-    const { isExpended, deviceAddr } = params;
-    if (type === 'transparent') {
-      scrcpy.setScrcpyWindowSize(deviceAddr, isExpended ? 730 : 430);
-    } else if (type === 'fileUpload') {
-      scrcpy.setScrcpyWindowSize(deviceAddr, isExpended ? 930 : 430);
-    }
-  });
+  // /** 打开scrcpy窗口额外透明栏 */
+  // im.on('scrcpy:show-toast', (_, type, params) => {
+  //   const { isExpended, deviceAddr } = params;
+  //   if (type === 'transparent') {
+  //     scrcpy.setScrcpyWindowSize(deviceAddr, isExpended ? 730 : 430);
+  //   } else if (type === 'fileUpload') {
+  //     scrcpy.setScrcpyWindowSize(deviceAddr, isExpended ? 930 : 430);
+  //   }
+  // });
 }
 
 function downloadImage(url: string, filePath: string) {

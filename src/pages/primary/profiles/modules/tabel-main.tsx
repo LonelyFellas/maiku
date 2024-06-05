@@ -4,7 +4,7 @@ import { useSetState, useUpdateEffect } from '@darwish/hooks-core';
 import { isBlanks, isUndef } from '@darwish/utils-is';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { debounce } from 'lodash';
-import { MaskSpin, Table, useMap } from '@common';
+import { getToken, MaskSpin, Table, useMap } from '@common';
 import { getBackupListByEnvIdService, type GetBackupParams, postAddBackupService, postDeleteBackService, postRunBackupService } from '@api';
 import RunButton from '@/pages/primary/profiles/modules/run-button.tsx';
 import { columns as configColumns, operationItems } from '../config';
@@ -190,7 +190,7 @@ const TableMain = (props: TableMainProps) => {
         ),
         dataIndex: 'operation',
         fixed: 'right',
-        width: 170,
+        width: 190,
         key: 'operation',
         render: (_: string, record: DataType) => {
           let btnText = '启动';
@@ -332,6 +332,7 @@ const TableMain = (props: TableMainProps) => {
       backupName: name,
       envName,
       type,
+      token: getToken ?? '',
     });
     setStates(envId, {
       running: 'waiting',
