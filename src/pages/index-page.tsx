@@ -12,6 +12,7 @@ export function IndexPage() {
     }
 
     setTimeout(() => {
+      console.log(22);
       window.ipcRenderer.send('loading:done', 'main');
     }, 1500);
   }, []);

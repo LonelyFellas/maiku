@@ -2,22 +2,12 @@ import { useEffect, type PropsWithChildren } from 'react';
 import { FloatButton, message } from 'antd';
 import { GlobalOutlined as GlobalIcon } from '@ant-design/icons/lib/icons';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { useNavigate } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
-import { useI18nConfig, Wrapper, useUpdate, isScrcpyWindow, getParamsUrl } from '@common';
-import ScrcpyHeader from '@common/components/wrapper/scrcpy-header.tsx';
+import { useI18nConfig, Wrapper, useUpdate } from '@common';
 
 const App = (props: PropsWithChildren<object>) => {
-  const navagate = useNavigate();
   const { setIsUpdate } = useUpdate();
   const [, setLang] = useI18nConfig();
-
-  useEffect(() => {
-    if (isScrcpyWindow) {
-      const [title, deviceAddr] = getParamsUrl(['title', 'deviceAddr']);
-      navagate({ to: `/scrcpy?title=${title}&deviceAddr=${deviceAddr}` });
-    }
-  }, []);
 
   useEffect(() => {
     window.ipcRenderer.on('error', (_, error) => {
@@ -38,14 +28,12 @@ const App = (props: PropsWithChildren<object>) => {
     setLang((prev) => (prev === 'zh' ? 'en' : 'zh'));
   };
 
-  const Component = isScrcpyWindow ? ScrcpyHeader : Wrapper;
-  const isPurePages = window.env.DEV && !isScrcpyWindow;
   return (
     <>
-      {isPurePages && <ReactQueryDevtools initialIsOpen={false} />}
-      {isPurePages && <TanStackRouterDevtools />}
-      {isPurePages && <FloatButton icon={<GlobalIcon />} onClick={handleLanguageChange} style={{ top: 24 }} />}
-      <Component>{props.children}</Component>
+      {window.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+      {window.env.DEV && <TanStackRouterDevtools />}
+      {window.env.DEV && <FloatButton icon={<GlobalIcon />} onClick={handleLanguageChange} style={{ top: 24 }} />}
+      <Wrapper>{props.children}</Wrapper>
     </>
   );
 };

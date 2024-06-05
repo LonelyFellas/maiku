@@ -16,6 +16,7 @@ export default function ScrcpyHeader(props: React.PropsWithChildren<object>) {
   }
 
   const deviceAddr = deviceAddrParam || '-1';
+  console.log('deviceAddr:', deviceAddr);
   const handleMinimize = () => {
     window.ipcRenderer.send('scrcpy:window-state', 'minimize', deviceAddr);
   };
