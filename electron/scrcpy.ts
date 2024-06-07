@@ -32,14 +32,9 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       await this.killProcess(deviceId);
     }
 
-    this.taskFindWindow({
-      winName: title,
-      deviceAddr: deviceId,
-      backupName,
-      envId,
-    });
+    this.taskFindWindow({ ...params, title });
 
-    this.processObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', title, '--window-width', '381', '--window-height', '675'], {
+    this.processObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', title, '--window-width', '1', '--window-height', '1'], {
       cwd: scrcpyCwd,
       shell: true,
     });
@@ -110,7 +105,8 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    * @param backupName 备份名字
    * @private
    */
-  private taskFindWindow({ winName, deviceAddr, backupName, envId }: { winName: string; deviceAddr: string; backupName: string; envId: number }) {
+  private taskFindWindow(params: SendChannelMap['scrcpy:start'][0] & { title: string }) {
+    const { title: winName, deviceId: deviceAddr, envId, backupName, token } = params;
     const maxAttempt = 10;
     let attempt = 0;
 
@@ -131,15 +127,16 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
           backupName,
           isSuccess: true,
         });
-        this.openPythonScrcpyWindow(winName, deviceAddr);
+        this.openPythonScrcpyWindow(winName, deviceAddr, token, params.envId + '');
       }
       attempt++;
     }, 1000);
   }
 
-  private openPythonScrcpyWindow(winName: string, deviceAddr: string) {
+  private openPythonScrcpyWindow(winName: string, deviceAddr: string, token: string, envId: string) {
     const pyPath = path.join(getScrcpyCwd(), 'main.exe');
-    execFile(pyPath, [winName, deviceAddr], (error, stdout, stderr) => {
+    console.log([winName, deviceAddr, token, envId]);
+    execFile(pyPath, [winName, deviceAddr, token, envId], (error, stdout, stderr) => {
       if (error) {
         console.error(`stderr: ${error}`);
         return;

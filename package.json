@@ -1,7 +1,7 @@
 {
   "name": "maiku",
   "private": true,
-  "version": "0.0.10",
+  "version": "0.0.13",
   "type": "module",
   "author": "darwish",
   "description": "maiku app",

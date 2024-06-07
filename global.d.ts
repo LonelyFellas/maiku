@@ -23,6 +23,7 @@ declare global {
         type: 'start' | 'restart' | 'switch';
         backupName: string;
         envName: string;
+        token: string;
       },
     ];
     'scrcpy:stop': [{ deviceId: string }];

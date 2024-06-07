@@ -1,5 +1,5 @@
-import { fetchData } from '../fetch-data';
 import type { GetProxyListResult, PostAddEditProxyParams } from '@api/discover/type';
+import { fetchData } from '../fetch-data';
 
 /** 获取代理列表 */
 export const getProxyListService: Api.IFetch<GetProxyListResult[]> = () =>
