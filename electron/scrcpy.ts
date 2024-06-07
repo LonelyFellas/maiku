@@ -127,15 +127,16 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
           backupName,
           isSuccess: true,
         });
-        this.openPythonScrcpyWindow(winName, deviceAddr, token);
+        this.openPythonScrcpyWindow(winName, deviceAddr, token, params.envId + '');
       }
       attempt++;
     }, 1000);
   }
 
-  private openPythonScrcpyWindow(winName: string, deviceAddr: string, token: string) {
+  private openPythonScrcpyWindow(winName: string, deviceAddr: string, token: string, envId: string) {
     const pyPath = path.join(getScrcpyCwd(), 'main.exe');
-    execFile(pyPath, [winName, deviceAddr, token], (error, stdout, stderr) => {
+    console.log([winName, deviceAddr, token, envId]);
+    execFile(pyPath, [winName, deviceAddr, token, envId], (error, stdout, stderr) => {
       if (error) {
         console.error(`stderr: ${error}`);
         return;

@@ -1,4 +1,4 @@
-import { Button, Space, Popconfirm } from 'antd';
+import { Button, Space, Popconfirm, App } from 'antd';
 import { useMutation, useSuspenseQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { PROXY_TYPE, Table, TriggerModal, useI18nConfig } from '@common';
@@ -7,12 +7,16 @@ import { postsProxyQueryOptions } from '@/routes/data';
 import AddEditModal from './modules/add-edit';
 
 export default function Proxy() {
+  const { message } = App.useApp();
   const [lang] = useI18nConfig('config.proxy');
   const navigate = useNavigate();
   const { data, refetch, isLoading } = useSuspenseQuery(postsProxyQueryOptions);
   const deleteMutation = useMutation({
     mutationKey: ['delete-proxy'],
     mutationFn: postDeleteProxyService,
+    onSuccess: () => {
+      message.success('删除成功');
+    },
   });
   const defaultColumns: AntdColumns<GetProxyListResult> = [
     {

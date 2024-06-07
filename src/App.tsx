@@ -1,5 +1,5 @@
 import { useEffect, type PropsWithChildren } from 'react';
-import { FloatButton, message } from 'antd';
+import { FloatButton, message, App as AntdApp } from 'antd';
 import { GlobalOutlined as GlobalIcon } from '@ant-design/icons/lib/icons';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
@@ -33,7 +33,9 @@ const App = (props: PropsWithChildren<object>) => {
       {window.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
       {window.env.DEV && <TanStackRouterDevtools />}
       {window.env.DEV && <FloatButton icon={<GlobalIcon />} onClick={handleLanguageChange} style={{ top: 24 }} />}
-      <Wrapper>{props.children}</Wrapper>
+      <Wrapper>
+        <AntdApp>{props.children}</AntdApp>
+      </Wrapper>
     </>
   );
 };
