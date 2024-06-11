@@ -15,7 +15,8 @@ export const MAIN_DIST = path.join(process.env.APP_ROOT, 'dist-electron');
 export const RENDERER_DIST = path.join(process.env.APP_ROOT, 'dist');
 process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 'public') : RENDERER_DIST;
 export const scrcpyProcessObj: EleApp.ProcessObj = {};
-export const scrcpy = new Scrcpy(scrcpyProcessObj || {});
+export const pyProcessObj: EleApp.ProcessObj = {};
+export const scrcpy = new Scrcpy(scrcpyProcessObj || {}, pyProcessObj || {});
 
 // 初始化electron-store
 export const store = new Store({ defaults: schema });
