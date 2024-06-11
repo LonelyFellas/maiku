@@ -1,4 +1,4 @@
-import { Button, type ButtonProps, Dropdown } from 'antd';
+import { type ButtonProps, Dropdown, Radio } from 'antd';
 
 interface RunButtonProps extends ButtonProps {
   isRunning: boolean;
@@ -8,10 +8,25 @@ interface RunButtonProps extends ButtonProps {
 const RunButton: React.FC<RunButtonProps> = (props) => {
   const { isRunning, onRestartClick, children, ...restProps } = props;
 
-  const items = [
+  const runningItems = [
     {
       key: '1',
       label: '重启',
+    },
+  ];
+  const notRunningItems = [
+    {
+      key: 'mini-size',
+      label: (
+        <div>
+          <span>窗口尺寸: </span>
+          <Radio.Group size="small" value="default">
+            <Radio.Button value="small">小号</Radio.Button>
+            <Radio.Button value="default">默认</Radio.Button>
+            <Radio.Button value="large">大号</Radio.Button>
+          </Radio.Group>
+        </div>
+      ),
     },
   ];
 
@@ -20,7 +35,7 @@ const RunButton: React.FC<RunButtonProps> = (props) => {
       <Dropdown.Button
         {...restProps}
         menu={{
-          items: items,
+          items: runningItems,
           onClick: onRestartClick,
         }}
       >
@@ -28,7 +43,11 @@ const RunButton: React.FC<RunButtonProps> = (props) => {
       </Dropdown.Button>
     );
   }
-  return <Button {...restProps}>{children}</Button>;
+  return (
+    <Dropdown.Button {...restProps} menu={{ items: notRunningItems }}>
+      {children}
+    </Dropdown.Button>
+  );
 };
 
 export default RunButton;
