@@ -35,7 +35,14 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
 
     this.taskFindWindow({ ...params, title, replyCallback });
 
-    this.processObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', title, '--window-width', '1', '--window-height', '1'], {
+    /**
+     * --window-title: 窗口标题
+     * --window-width: 窗口宽度
+     * --window-height: 窗口高度
+     * --window-x: 窗口x坐标
+     * --window-y: 窗口y坐标
+     */
+    this.processObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', title, '--window-width', '1', '--window-height', '1', '--window-x', '-10000', '--window-y', '-10000'], {
       cwd: scrcpyCwd,
       shell: true,
     });
@@ -141,7 +148,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
   ) {
     const { deviceId: deviceAddr, title: winName, token, envId, replyCallback } = params;
     const pyPath = path.join(getScrcpyCwd(), 'main.exe');
-    this.pyProcessObj[deviceAddr] = spawn(pyPath, [winName, deviceAddr, token, envId.toString(), 'prod']);
+    this.pyProcessObj[deviceAddr] = spawn(pyPath, [winName, deviceAddr, token, envId.toString()]);
     this.pyProcessObj[deviceAddr].stdout.on('data', (data: AnyObj) => {
       const strData = data.toString();
       if (strData.includes('ERROR')) {
