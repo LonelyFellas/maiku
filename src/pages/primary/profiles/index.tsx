@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { useMap } from '@common';
+import { getBackupListByEnvIdService } from '@api';
+import type { States } from '@/pages/primary/profiles/type.ts';
 import { postsEnvQueryOptions } from '@/routes/data';
 import Slider from './modules/slider';
 import TableMain from './modules/tabel-main';
@@ -19,12 +22,28 @@ async function adbConnect(deviceId: string) {
 
 export default function Profiles() {
   const [currentKey, setCurrentKey] = useState(0);
+  const [states, { set: setStates }] = useMap<number, States>([]);
   const { data: envList, isRefetching, isFetching } = useSuspenseQuery(postsEnvQueryOptions);
   const collapsedItems = envList?.find((li) => li.id === currentKey);
   useQuery({
     queryKey: ['connect adb', currentKey, collapsedItems],
     queryFn: () => adbConnect(collapsedItems?.adbAddr ?? ''),
     enabled: currentKey > 0 && collapsedItems !== undefined,
+  });
+
+  const envId = collapsedItems?.id ?? 0;
+  const envName = collapsedItems?.name ?? '';
+  const adbAddr = collapsedItems?.adbAddr ?? '';
+  const {
+    data: tableData,
+    isFetching: tableIsFetching,
+    isRefetching: tableIsRefetching,
+    isLoading: tableIsLoading,
+    refetch: tableRefetch,
+  } = useQuery({
+    queryKey: ['backupList', envId, isRefetching],
+    queryFn: () => getBackupListByEnvIdService({ envId }),
+    enabled: !!envId && !isRefetching,
   });
 
   useEffect(() => {
@@ -39,13 +58,28 @@ export default function Profiles() {
         {...{
           isFetching,
           isRefetching,
+          tableData,
           envList: envList ?? [],
           currentKey,
+          indexSetStates: setStates,
           setCurrentKey,
         }}
       />
       <div className="flex-1 overflow-hidden">
-        <TableMain envName={collapsedItems?.name ?? ''} isRefetching={isRefetching} deviceId={collapsedItems?.adbAddr ?? ''} envId={collapsedItems?.id ?? 0} />
+        <TableMain
+          {...{
+            envName,
+            adbAddr,
+            envId,
+            tableData,
+            tableIsFetching,
+            tableIsRefetching,
+            tableIsLoading,
+            tableRefetch,
+            states,
+            setStates,
+          }}
+        />
       </div>
     </div>
   );

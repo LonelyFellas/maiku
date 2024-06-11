@@ -2,27 +2,32 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { App, Button, Dropdown, Form, Input, Popconfirm, Space } from 'antd';
 import { useSetState, useUpdateEffect } from '@darwish/hooks-core';
 import { isBlanks, isUndef } from '@darwish/utils-is';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { debounce } from 'lodash';
-import { getToken, MaskSpin, Table, useMap } from '@common';
-import { getBackupListByEnvIdService, type GetBackupParams, postAddBackupService, postDeleteBackService, postRunBackupService } from '@api';
+import { getToken, MaskSpin, Table } from '@common';
+import { GetBackupListByIdResult, type GetBackupParams, postAddBackupService, postDeleteBackService, postRunBackupService } from '@api';
 import RunButton from '@/pages/primary/profiles/modules/run-button.tsx';
 import { columns as configColumns, operationItems } from '../config';
 import type { DataType, StartScrcpyParams, States } from '../type';
 
 interface TableMainProps {
-  deviceId: string;
-  envId: number;
-  isRefetching: boolean;
   envName: string;
+  adbAddr: string;
+  envId: number;
+  tableData: GetBackupListByIdResult[] | undefined;
+  tableIsLoading: boolean;
+  tableIsFetching: boolean;
+  tableIsRefetching: boolean;
+  tableRefetch: () => void;
+  states: Map<number, States>;
+  setStates: (key: number, entry: States) => void;
 }
 
 const TableMain = (props: TableMainProps) => {
   const { message } = App.useApp();
-  const { deviceId, envId, envName } = props;
+  const { adbAddr, states, setStates, envId, envName, tableData, tableIsLoading, tableRefetch, tableIsRefetching, tableIsFetching } = props;
   const [form] = Form.useForm();
   const scrollRef = useRef<React.ElementRef<'div'>>(null);
-  const [states, { set: setStates }] = useMap<number, States>([]);
   const [{ stopEnvId, openEnvId, openBackupName }, setClientStates] = useSetState({
     stopEnvId: 0,
     openEnvId: 0,
@@ -77,7 +82,7 @@ const TableMain = (props: TableMainProps) => {
     >
   >({});
   const startScrcpyRef = useRef<StartScrcpyParams>({
-    deviceId: '',
+    adbAddr: '',
     envId: -1,
     name: '',
     states: '',
@@ -88,9 +93,9 @@ const TableMain = (props: TableMainProps) => {
   const currentStates = states.get(envId);
 
   const switchSomeThing = async (params: StartScrcpyParams) => {
-    const { deviceId } = params;
-    await window.adbApi.disconnect(deviceId);
-    await window.adbApi.connect(deviceId);
+    const { adbAddr } = params;
+    await window.adbApi.disconnect(adbAddr);
+    await window.adbApi.connect(adbAddr);
     startScrcpyRef.current = params;
     handleScrcpyWindowOpen(params, 'switch');
   };
@@ -129,17 +134,12 @@ const TableMain = (props: TableMainProps) => {
     }
   }, [props.envId]);
 
-  const { data, isFetching, isRefetching, isLoading, refetch } = useQuery({
-    queryKey: ['backupList', envId],
-    queryFn: () => getBackupListByEnvIdService({ envId }),
-    enabled: !!envId,
-  });
   const deleteMutation = useMutation({
     mutationKey: ['deleteBackup', envId],
     mutationFn: postDeleteBackService,
     onSuccess: () => {
       message.success('删除成功');
-      refetch();
+      tableRefetch();
     },
   });
   const addBackupMutation = useMutation({
@@ -147,7 +147,7 @@ const TableMain = (props: TableMainProps) => {
     mutationFn: postAddBackupService,
     onSuccess: (data) => {
       message.success(data);
-      refetch();
+      tableRefetch();
     },
   });
   const runBackupMutation = useMutation({
@@ -155,15 +155,9 @@ const TableMain = (props: TableMainProps) => {
     mutationFn: postRunBackupService,
     onSuccess: (data) => {
       message.success(data);
-      refetch();
+      tableRefetch();
     },
   });
-  useUpdateEffect(() => {
-    /** 如果右边栏的环境发生变化，同时的这里表格数据也将重新刷新 */
-    if (props.isRefetching) {
-      refetch();
-    }
-  }, [props.isRefetching]);
 
   const handleDeleteBackup = (props: GetBackupParams) => {
     deleteMutation.mutate(props);
@@ -209,7 +203,7 @@ const TableMain = (props: TableMainProps) => {
                 danger={isRunning}
                 onRestartClick={() =>
                   handleRestartScrcpy({
-                    deviceId: record.deviceId,
+                    adbAddr: record.adbAddr,
                     envId: record.envId ?? -1,
                     name: record.Names,
                     containerName: record.containerName,
@@ -219,7 +213,7 @@ const TableMain = (props: TableMainProps) => {
                 }
                 onClick={() =>
                   handleStartScrcpy({
-                    deviceId: record.deviceId,
+                    adbAddr: record.adbAddr,
                     envId: record.envId ?? -1,
                     name: record.Names,
                     containerName: record.containerName,
@@ -265,7 +259,7 @@ const TableMain = (props: TableMainProps) => {
                   })
                 }
               >
-                <Button type="text" size="small" disabled={data && data?.length <= 1}>
+                <Button type="text" size="small" disabled={tableData && tableData?.length <= 1}>
                   删除
                 </Button>
               </Popconfirm>
@@ -282,10 +276,10 @@ const TableMain = (props: TableMainProps) => {
    * 同时增加一个500ms的延时防抖效果
    *  */
   const handleStartScrcpy = debounce((params: StartScrcpyParams) => {
-    const { deviceId, envId, name, states: startStates, containerName } = params;
+    const { adbAddr, envId, name, states: startStates, containerName } = params;
     // 如果当前启动的备份和当前页面的备份一致，则停止当前的scrcpy
     if (containerName === name && startStates === 'running') {
-      window.ipcRenderer.send('scrcpy:stop', { deviceId });
+      window.ipcRenderer.send('scrcpy:stop', { adbAddr });
       setStates(envId, {
         containerName: '',
         loading: false,
@@ -303,7 +297,7 @@ const TableMain = (props: TableMainProps) => {
         containerName: name,
         type: 'switch',
       });
-      window.ipcRenderer.send('scrcpy:stop', { deviceId });
+      window.ipcRenderer.send('scrcpy:stop', { adbAddr });
       runBackupMutation.mutate({
         envId,
         containerName: name,
@@ -325,9 +319,9 @@ const TableMain = (props: TableMainProps) => {
   };
   /** 打开scrcpy窗口的逻辑, 同时发送到客户端启动或重启scrcpy窗口 */
   const handleScrcpyWindowOpen = (params: StartScrcpyParams, type: States['type'] = 'start') => {
-    const { deviceId, envId, name, envName } = params;
+    const { adbAddr, envId, name, envName } = params;
     window.ipcRenderer.send('scrcpy:start', {
-      deviceId,
+      adbAddr,
       envId,
       backupName: name,
       envName,
@@ -343,19 +337,19 @@ const TableMain = (props: TableMainProps) => {
   };
 
   const dataSource = useMemo(() => {
-    return data?.map((item) =>
+    return tableData?.map((item) =>
       item.Names === currentStates?.containerName
         ? {
             ...item,
-            deviceId,
+            adbAddr,
             envId,
             running: currentStates?.running,
             containerName: currentStates?.containerName,
             envName,
           }
-        : { ...item, deviceId, envId, running: 'stop', envName },
+        : { ...item, adbAddr, envId, running: 'stop', envName },
     );
-  }, [deviceId, envName, envId, Object.values(currentStates || {})]);
+  }, [adbAddr, envName, envId, Object.values(currentStates || {})]);
 
   let spinContent = '正在切换备份，请稍后...';
   if (currentStates && currentStates.loading) {
@@ -379,9 +373,9 @@ const TableMain = (props: TableMainProps) => {
     <div ref={scrollRef} className="relative flex flex-col gap-2 flex-1 h-full bg-white rounded-md">
       <MaskSpin content={spinContent} loading={currentStates?.loading || false} />
       <Table
-        isFetching={isFetching || addBackupMutation.isPending}
-        isRefetching={isRefetching}
-        isSuccess={!isLoading}
+        isFetching={tableIsFetching || addBackupMutation.isPending}
+        isRefetching={tableIsRefetching}
+        isSuccess={!tableIsLoading}
         className="h-full"
         columns={columns
           .filter((col) => col.isVisible)

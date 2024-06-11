@@ -18,7 +18,7 @@ declare global {
     'scrcpy:window-state': [WindowState, string];
     'scrcpy:start': [
       {
-        deviceId: string;
+        adbAddr: string;
         envId: number;
         type: 'start' | 'restart' | 'switch';
         backupName: string;
@@ -26,7 +26,7 @@ declare global {
         token: string;
       },
     ];
-    'scrcpy:stop': [{ deviceId: string }];
+    'scrcpy:stop': [{ adbAddr: string }];
     'app:operate': ['close' | 'restart'];
     'loading:done': ['main' | 'loading'];
     'download-update': [];
