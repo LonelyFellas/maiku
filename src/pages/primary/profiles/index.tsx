@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { getBackupListByEnvIdService } from '@api';
 import { postsEnvQueryOptions } from '@/routes/data';
 import Slider from './modules/slider';
 import TableMain from './modules/tabel-main';
@@ -27,6 +28,21 @@ export default function Profiles() {
     enabled: currentKey > 0 && collapsedItems !== undefined,
   });
 
+  const envId = collapsedItems?.id ?? 0;
+  const envName = collapsedItems?.name ?? '';
+  const adbAddr = collapsedItems?.adbAddr ?? '';
+  const {
+    data: tableData,
+    isFetching: tableIsFetching,
+    isRefetching: tableIsRefetching,
+    isLoading: tableIsLoading,
+    refetch: tableRefetch,
+  } = useQuery({
+    queryKey: ['backupList', envId, isRefetching],
+    queryFn: () => getBackupListByEnvIdService({ envId }),
+    enabled: !!envId && !isRefetching,
+  });
+
   useEffect(() => {
     if (envList?.length > 0) {
       setCurrentKey(envList?.[0].id ?? 0);
@@ -45,7 +61,18 @@ export default function Profiles() {
         }}
       />
       <div className="flex-1 overflow-hidden">
-        <TableMain envName={collapsedItems?.name ?? ''} isRefetching={isRefetching} deviceId={collapsedItems?.adbAddr ?? ''} envId={collapsedItems?.id ?? 0} />
+        <TableMain
+          {...{
+            envName,
+            adbAddr,
+            envId,
+            tableData,
+            tableIsFetching,
+            tableIsRefetching,
+            tableIsLoading,
+            tableRefetch,
+          }}
+        />
       </div>
     </div>
   );

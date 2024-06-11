@@ -12,16 +12,8 @@ export interface DataType {
   Names: string;
   State: string;
   index?: number;
-  // category: string;
-  // index: number;
-  // name: string;
-  // deviceInfo: string;
-  // remark: string;
-  // tags: string;
-  // lastOpenTime: string;
-  // createTime: string;
   isVisible?: boolean;
-  deviceId: string;
+  adbAddr: string;
   envId?: number;
   running: States['running'];
   containerName: States['containerName'];
@@ -29,7 +21,7 @@ export interface DataType {
 }
 
 export interface StartScrcpyParams {
-  deviceId: string;
+  adbAddr: string;
   envId: number;
   name: string;
   states: string;

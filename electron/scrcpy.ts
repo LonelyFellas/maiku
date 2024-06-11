@@ -24,13 +24,13 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    * @param replyCallback 对渲染层通信的回调函数
    */
   public async startWindow(params: SendChannelMap['scrcpy:start'][0], replyCallback: GenericsFn<[string, any]>) {
-    const { deviceId, envId, backupName, envName, type: paramsType } = params;
+    const { adbAddr, envId, backupName, envName, type: paramsType } = params;
     const title = `[${envName}]-${backupName}`;
     const scrcpyCwd = getScrcpyCwd();
 
     // 重启
     if (paramsType === 'restart') {
-      await this.killProcess(deviceId);
+      await this.killProcess(adbAddr);
     }
 
     this.taskFindWindow({ ...params, title, replyCallback });
@@ -42,12 +42,12 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
      * --window-x: 窗口x坐标
      * --window-y: 窗口y坐标
      */
-    this.processObj[deviceId] = spawn('scrcpy', ['-s', deviceId, '--window-title', title, '--window-width', '1', '--window-height', '1', '--window-x', '-10000', '--window-y', '-10000'], {
+    this.processObj[adbAddr] = spawn('scrcpy', ['-s', adbAddr, '--window-title', title, '--window-width', '1', '--window-height', '1', '--window-x', '-10000', '--window-y', '-10000'], {
       cwd: scrcpyCwd,
       shell: true,
     });
-    this.processInfo[deviceId] = params;
-    this.processObj[deviceId].stdout.on('data', (data: AnyObj) => {
+    this.processInfo[adbAddr] = params;
+    this.processObj[adbAddr].stdout.on('data', (data: AnyObj) => {
       const strData = data.toString();
       console.error(`stdout: ${strData}`);
 
@@ -59,7 +59,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
         });
       }
     });
-    this.processObj[deviceId].stderr.on('data', (data: AnyObj) => {
+    this.processObj[adbAddr].stderr.on('data', (data: AnyObj) => {
       const strData = data.toString();
       console.log(`stdrr: ${strData}`);
 
@@ -67,7 +67,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
         replyCallback('error', strData);
       }
     });
-    this.processObj[deviceId].on('close', () => {
+    this.processObj[adbAddr].on('close', () => {
       // 通知渲染层当前的scrcpy关闭了
       replyCallback('close-device-envId', envId);
     });
@@ -146,7 +146,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       replyCallback: GenericsFn<[string, any]>;
     },
   ) {
-    const { deviceId: deviceAddr, title: winName, token, envId, replyCallback } = params;
+    const { adbAddr: deviceAddr, title: winName, token, envId, replyCallback } = params;
     const pyPath = path.join(getScrcpyCwd(), 'main.exe');
     this.pyProcessObj[deviceAddr] = spawn(pyPath, [winName, deviceAddr, token, envId.toString()]);
     this.pyProcessObj[deviceAddr].stdout.on('data', (data: AnyObj) => {

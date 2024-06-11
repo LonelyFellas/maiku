@@ -6,7 +6,7 @@ import { isArray } from '@darwish/utils-is';
 import { LeftOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { cn, ContainerWithEmpty, toNumber } from '@common';
+import { cn, ContainerWithEmpty, getToken, toNumber } from '@common';
 import { GetAllEnvListResult, getEnvByIdService } from '@api';
 import { emptyImg } from '../config.tsx';
 import BackupProxyModal from './backup-proxy-modal';
@@ -72,6 +72,25 @@ const Slider = (props: SliderProps) => {
     setStates({ pushFilesModalVisible: false });
   };
 
+  /** 启动scrcpy */
+  const handleStartScrcpy = () => {
+    const currentItem = envList[currentKey];
+    const { adbAddr, id, name } = currentItem;
+    window.ipcRenderer.send('scrcpy:start', {
+      deviceId: adbAddr,
+      envId: id,
+      backupName: name,
+      envName: name,
+      type: 'start',
+      token: getToken ?? '',
+    });
+    // setStates(envId, {
+    //   running: 'waiting',
+    //   loading: true,
+    //   containerName: name,
+    //   type,
+    // });
+  };
   return (
     <Scrollbar className="w-[180px] h-full bg-bg_primary/50 rounded-md 2xl:w-[230px]">
       <ContainerWithEmpty className="h-full" hasData={envList?.length > 0} isRefetching={isRefetching} isFetching={isFetching}>
@@ -96,6 +115,7 @@ const Slider = (props: SliderProps) => {
                   src={dataDeferredVal?.screenShot ? dataDeferredVal.screenShot : emptyImg}
                   className="rounded h-[300px] 2xl:h-[400px]"
                   alt="screen shot"
+                  onClick={handleStartScrcpy}
                 />
                 <Flex className="my-2" gap={10}>
                   <Button size="small" onClick={() => handleGoToEdit(item.id)}>
