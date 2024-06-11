@@ -4,7 +4,7 @@ import { useSetState, useUpdateEffect } from '@darwish/hooks-core';
 import { isBlanks, isUndef } from '@darwish/utils-is';
 import { useMutation } from '@tanstack/react-query';
 import { debounce } from 'lodash';
-import { getToken, MaskSpin, Table, useMap } from '@common';
+import { getToken, MaskSpin, Table } from '@common';
 import { GetBackupListByIdResult, type GetBackupParams, postAddBackupService, postDeleteBackService, postRunBackupService } from '@api';
 import RunButton from '@/pages/primary/profiles/modules/run-button.tsx';
 import { columns as configColumns, operationItems } from '../config';
@@ -19,14 +19,15 @@ interface TableMainProps {
   tableIsFetching: boolean;
   tableIsRefetching: boolean;
   tableRefetch: () => void;
+  states: Map<number, States>;
+  setStates: (key: number, entry: States) => void;
 }
 
 const TableMain = (props: TableMainProps) => {
   const { message } = App.useApp();
-  const { adbAddr, envId, envName, tableData, tableIsLoading, tableRefetch, tableIsRefetching, tableIsFetching } = props;
+  const { adbAddr, states, setStates, envId, envName, tableData, tableIsLoading, tableRefetch, tableIsRefetching, tableIsFetching } = props;
   const [form] = Form.useForm();
   const scrollRef = useRef<React.ElementRef<'div'>>(null);
-  const [states, { set: setStates }] = useMap<number, States>([]);
   const [{ stopEnvId, openEnvId, openBackupName }, setClientStates] = useSetState({
     stopEnvId: 0,
     openEnvId: 0,

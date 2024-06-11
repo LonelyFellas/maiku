@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { useMap } from '@common';
 import { getBackupListByEnvIdService } from '@api';
+import type { States } from '@/pages/primary/profiles/type.ts';
 import { postsEnvQueryOptions } from '@/routes/data';
 import Slider from './modules/slider';
 import TableMain from './modules/tabel-main';
@@ -20,6 +22,7 @@ async function adbConnect(deviceId: string) {
 
 export default function Profiles() {
   const [currentKey, setCurrentKey] = useState(0);
+  const [states, { set: setStates }] = useMap<number, States>([]);
   const { data: envList, isRefetching, isFetching } = useSuspenseQuery(postsEnvQueryOptions);
   const collapsedItems = envList?.find((li) => li.id === currentKey);
   useQuery({
@@ -55,8 +58,10 @@ export default function Profiles() {
         {...{
           isFetching,
           isRefetching,
+          tableData,
           envList: envList ?? [],
           currentKey,
+          indexSetStates: setStates,
           setCurrentKey,
         }}
       />
@@ -71,6 +76,8 @@ export default function Profiles() {
             tableIsRefetching,
             tableIsLoading,
             tableRefetch,
+            states,
+            setStates,
           }}
         />
       </div>

@@ -1,13 +1,14 @@
 import { useDeferredValue } from 'react';
-import { Button, Collapse, Dropdown, Flex } from 'antd';
+import { Button, Collapse, Dropdown, Flex, message } from 'antd';
 import { useSetState } from '@darwish/hooks-core';
 import { Scrollbar } from '@darwish/scrollbar-react';
-import { isArray } from '@darwish/utils-is';
+import { isArray, isUndef } from '@darwish/utils-is';
 import { LeftOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { cn, ContainerWithEmpty, getToken, toNumber } from '@common';
-import { GetAllEnvListResult, getEnvByIdService } from '@api';
+import { type GetAllEnvListResult, type GetBackupListByIdResult, getEnvByIdService } from '@api';
+import type { States } from '@/pages/primary/profiles/type.ts';
 import { emptyImg } from '../config.tsx';
 import BackupProxyModal from './backup-proxy-modal';
 import PushFilesModal from './push-files-modal';
@@ -16,14 +17,16 @@ import '../index.css';
 interface SliderProps {
   isFetching: boolean;
   isRefetching: boolean;
+  tableData: GetBackupListByIdResult[] | undefined;
   envList: GetAllEnvListResult[];
   currentKey: number;
   setCurrentKey: ReactAction<number>;
+  indexSetStates: (key: number, entry: States) => void;
 }
 
 const Slider = (props: SliderProps) => {
   const navigate = useNavigate();
-  const { isFetching, isRefetching, envList, currentKey, setCurrentKey } = props;
+  const { indexSetStates, isFetching, isRefetching, envList, currentKey, setCurrentKey, tableData } = props;
   const [states, setStates] = useSetState({
     pushFilesModalVisible: false,
     backupProxyModalVisible: false,
@@ -74,22 +77,30 @@ const Slider = (props: SliderProps) => {
 
   /** 启动scrcpy */
   const handleStartScrcpy = () => {
-    const currentItem = envList[currentKey];
+    const currentItem = envList.find((item) => item.id === currentKey)!;
     const { adbAddr, id, name } = currentItem;
-    window.ipcRenderer.send('scrcpy:start', {
-      deviceId: adbAddr,
-      envId: id,
-      backupName: name,
-      envName: name,
-      type: 'start',
-      token: getToken ?? '',
-    });
-    // setStates(envId, {
-    //   running: 'waiting',
-    //   loading: true,
-    //   containerName: name,
-    //   type,
-    // });
+    console.log(tableData);
+    if (tableData) {
+      const activeBackup = tableData.find((t) => t.State === 'running');
+      if (isUndef(activeBackup)) {
+        message.success('当前没有正在运行的备份');
+      } else {
+        window.ipcRenderer.send('scrcpy:start', {
+          adbAddr,
+          envId: id,
+          backupName: activeBackup.Names,
+          envName: name,
+          type: 'start',
+          token: getToken ?? '',
+        });
+        indexSetStates(id, {
+          running: 'waiting',
+          loading: true,
+          containerName: activeBackup.Names,
+          type: 'start',
+        });
+      }
+    }
   };
   return (
     <Scrollbar className="w-[180px] h-full bg-bg_primary/50 rounded-md 2xl:w-[230px]">
@@ -113,7 +124,7 @@ const Slider = (props: SliderProps) => {
                 <img
                   // preview={!!data?.screenShot}
                   src={dataDeferredVal?.screenShot ? dataDeferredVal.screenShot : emptyImg}
-                  className="rounded h-[300px] 2xl:h-[400px]"
+                  className="rounded h-[300px] 2xl:h-[400px] cursor-pointer"
                   alt="screen shot"
                   onClick={handleStartScrcpy}
                 />
