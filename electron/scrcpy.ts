@@ -141,7 +141,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
   ) {
     const { deviceId: deviceAddr, title: winName, token, envId, replyCallback } = params;
     const pyPath = path.join(getScrcpyCwd(), 'main.exe');
-    this.pyProcessObj[deviceAddr] = spawn(pyPath, [winName, deviceAddr, token, envId.toString()]);
+    this.pyProcessObj[deviceAddr] = spawn(pyPath, [winName, deviceAddr, token, envId.toString(), 'prod']);
     this.pyProcessObj[deviceAddr].stdout.on('data', (data: AnyObj) => {
       const strData = data.toString();
       if (strData.includes('ERROR')) {
