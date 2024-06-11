@@ -1,5 +1,4 @@
-import { scrcpyProcessObj } from '../main';
-import { isMac } from './helper';
+import { scrcpyProcessObj, pyProcessObj } from '../main';
 import { killProcessWithWindows } from './killProcessWithWindows';
 
 /**
@@ -7,11 +6,11 @@ import { killProcessWithWindows } from './killProcessWithWindows';
  */
 export function closeAllScrcpyDevices() {
   Object.entries(scrcpyProcessObj).forEach(([pid, process]) => {
-    if (isMac) {
-      process.kill('SIGTERM');
-    } else {
-      killProcessWithWindows(process.pid!);
-      delete scrcpyProcessObj[pid];
-    }
+    killProcessWithWindows(process.pid!);
+    delete scrcpyProcessObj[pid];
+  });
+  Object.entries(pyProcessObj).forEach(([pid, process]) => {
+    killProcessWithWindows(process.pid!);
+    delete scrcpyProcessObj[pid];
   });
 }
