@@ -8,7 +8,7 @@ import { getToken, MaskSpin, Table } from '@common';
 import { GetBackupListByIdResult, type GetBackupParams, postAddBackupService, postDeleteBackService, postRunBackupService } from '@api';
 import RunButton from '@/pages/primary/profiles/modules/run-button.tsx';
 import { columns as configColumns, operationItems } from '../config';
-import type { DataType, StartScrcpyParams, States } from '../type';
+import type { DataType, StartScrcpyParams, States, WindowsSize } from '../type';
 
 interface TableMainProps {
   envName: string;
@@ -28,6 +28,7 @@ const TableMain = (props: TableMainProps) => {
   const { adbAddr, states, setStates, envId, envName, tableData, tableIsLoading, tableRefetch, tableIsRefetching, tableIsFetching } = props;
   const [form] = Form.useForm();
   const scrollRef = useRef<React.ElementRef<'div'>>(null);
+  const [windowsSize, setWindowsSize] = useState<WindowsSize>({});
   const [{ stopEnvId, openEnvId, openBackupName }, setClientStates] = useSetState({
     stopEnvId: 0,
     openEnvId: 0,
@@ -174,6 +175,7 @@ const TableMain = (props: TableMainProps) => {
     }
   };
 
+  console.log(windowsSize);
   const [columns] = useState(() => {
     const defaultColumns = configColumns.concat([
       {
@@ -201,6 +203,10 @@ const TableMain = (props: TableMainProps) => {
                 size="small"
                 type="primary"
                 danger={isRunning}
+                handleWindowsChange={(size) => {
+                  setWindowsSize((prev) => ({ ...prev, [record.envId]: size }));
+                }}
+                windowSize={record.windowsSize[record.envId] || 'default'}
                 onRestartClick={() =>
                   handleRestartScrcpy({
                     adbAddr: record.adbAddr,
@@ -345,11 +351,12 @@ const TableMain = (props: TableMainProps) => {
             envId,
             running: currentStates?.running,
             containerName: currentStates?.containerName,
+            windowsSize,
             envName,
           }
-        : { ...item, adbAddr, envId, running: 'stop', envName },
+        : { ...item, adbAddr, envId, running: 'stop', envName, windowsSize },
     );
-  }, [adbAddr, envName, envId, Object.values(currentStates || {})]);
+  }, [adbAddr, envName, envId, Object.values(currentStates || {}), windowsSize]);
 
   let spinContent = '正在切换备份，请稍后...';
   if (currentStates && currentStates.loading) {
