@@ -49,6 +49,11 @@ const PushFilesModal = memo((props: PushFilesModalProps) => {
       dataIndex: 'name',
       key: 'name',
       width: 120,
+      render: (text: string) => (
+        <span className="text-ellipsis" title={text}>
+          {text.length > 10 ? text.slice(0, 10) + '...' : text}
+        </span>
+      ),
     },
     {
       title: '自定义名称',
