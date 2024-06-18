@@ -73,19 +73,10 @@ function createMainWindow() {
   if (!isProd) {
     mainWin.webContents.openDevTools({ mode: 'detach' });
   }
-  mainWin.on('close', (e) => {
-    if (!app.isQuitting) {
-      e.preventDefault();
-      if (isMac) {
-        mainWin?.hide();
-      }
-    }
-  });
   if (mainWin) {
     // 给主窗口设置scrcpy实例
     // 后续scrcpy窗口进行操作时有可能需要的对渲染层发消息
     scrcpy.setMainWindow(mainWin);
-    // scrcpy.setupPythonWindow();
   }
 }
 
@@ -116,12 +107,6 @@ app.on('activate', () => {
     createMainWindow();
   } else {
     mainWin?.show();
-  }
-});
-app.on('before-quit', () => {
-  app.isQuitting = true;
-  if (mainWin) {
-    mainWin.destroy();
   }
 });
 
