@@ -18,7 +18,6 @@ export interface DataType {
   running: States['running'];
   containerName: States['containerName'];
   envName: string;
-  windowsSize: WindowsSize;
 }
 
 export interface StartScrcpyParams {
@@ -29,5 +28,3 @@ export interface StartScrcpyParams {
   containerName: string;
   envName: string;
 }
-
-export type WindowsSize = Record<string, 'small' | 'default' | 'large'>;
