@@ -97,7 +97,7 @@ const PushFilesModal = memo((props: PushFilesModalProps) => {
   if (size === '2xl') {
     bodyHeightStyle['height'] = l.lang === 'English' ? 500 : 475;
   } else {
-    bodyHeightStyle['height'] = l.lang === 'English' ? 415 : 390;
+    bodyHeightStyle['height'] = l.lang === 'English' ? 395 : 370;
   }
   const scrollYVal = size === '2xl' ? 350 : 250;
 

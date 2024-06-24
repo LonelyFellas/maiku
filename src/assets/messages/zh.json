@@ -152,7 +152,7 @@
     "column_file_size": "文件大小",
     "column_file_time": "上传时间",
     "modal_file_title": "请从文件中转站推送到云手机（云手机默认存储路径：/sdcard/Download/）",
-    "modal_file_msg1": "请选择如下文件，推送到 测试环境334 云手机，请在 文件管理 -> Download 下查看推送进度。",
+    "modal_file_msg1": "请选择如下文件，推送到",
     "modal_file_msg2": " 云手机，请在 文件管理 -> Download 下查看推送进度。"
   },
   "new_profiles": {
