@@ -60,6 +60,7 @@ export default function FileTransferStation() {
       title: lang?.tb_col_fileName,
       dataIndex: 'name',
       key: 'name',
+      ellipsis: true,
     },
     {
       title: lang?.tb_col_customName,
@@ -94,10 +95,10 @@ export default function FileTransferStation() {
         columns={columns}
         rowKey="id"
         dataSource={postsFileData}
-        paginationTop={-55}
+        paginationTop={-40}
         pagination={{
           total: postsFileData?.length,
-          pageSize: 10,
+          pageSize: 20,
         }}
         isFetching={isFetching}
         isRefetching={isRefetching}

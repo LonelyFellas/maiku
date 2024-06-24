@@ -108,7 +108,7 @@
     }
   },
   "profiles": {
-    "modify_btn": "更多",
+    "modify_btn": "修改",
     "proxy_btn": "代理",
     "more_btn": "更多",
     "more_push_btn": "推送",
