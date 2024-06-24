@@ -52,11 +52,8 @@ const PushFilesModal = memo((props: PushFilesModalProps) => {
       dataIndex: 'name',
       key: 'name',
       width: 120,
-      render: (text: string) => (
-        <span className="text-ellipsis" title={text}>
-          {text.length > 10 ? text.slice(0, 10) + '...' : text}
-        </span>
-      ),
+      ellipsis: true,
+      render: (text: string) => text,
     },
     {
       title: lang.column_custom_name,
@@ -96,12 +93,13 @@ const PushFilesModal = memo((props: PushFilesModalProps) => {
   const msg = `${lang.modal_file_msg1} ${props.name} ${lang.modal_file_msg2}`;
   // const body =
   const headerHeightStyle = { height: l.lang === 'English' ? 60 : 40 };
-  const bodyHeightStyle: React.CSSProperties = {};
+  const bodyHeightStyle: React.CSSProperties = { height: 475 };
   if (size === '2xl') {
     bodyHeightStyle['height'] = l.lang === 'English' ? 500 : 475;
   } else {
     bodyHeightStyle['height'] = l.lang === 'English' ? 395 : 370;
   }
+  const scrollYVal = size === '2xl' ? 350 : 250;
 
   return (
     <Modal {...props} title={lang.modal_file_title} width={700} styles={{ body: bodyHeightStyle, header: headerHeightStyle }}>
@@ -116,7 +114,7 @@ const PushFilesModal = memo((props: PushFilesModalProps) => {
           total: data?.length,
           pageSize: 10,
         }}
-        scroll={{ y: size === '2xl' ? 350 : 250 }}
+        scroll={{ y: scrollYVal }}
         isFetching={isFetching}
         isRefetching={isRefetching}
         dataSource={data}

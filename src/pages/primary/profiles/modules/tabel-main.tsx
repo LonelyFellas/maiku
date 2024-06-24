@@ -302,7 +302,7 @@ const TableMain = (props: TableMainProps) => {
                   })
                 }
               >
-                <Button type="text" size="small" disabled={tableData && tableData?.length <= 1}>
+                <Button type="text" size="small" danger disabled={tableData && tableData?.length <= 1}>
                   {lang.operation_btn_delete}
                 </Button>
               </Popconfirm>

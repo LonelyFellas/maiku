@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { App, Button, Descriptions, Popconfirm, Space } from 'antd';
 import { useMutation, useQueries } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { ContainerWithEmpty, Modal, PopconfirmButton, PROXY_TYPE, Table, useI18nConfig, useScreens } from '@common';
+import { ContainerWithEmpty, Modal, PopconfirmButton, PROXY_TYPE, Table, useI18nConfig } from '@common';
 import { GetProxyListResult, getProxyListService, PostBackupProxyResult, postBackupProxyService, postClearBackupProxyService, postDeleteProxyService, postSetBackupProxyService } from '@api';
 
 interface BackupProxyModalProps extends AntdModalProps {
@@ -11,7 +11,6 @@ interface BackupProxyModalProps extends AntdModalProps {
 
 const BackupProxyModal = memo((props: BackupProxyModalProps) => {
   const [lang] = useI18nConfig('config.profiles');
-  const size = useScreens();
   const { message } = App.useApp();
   const navigate = useNavigate();
   const { envId, ...restProps } = props;
@@ -71,7 +70,7 @@ const BackupProxyModal = memo((props: BackupProxyModalProps) => {
   const proxyList = results[1].data as unknown as GetProxyListResult[];
   return (
     <Modal {...restProps} width={600}>
-      <ContainerWithEmpty emptyDescription={lang.no_starting} hasData={Boolean(detailData)} isFetching={results[0].isLoading} isRefetching={results[0].isRefetching}>
+      <ContainerWithEmpty height={100} emptyDescription={lang.no_starting} hasData={Boolean(detailData)} isFetching={results[0].isLoading} isRefetching={results[0].isRefetching}>
         <Descriptions title="">
           <Descriptions.Item label={lang.ip_address} span={3}>
             {detailData?.addr}
@@ -87,7 +86,7 @@ const BackupProxyModal = memo((props: BackupProxyModalProps) => {
         className="mt-4"
         dataSource={proxyList}
         pagination={false}
-        scroll={{ y: size === '2xl' ? 350 : 200 }}
+        scroll={{ y: 240, x: 500 }}
         rowKey="id"
         columns={[
           {
@@ -107,6 +106,8 @@ const BackupProxyModal = memo((props: BackupProxyModalProps) => {
           {
             title: lang.column_operation,
             dataIndex: 'operation',
+            width: 160,
+            fixed: 'right',
             render: (_: unknown, record: GetProxyListResult) => (
               <Space>
                 <Popconfirm title={lang.proxy_confirm_title} onConfirm={() => handleSetVpc(record.id)}>
