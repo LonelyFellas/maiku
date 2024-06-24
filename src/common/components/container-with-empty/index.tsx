@@ -7,6 +7,8 @@ interface ContainerWithEmptyProps extends EmptyProps {
   hasData?: boolean;
   className?: string;
   emptyDescription?: string;
+  height?: number | string;
+  size?: 'default' | 'small' | 'large';
 }
 
 const contentStyle: React.CSSProperties = {
@@ -17,12 +19,14 @@ const contentStyle: React.CSSProperties = {
 
 const content = <div style={contentStyle} />;
 
-export function LoadingView({ tip }: { tip: string }) {
+export function LoadingView({ tip, height, size }: { tip: string; height: number | string; size: 'default' | 'small' | 'large' }) {
   return (
-    <div className="all_flex h-full w-full">
-      <Spin tip={tip} size="large">
-        {content}
-      </Spin>
+    <div style={{ height }} className="relative">
+      <div className="all_flex h-full w-full absolute">
+        <Spin tip={tip} size={size}>
+          {content}
+        </Spin>
+      </div>
     </div>
   );
 }
@@ -35,13 +39,13 @@ export function LoadingView({ tip }: { tip: string }) {
  * @param { unknown[] } props.list 需要传入list数据，来进行计算长度
  */
 export default function ContainerWithEmpty(props: React.PropsWithChildren<ContainerWithEmptyProps>) {
-  const { isFetching, isRefetching, children, className = '', hasData = false, emptyDescription = '暂无数据', ...restProps } = props;
+  const { isFetching, height = '100%', size = 'default', isRefetching, children, className = '', hasData = false, emptyDescription = '暂无数据', ...restProps } = props;
 
   if (isRefetching) {
-    return <LoadingView tip="正在重新获取数据" />;
+    return <LoadingView tip="正在重新获取数据" height={height} size={size} />;
   }
   if (isFetching) {
-    return <LoadingView tip="正在获取数据" />;
+    return <LoadingView tip="正在获取数据" height={height} size={size} />;
   }
 
   return <div className={className}>{!hasData || children === null || children === undefined ? <Empty {...restProps} description={emptyDescription} className="all_flex_col h-full w-full" /> : children}</div>;

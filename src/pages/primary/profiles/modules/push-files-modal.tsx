@@ -93,7 +93,7 @@ const PushFilesModal = memo((props: PushFilesModalProps) => {
   const msg = `${lang.modal_file_msg1} ${props.name} ${lang.modal_file_msg2}`;
   // const body =
   const headerHeightStyle = { height: l.lang === 'English' ? 60 : 40 };
-  const bodyHeightStyle: React.CSSProperties = {};
+  const bodyHeightStyle: React.CSSProperties = { height: 475 };
   if (size === '2xl') {
     bodyHeightStyle['height'] = l.lang === 'English' ? 500 : 475;
   } else {
