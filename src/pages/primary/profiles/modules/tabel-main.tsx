@@ -1,13 +1,12 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { App, Button, Dropdown, Form, Input, Popconfirm, Space } from 'antd';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { App, Button, Form, Input, Popconfirm, Space, Tag } from 'antd';
 import { useSetState, useUpdateEffect } from '@darwish/hooks-core';
 import { isBlanks, isUndef } from '@darwish/utils-is';
 import { useMutation } from '@tanstack/react-query';
 import { debounce } from 'lodash';
-import { getToken, MaskSpin, Table } from '@common';
+import { getToken, MaskSpin, Table, useI18nConfig, useScreens } from '@common';
 import { GetBackupListByIdResult, type GetBackupParams, postAddBackupService, postDeleteBackService, postRunBackupService } from '@api';
 import RunButton from '@/pages/primary/profiles/modules/run-button.tsx';
-import { columns as configColumns, operationItems } from '../config';
 import type { DataType, StartScrcpyParams, States } from '../type';
 
 interface TableMainProps {
@@ -24,6 +23,9 @@ interface TableMainProps {
 }
 
 const TableMain = (props: TableMainProps) => {
+  const [l] = useI18nConfig();
+  const [lang] = useI18nConfig('config.profiles');
+  const size = useScreens();
   const { message } = App.useApp();
   const { adbAddr, states, setStates, envId, envName, tableData, tableIsLoading, tableRefetch, tableIsRefetching, tableIsFetching } = props;
   const [form] = Form.useForm();
@@ -147,7 +149,7 @@ const TableMain = (props: TableMainProps) => {
     mutationKey: ['deleteBackup', envId],
     mutationFn: postDeleteBackService,
     onSuccess: () => {
-      message.success('删除成功');
+      message.success(lang.delete_msg);
       tableRefetch();
     },
   });
@@ -183,25 +185,57 @@ const TableMain = (props: TableMainProps) => {
     }
   };
 
-  const [columns] = useState(() => {
+  const columns = useMemo(() => {
+    const TAG_MAP = {
+      created: {
+        color: 'blue',
+        title: lang.status_created,
+      },
+      running: {
+        color: 'green',
+        title: lang.status_running,
+      },
+      exited: {
+        color: 'yellow',
+        title: lang.status_exited,
+      },
+    };
+    const configColumns: AntdColumns<DataType> = [
+      {
+        title: '#',
+        width: 45,
+        dataIndex: 'num',
+        key: 'num',
+        render: (_, __, index) => index + 1,
+      },
+      {
+        title: lang.column_name,
+        width: size === '2xl' ? 400 : 150,
+        dataIndex: 'Names',
+        key: 'Names',
+      },
+      {
+        title: lang.column_status,
+        width: 80,
+        dataIndex: 'State',
+        key: 'State',
+        render: (text: keyof typeof TAG_MAP) => <Tag color={TAG_MAP[text].color}>{TAG_MAP[text].title}</Tag>,
+      },
+    ];
     const defaultColumns = configColumns.concat([
       {
-        title: (
-          <Dropdown menu={{ items: operationItems }} trigger={['click']}>
-            <span className="cursor-pointer">操作</span>
-          </Dropdown>
-        ),
+        title: lang.column_operation,
         dataIndex: 'operation',
         fixed: 'right',
-        width: 190,
+        width: l.lang == 'English' ? 220 : 190,
         key: 'operation',
         render: (_: string, record: DataType) => {
-          let btnText = '启动';
+          let btnText = lang.setup_status_running;
           const isRunning = record.running === 'running';
           if (isRunning) {
-            btnText = '停止';
+            btnText = lang.setup_status_stop;
           } else if (record.running === 'waiting') {
-            btnText = '等待中';
+            btnText = lang.setup_status_waiting;
           }
           return (
             <Space size={0}>
@@ -234,15 +268,15 @@ const TableMain = (props: TableMainProps) => {
                 {btnText}
               </RunButton>
               <Button type="text" size="small">
-                编辑
+                {lang.operation_btn_edit}
               </Button>
               <Popconfirm
                 onOpenChange={handleBackupPopconfirmOpenChange}
-                title="是否备份？"
+                title={lang.backup_confirm_title}
                 description={
                   <Form form={form}>
                     <Form.Item name="newName" style={{ height: 10 }}>
-                      <Input placeholder="新备份名字（可选）" />
+                      <Input placeholder={lang.backup_confirm_placeholder} />
                     </Form.Item>
                   </Form>
                 }
@@ -254,13 +288,13 @@ const TableMain = (props: TableMainProps) => {
                 }
               >
                 <Button type="text" size="small">
-                  备份
+                  {lang.operation_btn_backup}
                 </Button>
               </Popconfirm>
 
               <Popconfirm
-                title="删除备份"
-                description="您确定删除此备份"
+                title={lang.delete_confirm_title}
+                description={lang.delete_confirm_des}
                 onConfirm={() =>
                   handleDeleteBackup({
                     envId: record.envId ?? -1,
@@ -269,7 +303,7 @@ const TableMain = (props: TableMainProps) => {
                 }
               >
                 <Button type="text" size="small" disabled={tableData && tableData?.length <= 1}>
-                  删除
+                  {lang.operation_btn_delete}
                 </Button>
               </Popconfirm>
             </Space>
@@ -278,7 +312,7 @@ const TableMain = (props: TableMainProps) => {
       },
     ]);
     return defaultColumns.map((col) => ({ ...col, isVisible: true }));
-  });
+  }, [lang, l.lang, size]);
 
   /**
    * 启动scrcpy的窗口的逻辑，
@@ -358,23 +392,19 @@ const TableMain = (props: TableMainProps) => {
           }
         : { ...item, adbAddr, envId, running: 'stop', envName },
     );
-  }, [adbAddr, envName, envId, Object.values(currentStates || {})]);
+  }, [adbAddr, envName, envId, Object.values(currentStates || {}), lang]);
 
-  let spinContent = '正在切换备份，请稍后...';
+  let spinContent = lang.spin_content_default;
   if (currentStates && currentStates.loading) {
     switch (currentStates.type) {
       case 'start':
-        spinContent = '正在启动备份，请稍后...';
+        spinContent = lang.spin_content_start;
         break;
       case 'restart':
-        spinContent = '正在重启备份，请稍后...';
-        break;
-      case 'switch':
-        spinContent = '正在切换备份，请稍后...';
+        spinContent = lang.spin_content_restart;
         break;
       default:
-        spinContent = '正在切换备份，请稍后...';
-        break;
+        spinContent = lang.spin_content_switch;
     }
   }
 
@@ -385,6 +415,8 @@ const TableMain = (props: TableMainProps) => {
         isFetching={tableIsFetching || addBackupMutation.isPending}
         isRefetching={tableIsRefetching}
         isSuccess={!tableIsLoading}
+        pagination={{ pageSize: 20 }}
+        paginationTop={-40}
         className="h-full"
         columns={columns
           .filter((col) => col.isVisible)
