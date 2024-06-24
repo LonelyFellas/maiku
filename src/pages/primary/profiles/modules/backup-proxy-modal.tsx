@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { App, Button, Descriptions, Popconfirm, Space } from 'antd';
 import { useMutation, useQueries } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { ContainerWithEmpty, Modal, PopconfirmButton, PROXY_TYPE, Table } from '@common';
+import { ContainerWithEmpty, Modal, PopconfirmButton, PROXY_TYPE, Table, useI18nConfig, useScreens } from '@common';
 import { GetProxyListResult, getProxyListService, PostBackupProxyResult, postBackupProxyService, postClearBackupProxyService, postDeleteProxyService, postSetBackupProxyService } from '@api';
 
 interface BackupProxyModalProps extends AntdModalProps {
@@ -10,6 +10,8 @@ interface BackupProxyModalProps extends AntdModalProps {
 }
 
 const BackupProxyModal = memo((props: BackupProxyModalProps) => {
+  const [lang] = useI18nConfig('config.profiles');
+  const size = useScreens();
   const { message } = App.useApp();
   const navigate = useNavigate();
   const { envId, ...restProps } = props;
@@ -29,8 +31,8 @@ const BackupProxyModal = memo((props: BackupProxyModalProps) => {
   const setMutation = useMutation({
     mutationKey: ['set-proxy'],
     mutationFn: postSetBackupProxyService,
-    onSuccess: () => {
-      message.success('设置成功');
+    onSuccess: (res) => {
+      message.success(res);
       results[0].refetch();
     },
   });
@@ -38,15 +40,15 @@ const BackupProxyModal = memo((props: BackupProxyModalProps) => {
     mutationKey: ['delete-proxy'],
     mutationFn: postDeleteProxyService,
     onSuccess: () => {
-      message.success('删除成功');
+      message.success(lang.delete_msg);
       results[1].refetch();
     },
   });
   const clearMutation = useMutation({
     mutationKey: ['clear-proxy'],
     mutationFn: postClearBackupProxyService,
-    onSuccess: () => {
-      message.success('清除成功');
+    onSuccess: (res) => {
+      message.success(res);
       results[0].refetch();
     },
   });
@@ -69,13 +71,13 @@ const BackupProxyModal = memo((props: BackupProxyModalProps) => {
   const proxyList = results[1].data as unknown as GetProxyListResult[];
   return (
     <Modal {...restProps} width={600}>
-      <ContainerWithEmpty emptyDescription="未启动" hasData={Boolean(detailData)} isFetching={results[0].isLoading} isRefetching={results[0].isRefetching}>
+      <ContainerWithEmpty emptyDescription={lang.no_starting} hasData={Boolean(detailData)} isFetching={results[0].isLoading} isRefetching={results[0].isRefetching}>
         <Descriptions title="">
-          <Descriptions.Item label="IP地址" span={3}>
+          <Descriptions.Item label={lang.ip_address} span={3}>
             {detailData?.addr}
           </Descriptions.Item>
-          <Descriptions.Item label="启动状态">{detailData?.statusText}</Descriptions.Item>
-          <Descriptions.Item label="代理类型">{PROXY_TYPE[detailData?.type || 1]}</Descriptions.Item>
+          <Descriptions.Item label={lang.start_status}>{detailData?.statusText}</Descriptions.Item>
+          <Descriptions.Item label={lang.proxy_type}>{PROXY_TYPE[detailData?.type || 1]}</Descriptions.Item>
         </Descriptions>
       </ContainerWithEmpty>
       <Table
@@ -85,11 +87,11 @@ const BackupProxyModal = memo((props: BackupProxyModalProps) => {
         className="mt-4"
         dataSource={proxyList}
         pagination={false}
-        scroll={{ y: 200 }}
+        scroll={{ y: size === '2xl' ? 350 : 200 }}
         rowKey="id"
         columns={[
           {
-            title: '代理信息',
+            title: lang.column_proxy_info,
             dataIndex: 'proxyInfo',
             key: 'proxyInfo',
             width: 200,
@@ -101,15 +103,15 @@ const BackupProxyModal = memo((props: BackupProxyModalProps) => {
               );
             },
           },
-          { title: '代理账号', dataIndex: 'username' },
+          { title: lang.column_proxy_account, dataIndex: 'username' },
           {
-            title: '操作',
+            title: lang.column_operation,
             dataIndex: 'operation',
             render: (_: unknown, record: GetProxyListResult) => (
               <Space>
-                <Popconfirm title="确定要切换当前代理" onConfirm={() => handleSetVpc(record.id)}>
+                <Popconfirm title={lang.proxy_confirm_title} onConfirm={() => handleSetVpc(record.id)}>
                   <Button type="text" className="text-text_primary hover:!text-text_secondary">
-                    切换
+                    {lang.proxy_confirm_change}
                   </Button>
                 </Popconfirm>
                 <PopconfirmButton onConfirm={() => handleDeleteVpc(record.id)} />
@@ -120,13 +122,13 @@ const BackupProxyModal = memo((props: BackupProxyModalProps) => {
       />
 
       <div className="mt-4 text-center absolute top-10 right-6 flex flex-col gap-2">
-        <Popconfirm title="确定清空该云机代理？" onConfirm={handleClearVpc}>
+        <Popconfirm title={lang.clear_confirm_title} onConfirm={handleClearVpc}>
           <Button type="primary" danger>
-            清空当前代理
+            {lang.clear_btn}
           </Button>
         </Popconfirm>
         <Button type="primary" onClick={handleGoToProxy}>
-          去添加代理
+          {lang.add_btn}
         </Button>
       </div>
     </Modal>

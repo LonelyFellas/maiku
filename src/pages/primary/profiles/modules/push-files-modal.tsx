@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Alert, App, Button, Space } from 'antd';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { fileSizeFormat, Modal, PopconfirmButton, Table, timeFormatHours } from '@common';
+import { fileSizeFormat, Modal, PopconfirmButton, Table, timeFormatHours, useI18nConfig, useScreens } from '@common';
 import { GetFilesListResult, getFilesListService, postDeleteFileService, postPushFileService } from '@api';
 
 interface PushFilesModalProps extends AntdModalProps {
@@ -11,6 +11,9 @@ interface PushFilesModalProps extends AntdModalProps {
 }
 
 const PushFilesModal = memo((props: PushFilesModalProps) => {
+  const [l] = useI18nConfig();
+  const [lang] = useI18nConfig('config.profiles');
+  const size = useScreens();
   const { message } = App.useApp();
   const {
     data,
@@ -26,15 +29,15 @@ const PushFilesModal = memo((props: PushFilesModalProps) => {
     mutationKey: ['delete-files'],
     mutationFn: postDeleteFileService,
     onSuccess: () => {
-      message.success('文件删除成功！');
+      message.success(lang.delete_msg);
       refetchPostsFile();
     },
   });
   const pushMutation = useMutation({
     mutationKey: ['push-files'],
     mutationFn: postPushFileService,
-    onSuccess: () => {
-      message.success('推送成功');
+    onSuccess: (res) => {
+      message.success(res);
     },
   });
   const handleRemoteRemoveFile = (id: number) => {
@@ -45,7 +48,7 @@ const PushFilesModal = memo((props: PushFilesModalProps) => {
   };
   const columns: AntdColumns<GetFilesListResult> = [
     {
-      title: '文件名',
+      title: lang.column_file_name,
       dataIndex: 'name',
       key: 'name',
       width: 120,
@@ -56,42 +59,53 @@ const PushFilesModal = memo((props: PushFilesModalProps) => {
       ),
     },
     {
-      title: '自定义名称',
+      title: lang.column_custom_name,
       dataIndex: 'customName',
       key: 'customName',
     },
     {
-      title: '文件大小',
+      title: lang.column_file_size,
       dataIndex: 'size',
       key: 'size',
       width: 80,
       render: (text: number) => fileSizeFormat(text),
     },
     {
-      title: '上传时间',
+      title: lang.column_file_time,
       dataIndex: 'create_at',
       key: 'create_at',
       render: (text: number) => timeFormatHours(text),
     },
     {
-      title: '操作',
+      title: lang.column_operation,
       dataIndex: 'operation',
       key: 'operation',
       fixed: 'right',
-      width: 120,
+      width: 130,
       render: (_: unknown, record: GetFilesListResult) => (
         <Space>
           <Button type="primary" size="small" onClick={() => handlePushFile(record.id)}>
-            推送
+            {lang.more_push_btn}
           </Button>
           <PopconfirmButton onConfirm={() => handleRemoteRemoveFile(record.id)} />
         </Space>
       ),
     },
   ];
+
+  const msg = `${lang.modal_file_msg1} ${props.name} ${lang.modal_file_msg2}`;
+  // const body =
+  const headerHeightStyle = { height: l.lang === 'English' ? 60 : 40 };
+  const bodyHeightStyle: React.CSSProperties = {};
+  if (size === '2xl') {
+    bodyHeightStyle['height'] = l.lang === 'English' ? 500 : 475;
+  } else {
+    bodyHeightStyle['height'] = l.lang === 'English' ? 395 : 370;
+  }
+
   return (
-    <Modal {...props} title="请从文件中转站推送到云手机（云手机默认存储路径：/sdcard/Download/）" width={700}>
-      <Alert message={`请选择如下文件，推送到 ${props.name} 云手机，请在 文件管理 -> Downnoad 下查看推送进度。`} type="error" className="-mt-4 text-red-700 p-[0.3rem] px-3" />
+    <Modal {...props} title={lang.modal_file_title} width={700} styles={{ body: bodyHeightStyle, header: headerHeightStyle }}>
+      <Alert message={msg} type="error" className="-mt-4 text-red-700 p-[0.3rem] px-3" />
       <Table
         bordered
         size="small"
@@ -100,8 +114,9 @@ const PushFilesModal = memo((props: PushFilesModalProps) => {
         paginationTop={-25}
         pagination={{
           total: data?.length,
-          pageSize: 5,
+          pageSize: 10,
         }}
+        scroll={{ y: size === '2xl' ? 350 : 250 }}
         isFetching={isFetching}
         isRefetching={isRefetching}
         dataSource={data}

@@ -92,12 +92,14 @@ export default function Proxy() {
     render: (_: unknown, record: GetProxyListResult) => (
       <Space>
         <TriggerModal renderModal={(renderProps) => <AddEditModal {...renderProps} title={lang?.modal_edit_title} handleUpdateList={handleUpdateList} id={record.id} />}>
-          <Button type="primary" ghost>
+          <Button type="primary" ghost size="small">
             {lang?.tb_operation_edit}
           </Button>
         </TriggerModal>
         <Popconfirm title={lang?.tb_operation_delete_title} onConfirm={() => handleDelete(record.id)} okText={lang?.tb_operation_delete_okText} cancelText={lang?.tb_operation_delete_cancelText}>
-          <Button danger>{lang?.tb_operation_delete}</Button>
+          <Button danger size="small">
+            {lang?.tb_operation_delete}
+          </Button>
         </Popconfirm>
       </Space>
     ),
@@ -129,7 +131,18 @@ export default function Proxy() {
           {lang?.modal_batch_add_title}
         </Button>
       </div>
-      <Table loading={isLoading} rowKey={(record) => record.id} className="mt-2 2xl:mt-4" virtual columns={columns} dataSource={data} />
+      <Table
+        loading={isLoading}
+        rowKey={(record) => record.id}
+        className="mt-2 2xl:mt-4"
+        virtual
+        columns={columns}
+        dataSource={data}
+        paginationTop={-40}
+        pagination={{
+          pageSize: 20,
+        }}
+      />
     </div>
   );
 }

@@ -6,7 +6,7 @@ import { isArray, isUndef } from '@darwish/utils-is';
 import { LeftOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { cn, ContainerWithEmpty, getToken, toNumber } from '@common';
+import { cn, ContainerWithEmpty, getToken, toNumber, useI18nConfig } from '@common';
 import { type GetAllEnvListResult, type GetBackupListByIdResult, getEnvByIdService } from '@api';
 import type { States } from '@/pages/primary/profiles/type.ts';
 import { emptyImg } from '../config.tsx';
@@ -25,6 +25,7 @@ interface SliderProps {
 }
 
 const Slider = (props: SliderProps) => {
+  const [lang] = useI18nConfig('config.profiles');
   const navigate = useNavigate();
   const { indexSetStates, isFetching, isRefetching, envList, currentKey, setCurrentKey, tableData } = props;
   const [states, setStates] = useSetState({
@@ -79,11 +80,10 @@ const Slider = (props: SliderProps) => {
   const handleStartScrcpy = () => {
     const currentItem = envList.find((item) => item.id === currentKey)!;
     const { adbAddr, id, name } = currentItem;
-    console.log(tableData);
     if (tableData) {
       const activeBackup = tableData.find((t) => t.State === 'running');
       if (isUndef(activeBackup)) {
-        message.success('当前没有正在运行的备份');
+        message.success(lang.empty_backup_msg);
       } else {
         window.ipcRenderer.send('scrcpy:start', {
           adbAddr,
@@ -121,19 +121,13 @@ const Slider = (props: SliderProps) => {
             ),
             children: (
               <div className="flex flex-col items-center p-2">
-                <img
-                  // preview={!!data?.screenShot}
-                  src={dataDeferredVal?.screenShot ? dataDeferredVal.screenShot : emptyImg}
-                  className="rounded h-[300px] 2xl:h-[400px] cursor-pointer"
-                  alt="screen shot"
-                  onClick={handleStartScrcpy}
-                />
+                <img src={dataDeferredVal?.screenShot ? dataDeferredVal.screenShot : emptyImg} className="rounded h-[300px] 2xl:h-[400px] cursor-pointer" alt="screen shot" onClick={handleStartScrcpy} />
                 <Flex className="my-2" gap={10}>
                   <Button size="small" onClick={() => handleGoToEdit(item.id)}>
-                    修改
+                    {lang.modify_btn}
                   </Button>
                   <Button size="small" onClick={handleOpenDetailModal}>
-                    代理
+                    {lang.proxy_btn}
                   </Button>
                   <Dropdown
                     trigger={['click']}
@@ -141,7 +135,7 @@ const Slider = (props: SliderProps) => {
                       items: [
                         {
                           key: 'push',
-                          label: '推送',
+                          label: lang.more_push_btn,
                           onClick: () => handleOpenPushFilesModal(item.id),
                         },
                       ],
@@ -149,7 +143,7 @@ const Slider = (props: SliderProps) => {
                     overlayClassName="w-20"
                   >
                     <Button size="small" onClick={() => window.adbApi.reboot('bgm8.cn:65341')}>
-                      更多
+                      {lang.more_btn}
                     </Button>
                   </Dropdown>
                 </Flex>
@@ -165,8 +159,16 @@ const Slider = (props: SliderProps) => {
           }))}
         />
       </ContainerWithEmpty>
-      <BackupProxyModal title="云机代理" open={backupProxyModalVisible} envId={dataDeferredVal?.id ?? -1} onCancel={handleCloseDetailModal} onOk={handleCloseDetailModal} />
-      <PushFilesModal envId={states.selectedEnvId} adbAddr={dataDeferredVal?.adbAddr} name={dataDeferredVal?.name} title="推送文件" open={pushFilesModalVisible} onCancel={handleClosePushFilesModal} onOk={handleClosePushFilesModal} />
+      <BackupProxyModal title={lang.backup_proxy_modal_title} open={backupProxyModalVisible} envId={dataDeferredVal?.id ?? -1} onCancel={handleCloseDetailModal} onOk={handleCloseDetailModal} />
+      <PushFilesModal
+        envId={states.selectedEnvId}
+        adbAddr={dataDeferredVal?.adbAddr}
+        name={dataDeferredVal?.name}
+        title={lang.push_files_modal_title}
+        open={pushFilesModalVisible}
+        onCancel={handleClosePushFilesModal}
+        onOk={handleClosePushFilesModal}
+      />
     </Scrollbar>
   );
 };
