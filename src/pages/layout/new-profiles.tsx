@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { App, Button, Divider, Form, Input, InputNumber, Radio, Space } from 'antd';
 import { Scrollbar } from '@darwish/scrollbar-react';
 import { isBlanks, isObject, isUndef } from '@darwish/utils-is';
@@ -12,7 +12,7 @@ import GetProxyView from './modules/get-proxy-view';
 import Resolution from './modules/resolution';
 import './style.css';
 
-type ProxyType = 'custom' | 'list';
+type ProxyType = 'custom' | 'list' | 'none';
 /**
  * 后端字段 px-type
  * * 1 -> auto-720
@@ -29,7 +29,7 @@ export default function NewProfiles() {
   const isEdit = id !== '-1';
   const { history } = useRouter();
   const [form] = Form.useForm<IForm>();
-  const [proxyType, setProxyType] = useState<ProxyType>('custom');
+  const [proxyType, setProxyType] = useState<ProxyType>('none');
   const [pxType, setPxType] = useState<PXType>('1');
 
   const { data, isFetching } = useQuery({
@@ -57,8 +57,10 @@ export default function NewProfiles() {
   useEffect(() => {
     if (isEdit && isObject(data)) {
       const toStrPxType = (data.px_type ?? 1).toString() as PXType;
-      form.setFieldsValue({ ...data, formProxyType: 'list', px_type: toStrPxType });
+      const formProxyType = isBlanks(data.vpc_id) ? 'none' : 'list';
+      form.setFieldsValue({ ...data, formProxyType, px_type: toStrPxType });
       setPxType(toStrPxType);
+      setProxyType(formProxyType);
       proxyMutation.mutate();
     }
   }, [data, isEdit]);
@@ -151,6 +153,18 @@ export default function NewProfiles() {
     isEdit ? editMutation.mutate({ ...filteredValues, id: toNumber(id) }) : addMutation.mutate(filteredValues);
   };
 
+  const VpcView = useMemo(() => {
+    if (proxyType === 'none') {
+      console.log(11);
+      return null;
+    } else if (proxyType === 'custom') {
+      console.log(22);
+      return <AddProxyFormItems />;
+    }
+    console.log(33);
+    return <GetProxyView proxyMutation={proxyMutation} />;
+  }, [proxyType, proxyMutation.data]);
+
   return (
     <ContainerWithEmpty className="h-full" hasData={isEdit ? !isBlanks(data) : true} isFetching={isEdit ? isFetching : false}>
       <div className="flex flex-col h-full rounded-md p-4">
@@ -163,8 +177,10 @@ export default function NewProfiles() {
             initialValues={{
               ...onlyTrueObj(isEdit, { formProxyType: 'custom' }),
               ...onlyTrueObj(!isEdit, { type: '1' }),
-              formProxyType: 'custom',
-              px_type: 1,
+              formProxyType: 'none',
+              disk: 10,
+              memory: 2,
+              px_type: '1',
             }}
           >
             <h1 className="font-bold border-b-[1px] pl-3 py-1 rounded-sm mb-6 pb-3">{lang?.form_title1}</h1>
@@ -181,10 +197,10 @@ export default function NewProfiles() {
                   key: '1',
                   children: (
                     <>
-                      <Form.Item label={lang?.form_title2_item1Disk} name="disk" className="mt-4">
+                      <Form.Item label={`${lang?.form_title2_item1Disk}(GB)`} name="disk" className="mt-4">
                         <InputNumber placeholder={lang?.form_title2_item1Disk_placeholder} style={inputStyle} />
                       </Form.Item>
-                      <Form.Item label={lang?.form_title2_item2Memory} name="memory">
+                      <Form.Item label={`${lang?.form_title2_item2Memory}(GB)`} name="memory">
                         <InputNumber placeholder={lang?.form_title2_item2Memory_placeholder} style={inputStyle} />
                       </Form.Item>
                       <Form.Item label={lang?.form_title2_item3DPI} className="new_profiles_compact h-[32px] mb-0" required>
@@ -203,18 +219,14 @@ export default function NewProfiles() {
                   key: '1',
                   children: (
                     <>
-                      {!isEdit ? (
-                        <Form.Item label={lang?.form_title3_item1Type} className="mt-4" name="formProxyType">
-                          <Radio.Group value={proxyType}>
-                            <Radio.Button value="custom">{lang?.form_title3_item1Type_custom}</Radio.Button>
-                            <Radio.Button value="list">{lang?.form_title3_item1Type_list}</Radio.Button>
-                          </Radio.Group>
-                        </Form.Item>
-                      ) : null}
-                      {/*
-                       *  只有在新增环境 才能自定义代理
-                       */}
-                      {!isEdit && proxyType === 'custom' ? <AddProxyFormItems /> : <GetProxyView proxyMutation={proxyMutation} />}
+                      <Form.Item label={lang?.form_title3_item1Type} className="mt-4" name="formProxyType">
+                        <Radio.Group value={proxyType}>
+                          <Radio.Button value="none">无代理</Radio.Button>
+                          <Radio.Button value="custom">{lang?.form_title3_item1Type_custom}</Radio.Button>
+                          <Radio.Button value="list">{lang?.form_title3_item1Type_list}</Radio.Button>
+                        </Radio.Group>
+                      </Form.Item>
+                      {VpcView}
                     </>
                   ),
                 },

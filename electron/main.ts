@@ -27,6 +27,11 @@ const updater = new Updater();
 function createMainWindow() {
   // 获取屏幕的尺寸
   const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+  const x = (width - 972) / 2;
+  let y = (height - 722) / 2;
+  if (y < 0) {
+    y = 0;
+  }
   mainWin = createBrowserWindow({
     frame: isMac,
     show: false,
@@ -37,8 +42,8 @@ function createMainWindow() {
       preload: path.join(__dirname, 'preload.mjs'),
       // devTools: !app.isPackaged,
     },
-    x: (width - 972) / 2,
-    y: (height - 722) / 2,
+    x,
+    y,
   });
 
   if (VITE_DEV_SERVER_URL) {

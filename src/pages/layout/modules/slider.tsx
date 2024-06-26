@@ -119,7 +119,7 @@ const Slider = () => {
   };
   return (
     <div
-      className="flex flex-col items-center w-[220px] slider bg-bg_primary pt-3 px-[16px] overflow-hidden transition-all"
+      className="drag flex flex-col items-center w-[220px] slider bg-bg_primary pt-3 px-[16px] overflow-hidden transition-all"
       style={{
         height: isMac ? '100vh' : 'calc(100vh - 30px)',
         width: collapsed ? '90px' : '220px',
@@ -146,7 +146,7 @@ const Slider = () => {
           MaiKu-Net
         </span>
       </div>
-      <div className="relative">
+      <div className="no_drag relative">
         <Tooltip title={lang?.new_project} {...(collapsed ? {} : { open: false })}>
           <Button icon={<PlusOutlined />} className="h-10 rounded-lg mt-2 shadow-3xl transition-all" type="primary" style={{ width: collapsed ? '43px' : '180px' }} onClick={handleGoToNewProfiles}>
             {collapsed ? '' : lang?.new_project}
@@ -163,7 +163,7 @@ const Slider = () => {
           <ToggleIcon className="text-white" />
         </div>
       </div>
-      <Scrollbar className="flex-1 mt-3 w-full">
+      <Scrollbar className="no_drag flex-1 mt-3 w-full select-none">
         <Menu
           className="layout-slider-menu h-full w-full bg-bg_primary transition-all"
           defaultSelectedKeys={collapsed ? [] : ['profiles']}
@@ -194,7 +194,7 @@ export const SliderFooterUnCollapse = () => {
   };
 
   return (
-    <div className="w-full h-[125px] pt-6 pb-2">
+    <div className="no_drag w-full h-[125px] pt-6 pb-2">
       <div className="w-full h-full bg-bg_secondary/50 rounded-lg p-2">
         <div className="flex justify-between items-center">
           <span className="text-bold text-white text-lg">Free</span>
@@ -222,7 +222,7 @@ export const SliderFooterCollapse = () => {
     navigate({ to: '/layout/upgrade_pkg' });
   };
   return (
-    <div className="w-full h-[125px] pt-6 cursor-pointer">
+    <div className="no_drag w-full h-[125px] pt-6 cursor-pointer">
       <Tooltip open={true} overlayClassName="slider_tooltip" title={lang?.first_subs} placement="topLeft" trigger="click">
         <div className="btn_outside all_flex w-14 h-14 !bg-bg_primary" style={{ borderRadius: '1.2rem' }} onClick={handleGoToUpgrade}>
           <GiftOutlined className="text-3xl text-gray-700" />
