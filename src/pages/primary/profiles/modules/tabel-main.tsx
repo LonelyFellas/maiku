@@ -149,7 +149,7 @@ const TableMain = (props: TableMainProps) => {
     mutationKey: ['deleteBackup', envId],
     mutationFn: postDeleteBackService,
     onSuccess: () => {
-      message.success(lang.delete_msg);
+      message.success(lang?.delete_msg);
       tableRefetch();
     },
   });
@@ -189,15 +189,15 @@ const TableMain = (props: TableMainProps) => {
     const TAG_MAP = {
       created: {
         color: 'blue',
-        title: lang.status_created,
+        title: lang?.status_created,
       },
       running: {
         color: 'green',
-        title: lang.status_running,
+        title: lang?.status_running,
       },
       exited: {
         color: 'yellow',
-        title: lang.status_exited,
+        title: lang?.status_exited,
       },
     };
     const configColumns: AntdColumns<DataType> = [
@@ -209,13 +209,13 @@ const TableMain = (props: TableMainProps) => {
         render: (_, __, index) => index + 1,
       },
       {
-        title: lang.column_name,
+        title: lang?.column_name,
         width: size === '2xl' ? 400 : 150,
         dataIndex: 'Names',
         key: 'Names',
       },
       {
-        title: lang.column_status,
+        title: lang?.column_status,
         width: 80,
         dataIndex: 'State',
         key: 'State',
@@ -224,18 +224,18 @@ const TableMain = (props: TableMainProps) => {
     ];
     const defaultColumns = configColumns.concat([
       {
-        title: lang.column_operation,
+        title: lang?.column_operation,
         dataIndex: 'operation',
         fixed: 'right',
         width: l.lang == 'English' ? 220 : 190,
         key: 'operation',
         render: (_: string, record: DataType) => {
-          let btnText = lang.setup_status_running;
+          let btnText = lang?.setup_status_running;
           const isRunning = record.running === 'running';
           if (isRunning) {
-            btnText = lang.setup_status_stop;
+            btnText = lang?.setup_status_stop;
           } else if (record.running === 'waiting') {
-            btnText = lang.setup_status_waiting;
+            btnText = lang?.setup_status_waiting;
           }
           return (
             <Space size={0}>
@@ -268,15 +268,15 @@ const TableMain = (props: TableMainProps) => {
                 {btnText}
               </RunButton>
               <Button type="text" size="small">
-                {lang.operation_btn_edit}
+                {lang?.operation_btn_edit}
               </Button>
               <Popconfirm
                 onOpenChange={handleBackupPopconfirmOpenChange}
-                title={lang.backup_confirm_title}
+                title={lang?.backup_confirm_title}
                 description={
                   <Form form={form}>
                     <Form.Item name="newName" style={{ height: 10 }}>
-                      <Input placeholder={lang.backup_confirm_placeholder} />
+                      <Input placeholder={lang?.backup_confirm_placeholder} />
                     </Form.Item>
                   </Form>
                 }
@@ -288,13 +288,13 @@ const TableMain = (props: TableMainProps) => {
                 }
               >
                 <Button type="text" size="small">
-                  {lang.operation_btn_backup}
+                  {lang?.operation_btn_backup}
                 </Button>
               </Popconfirm>
 
               <Popconfirm
-                title={lang.delete_confirm_title}
-                description={lang.delete_confirm_des}
+                title={lang?.delete_confirm_title}
+                description={lang?.delete_confirm_des}
                 onConfirm={() =>
                   handleDeleteBackup({
                     envId: record.envId ?? -1,
@@ -303,7 +303,7 @@ const TableMain = (props: TableMainProps) => {
                 }
               >
                 <Button type="text" size="small" danger disabled={tableData && tableData?.length <= 1}>
-                  {lang.operation_btn_delete}
+                  {lang?.operation_btn_delete}
                 </Button>
               </Popconfirm>
             </Space>
@@ -394,17 +394,17 @@ const TableMain = (props: TableMainProps) => {
     );
   }, [adbAddr, envName, envId, Object.values(currentStates || {}), lang]);
 
-  let spinContent = lang.spin_content_default;
+  let spinContent = lang?.spin_content_default;
   if (currentStates && currentStates.loading) {
     switch (currentStates.type) {
       case 'start':
-        spinContent = lang.spin_content_start;
+        spinContent = lang?.spin_content_start;
         break;
       case 'restart':
-        spinContent = lang.spin_content_restart;
+        spinContent = lang?.spin_content_restart;
         break;
       default:
-        spinContent = lang.spin_content_switch;
+        spinContent = lang?.spin_content_switch;
     }
   }
 
