@@ -42,7 +42,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
      * --window-x: 窗口x坐标
      * --window-y: 窗口y坐标
      */
-    this.processObj[adbAddr] = spawn('scrcpy', ['-s', adbAddr, '--window-title', title, '--window-width', '1', '--window-height', '1', '--window-x', '-10000', '--window-y', '-10000'], {
+    this.processObj[adbAddr] = spawn('scrcpy', ['-s', adbAddr, '--window-title', title, '--window-width', '1', '--window-height', '1', '--window-x', '-10000', '--window-y', '-10000', "--video-encoder 'c2.android.avc.encoder'"], {
       cwd: scrcpyCwd,
       shell: true,
     });
