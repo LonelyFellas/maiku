@@ -1,8 +1,8 @@
 import { memo } from 'react';
-import { App, Button, Descriptions, Popconfirm, Space } from 'antd';
+import { App, Button, Descriptions, Popconfirm, Space, Table } from 'antd';
 import { useMutation, useQueries } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { ContainerWithEmpty, Modal, PopconfirmButton, PROXY_TYPE, Table, useI18nConfig } from '@common';
+import { ContainerWithEmpty, Modal, PopconfirmButton, PROXY_TYPE, useI18nConfig } from '@common';
 import { GetProxyListResult, getProxyListService, PostBackupProxyResult, postBackupProxyService, postClearBackupProxyService, postDeleteProxyService, postSetBackupProxyService } from '@api';
 
 interface BackupProxyModalProps extends AntdModalProps {
@@ -81,8 +81,10 @@ const BackupProxyModal = memo((props: BackupProxyModalProps) => {
       </ContainerWithEmpty>
       <Table
         bordered
-        isRefetching={results[1].isRefetching}
-        isFetching={results[1].isFetching}
+        // isRefetching={results[1].isRefetching}
+        // isFetching={results[1].isFetching}
+        size="small"
+        loading={results[1].isRefetching}
         className="mt-4"
         dataSource={proxyList}
         pagination={false}

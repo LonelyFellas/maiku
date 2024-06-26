@@ -1,7 +1,7 @@
 import { memo } from 'react';
-import { Alert, App, Button, Space } from 'antd';
+import { Alert, App, Button, Space, Table } from 'antd';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { fileSizeFormat, Modal, PopconfirmButton, Table, timeFormatHours, useI18nConfig, useScreens } from '@common';
+import { fileSizeFormat, Modal, PopconfirmButton, timeFormatHours, useI18nConfig, useScreens } from '@common';
 import { GetFilesListResult, getFilesListService, postDeleteFileService, postPushFileService } from '@api';
 
 interface PushFilesModalProps extends AntdModalProps {
@@ -18,7 +18,6 @@ const PushFilesModal = memo((props: PushFilesModalProps) => {
   const {
     data,
     isFetching,
-    isRefetching,
     refetch: refetchPostsFile,
   } = useQuery({
     queryKey: ['posts-file-list'],
@@ -109,14 +108,15 @@ const PushFilesModal = memo((props: PushFilesModalProps) => {
         size="small"
         rowKey="id"
         columns={columns}
-        paginationTop={-25}
+        // paginationTop={-25}
         pagination={{
           total: data?.length,
           pageSize: 10,
         }}
         scroll={{ y: scrollYVal }}
-        isFetching={isFetching}
-        isRefetching={isRefetching}
+        loading={isFetching}
+        // isFetching={isFetching}
+        // isRefetching={isRefetching}
         dataSource={data}
         className="mt-2 2xl:mt-4 h-[330px] 2xl:h-[550px]"
       />
