@@ -7,7 +7,7 @@ import { MenuItem } from '@common/utils/get-item';
 import '../style.css';
 
 const ProfileCenter = () => {
-  const [{ username }] = useLocalStorage<UserInfo>(Constants.LOCAL_LOGIN_INFO, {});
+  const [{ username = '暂无设置昵称' }] = useLocalStorage<UserInfo>(Constants.LOCAL_LOGIN_INFO, {});
   const [lang] = useI18nConfig('config.layout.header.profile');
   return (
     <Popover overlayClassName="card_profile" content={<ContentView name={username ?? ''} />} arrow={false} placement="bottomLeft">
