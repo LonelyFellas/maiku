@@ -130,9 +130,9 @@ declare global {
   type ReactFCWithChildren<T> = React.FC<React.PropsWithChildren<T>>;
 
   interface UserInfo {
-    id: number;
-    role: number;
-    username: string;
+    id?: number;
+    role?: number;
+    username?: string;
   }
 
   /**
