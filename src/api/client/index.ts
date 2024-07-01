@@ -1,4 +1,4 @@
-import type { GetReleaseResult, PostUpgradeRelease } from './type';
+import type { GetReleaseResult, PostUpgradeRelease } from '@/api';
 import { fetchData } from '../fetch-data';
 
 export const getReleaseService: Api.IFetch<GetReleaseResult[]> = () =>

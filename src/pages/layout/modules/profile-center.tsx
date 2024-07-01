@@ -7,10 +7,10 @@ import { MenuItem } from '@common/utils/get-item';
 import '../style.css';
 
 const ProfileCenter = () => {
-  const [{ username }] = useLocalStorage<UserInfo>(Constants.LOCAL_LOGIN_INFO, {});
+  const [{ username = '暂无设置昵称' }] = useLocalStorage<UserInfo>(Constants.LOCAL_LOGIN_INFO, {});
   const [lang] = useI18nConfig('config.layout.header.profile');
   return (
-    <Popover overlayClassName="card_profile" content={<ContentView name={username ?? ''} />} arrow={false} placement="bottomLeft">
+    <Popover overlayClassName="card_profile" content={<ContentView name={username} />} arrow={false} placement="bottomLeft">
       <Space className="all_flex p-2 h-9 bg-bg_secondary/20 rounded-md shadow-sm hover:shadow-lg transition-shadow duration-200">
         <div className="all_flex bg-bg_secondary rounded-full w-6 h-6">
           <AndroidFilled className="text-white" />

@@ -6,7 +6,7 @@
     src: url("/sc.ttf") format("truetype");
 }
 
-body {
+body, * {
     font-family: "PingFang SC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 

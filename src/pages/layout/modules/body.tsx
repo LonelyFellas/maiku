@@ -1,5 +1,5 @@
-import { Outlet } from '@tanstack/react-router';
 import { Scrollbar } from '@darwish/scrollbar-react';
+import { Outlet } from '@tanstack/react-router';
 
 const Body = () => {
   return (

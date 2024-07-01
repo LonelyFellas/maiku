@@ -1,6 +1,6 @@
 import { Button, Space } from 'antd';
-import Wrapper from './wrapper';
 import { useNavigate, useRouter } from '@tanstack/react-router';
+import Wrapper from './wrapper';
 
 export default function ErrorComponent() {
   const {
