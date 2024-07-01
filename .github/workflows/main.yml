@@ -24,10 +24,13 @@ jobs:
       - name: Lint code
         run: npm run lint || true
 
-      - name: Build and Package
+      - name: Build Render Application
+        run: npm run build:render
+        
+      - name: Build Electron Application
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: npm run build
+        run: npm run build:electron
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2
