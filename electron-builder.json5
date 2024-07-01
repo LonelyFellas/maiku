@@ -12,12 +12,6 @@
     'dist',
     'dist-electron'
   ],
-  //  publish: [
-  //    {
-  //      provider: 'generic',
-  //      url: 'http://maiku.npaas.cn/app/',
-  //    }
-  //  ],
   mac: {
     target: [
       'dmg'
@@ -49,6 +43,13 @@
     installerIcon: 'public/favicon.ico',
     uninstallerIcon: 'public/favicon.ico',
   },
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "LonelyFellas",
+      "repo": "maiku"
+    }
+  ],
   linux: {
     target: [
       'AppImage'
