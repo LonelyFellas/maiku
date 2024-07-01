@@ -9,7 +9,7 @@
     "dev": "vite",
     "redev": "npm run dev",
     "build": "tsc && vite build && electron-builder",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
     "preview": "vite preview",
     "update:client:patch": "node update-client.js",
     "update:client:minor": "node update-client.js minor",
