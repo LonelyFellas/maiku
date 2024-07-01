@@ -25,7 +25,7 @@ jobs:
         run: npm run lint || true
 
       - name: Build and Package
-        run: npm run package
+        run: npm run build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2
