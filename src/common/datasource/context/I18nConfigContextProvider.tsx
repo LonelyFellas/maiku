@@ -1,18 +1,12 @@
-import { useLocalStorage } from '@darwish/hooks-core';
 import React, { useEffect, useState } from 'react';
-import { I18nConfigContext } from './I18nconfigContext';
+import { useLocalStorage } from '@darwish/hooks-core';
+import { I18nConfigContext } from '@/common';
 
-export function I18nConfigContextProvider(
-  props: React.PropsWithChildren<object>,
-) {
+export function I18nConfigContextProvider(props: React.PropsWithChildren<object>) {
   const [config, setConfig] = useState<I18nConfig>({} as I18nConfig);
   const [language, setLanguage] = useLocalStorage<Common.Locale>('i18n', 'zh');
   useEffect(() => {
-    import(
-      language === 'zh'
-        ? '/src/assets/messages/zh.json'
-        : '/src/assets/messages/en.json'
-    ).then((res) => {
+    import(language === 'zh' ? '/src/assets/messages/zh.json' : '/src/assets/messages/en.json').then((res) => {
       setConfig({
         lang: language === 'zh' ? '简体中文' : 'English',
         config: res.default,

@@ -1,9 +1,9 @@
 import React, { Children, useMemo } from 'react';
 import { Collapse, Tabs, Button } from 'antd';
 import type { CollapsePanelProps, CollapseProps } from 'antd';
-import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import { useSetState } from '@darwish/hooks-core';
 import { isObject } from '@darwish/utils-is';
+import { DownOutlined, RightOutlined } from '@ant-design/icons';
 import { toNumber } from '@common';
 import './index.css';
 
