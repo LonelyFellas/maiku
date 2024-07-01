@@ -8,6 +8,8 @@
   "scripts": {
     "dev": "vite",
     "redev": "npm run dev",
+    "build:render": "tsc && vite build",
+    "build:electron": "electron-builder",
     "build": "tsc && vite build && electron-builder",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
     "preview": "vite preview",
