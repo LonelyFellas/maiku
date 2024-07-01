@@ -27,10 +27,10 @@ jobs:
       - name: Build Render Application
         run: npm run build:render
         
-      - name: Build Electron Application
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        run: npm run build:electron
+      # - name: Build Electron Application
+      #   env:
+      #     GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      #   run: npm run build:electron
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v2
