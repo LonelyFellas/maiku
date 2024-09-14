@@ -2,10 +2,13 @@ import { fetchData } from '@api/fetch-data.ts';
 import { GetAllEnvListResult, GetBackupListByIdParams, GetBackupListByIdResult, GetBackupParams, GetBackupToBackupParams, PostAddEnvParams, PostBackupProxyResult, PostPushFileService, PostSetBackupProxyParams } from '@api';
 
 /** 获取环境列表 */
-export const getEnvListService: Api.IFetch<GetAllEnvListResult[]> = () =>
-  fetchData('env/getAll', {
-    method: 'GET',
-  });
+// export const getEnvListService: Api.IFetch<GetAllEnvListResult[]> = () =>
+//   fetchData('env/getAll', {
+//     method: 'GET',
+//   });
+export const getListDeviceService: Api.IFetch<{}, {}> = () => fetchData('device/listDevice', {
+  method: 'GET'
+})
 /** 添加环境 */
 export const postAddEnvService: Api.IFetch<number, PostAddEnvParams> = (data) =>
   fetchData('env/add', {

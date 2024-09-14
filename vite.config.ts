@@ -41,7 +41,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/mkapi': {
-        target: 'http://maiku.npaas.cn/s/api',
+        target: 'http://web.shandianyun.vip/s/api/',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/mkapi/, ''),
       },

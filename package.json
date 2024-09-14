@@ -7,6 +7,7 @@
   "description": "maiku app",
   "scripts": {
     "dev": "vite",
+    "dev:win": "chcp 65001 && vite",
     "redev": "npm run dev",
     "build:render": "tsc && vite build",
     "build": "tsc && vite build && electron-builder",

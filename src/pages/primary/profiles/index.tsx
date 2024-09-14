@@ -3,7 +3,7 @@ import { useQuery, useSuspenseQuery } from '@tanstack/react-query';
 import { useMap } from '@common';
 import { getBackupListByEnvIdService } from '@api';
 import type { States } from '@/pages/primary/profiles/type.ts';
-import { postsEnvQueryOptions } from '@/routes/data';
+import { postsListDeviceOptions } from '@/routes/data';
 import Slider from './modules/slider';
 import TableMain from './modules/tabel-main';
 
@@ -23,7 +23,7 @@ async function adbConnect(deviceId: string) {
 export default function Profiles() {
   const [currentKey, setCurrentKey] = useState(0);
   const [states, { set: setStates }] = useMap<number, States>([]);
-  const { data: envList, isRefetching, isFetching } = useSuspenseQuery(postsEnvQueryOptions);
+  const { data: envList, isRefetching, isFetching } = useSuspenseQuery(postsListDeviceOptions);
   const collapsedItems = envList?.find((li) => li.id === currentKey);
   useQuery({
     queryKey: ['connect adb', currentKey, collapsedItems],
