@@ -6,7 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import { debounce } from 'lodash';
 import { getToken, MaskSpin, Table, useI18nConfig, useScreens } from '@common';
 import { GetBackupListByIdResult, type GetBackupParams, postAddBackupService, postDeleteBackService, postRunBackupService } from '@api';
-import RunButton from '@/pages/primary/profiles/modules/run-button.tsx';
+import RunButton from '@/pages/primary/profiles-copy/modules/run-button.tsx';
 import type { DataType, StartScrcpyParams, States } from '../type';
 
 interface TableMainProps {

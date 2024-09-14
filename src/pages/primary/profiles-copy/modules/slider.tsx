@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { cn, ContainerWithEmpty, getToken, toNumber, useI18nConfig } from '@common';
 import { type GetAllEnvListResult, type GetBackupListByIdResult, getEnvByIdService } from '@api';
-import type { States } from '@/pages/primary/profiles/type.ts';
+import type { States } from '@/pages/primary/profiles-copy/type.ts';
 import { emptyImg } from '../config.tsx';
 import BackupProxyModal from './backup-proxy-modal';
 import PushFilesModal from './push-files-modal';

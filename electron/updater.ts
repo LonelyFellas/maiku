@@ -10,7 +10,7 @@ export default class Updater {
   constructor() {
     this.updater.setFeedURL({
       provider: 'generic',
-      url: 'http://web.shandianyun.vip/app',
+      url: 'http://web.shandianyun.vip/app/windows',
     });
   }
 
