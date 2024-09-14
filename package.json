@@ -1,10 +1,10 @@
 {
-  "name": "maiku",
+  "name": "shandian",
   "private": true,
   "version": "0.0.22",
   "type": "module",
   "author": "darwish",
-  "description": "maiku app",
+  "description": "闪电云手机",
   "scripts": {
     "dev": "vite",
     "dev:win": "chcp 65001 && vite",

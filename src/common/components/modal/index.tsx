@@ -10,7 +10,7 @@ import './index.css';
  */
 const Modal = (props: React.PropsWithChildren<ModalProps>) => (
   <AntdModal
-    className="general-maiku-modal border-gray-100"
+    className="general-shandianyun-modal border-gray-100"
     styles={{
       header: {
         padding: '0px 0px 10px 0px',

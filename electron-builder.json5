@@ -1,9 +1,9 @@
 // @see - https://www.electron.build/configuration/configuration
 {
   $schema: 'https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json',
-  appId: 'maiku.test.app',
+  appId: 'shandian.test.app',
   asar: true,
-  productName: 'maiku',
+  productName: '闪电云',
   directories: {
     output: 'release/${version}',
   },
@@ -40,8 +40,9 @@
     perMachine: false,
     allowToChangeInstallationDirectory: true,
     deleteAppDataOnUninstall: false,
-    installerIcon: 'public/favicon.ico',
-    uninstallerIcon: 'public/favicon.ico',
+    installerIcon: 'public/logo64x64.ico',
+    uninstallerIcon: 'public/logo64x64.ico',
+    installerHeaderIcon: 'public/logo64x64.icon'
   },
   linux: {
     target: [

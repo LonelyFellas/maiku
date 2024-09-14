@@ -9,11 +9,11 @@ import { Tray, nativeImage, Menu, type BrowserWindow, type App } from 'electron'
  */
 export function createTray(mainWindow: BrowserWindow, app: App) {
   // 创建系统托盘图标
-  const icon = nativeImage.createFromPath(path.join(process.env.VITE_PUBLIC, '/favicon.ico'));
+  const icon = nativeImage.createFromPath(path.join(process.env.VITE_PUBLIC, '/logo64x64.ico'));
   const tray = new Tray(icon);
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: '打开迈库',
+      label: '打开闪电云',
       click: function () {
         mainWindow.show();
       },
@@ -30,6 +30,6 @@ export function createTray(mainWindow: BrowserWindow, app: App) {
   tray.on('click', () => {
     mainWindow.show();
   });
-  tray.setToolTip('迈库');
+  tray.setToolTip('闪电云');
   tray.setContextMenu(contextMenu);
 }

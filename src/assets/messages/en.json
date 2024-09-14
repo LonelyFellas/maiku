@@ -1,6 +1,6 @@
 {
   "basic": {
-    "project_name": "maiku-net",
+    "project_name": "shandianyun-net",
     "pagination_items": "Total: ",
     "cmp_popconfirm_button_title": "Confirm Delete",
     "cmp_popconfirm_button_text": "Delete"
@@ -8,7 +8,7 @@
   "login": {
     "login": {
       "btn_title": "Login",
-      "main_title1": "Don't have an MaiKu account? ",
+      "main_title1": "Don't have an shandianyun account? ",
       "main_title2": "Sign up",
       "filed_email_phone": "Email/Phone number",
       "placeholder_email_phone": "Please enter the correct email address/phone number.",

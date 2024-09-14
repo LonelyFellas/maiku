@@ -1,6 +1,6 @@
 {
   "basic": {
-    "project_name": "迈库网络",
+    "project_name": "闪电云网络",
     "pagination_items": "总数：",
     "cmp_popconfirm_button_title": "确认删除",
     "cmp_popconfirm_button_text": "删除"
@@ -8,7 +8,7 @@
   "login": {
     "login": {
       "btn_title": "登录",
-      "main_title1": "没有迈库网络账户? ",
+      "main_title1": "没有闪电云网络账户? ",
       "main_title2": "立即注册",
       "filed_email_phone": "邮箱地址或手机号码",
       "placeholder_email_phone": "请输入正确邮箱地址或手机号码",
@@ -24,7 +24,7 @@
     },
     "register": {
       "btn_title": "注册",
-      "main_title1": "已有迈库网络账户? ",
+      "main_title1": "已有闪电云网络账户? ",
       "main_title2": "立即登录",
       "phone_title": "手机注册",
       "email_title": "邮箱注册",

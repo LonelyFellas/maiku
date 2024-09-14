@@ -143,7 +143,7 @@ const Slider = () => {
           alt="add-profile-icon"
         />
         <span className="text-black font-bold text-xl" style={{ display: collapsed ? 'none' : 'unset' }}>
-          MaiKu-Net
+          Shandian-Net
         </span>
       </div>
       <div className="no_drag relative">
