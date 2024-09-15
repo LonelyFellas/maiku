@@ -76,3 +76,24 @@ export interface PostPushFileService {
   envId: number;
   fileId: number;
 }
+
+export interface GetListDeviceResult {
+  bak_number: number;
+  device_name: string;
+  expTime: number;
+  expiration: number;
+  ext_name: string;
+  group_id: number | null;
+  id: number;
+  imageName: string;
+  name: string;
+  number: number;
+  p1: number;
+  p2: number;
+  pid: number;
+  pname: string;
+  screenshot: string;
+  screenshot2: string;
+  status: number;
+  time_length: number;
+}

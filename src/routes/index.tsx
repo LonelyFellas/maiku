@@ -11,7 +11,7 @@ import NewProfiles from '@/pages/layout/new-profiles.tsx';
 import UpgradePkg from '@/pages/layout/upgrade-pkg.tsx';
 import Login from '@/pages/login';
 import Profiles from '@/pages/primary/profiles';
-import { postsListDeviceOptions, postsFileQueryOptions, postsProxyQueryOptions } from './data.ts';
+import { getListDeviceOptions, postsFileQueryOptions, postsProxyQueryOptions } from './data.ts';
 
 const rootRoute = createRootRouteWithContext<{
   queryClient: QueryClient;
@@ -46,13 +46,13 @@ const layoutRoute = createRoute({
   component: Layout,
 });
 
-/** 环境管理 */
+/** 我的云手机 */
 const profiles = createRoute({
   getParentRoute: () => layoutRoute,
   path: '/profiles',
   component: Profiles,
-  loader: ({ context: { queryClient } }) => queryClient.ensureQueryData(postsListDeviceOptions),
-  meta: () => [{ title: '环境管理' }],
+  loader: ({ context: { queryClient } }) => queryClient.ensureQueryData(getListDeviceOptions),
+  meta: () => [{ title: '我的云手机' }],
 });
 /** 代理管理 */
 const proxy = createRoute({

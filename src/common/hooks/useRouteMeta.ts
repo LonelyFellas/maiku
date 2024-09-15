@@ -15,7 +15,7 @@ const useRouteMeta = () => {
         pathname: latestLocation.pathname,
         history,
         // @ts-ignore
-        title: matchRoute?.at(-1).meta[0].title ?? '环境管理',
+        title: matchRoute?.at(-1).meta[0].title ?? '我的云手机',
         // @ts-ignore
         isBack: matchRoute?.at(-1).meta[0].isBack ?? false,
       };
@@ -25,7 +25,7 @@ const useRouteMeta = () => {
       return {
         history,
         pathname: latestLocation.pathname,
-        title: '环境管理',
+        title: '我的云手机',
         isBack: false,
       };
     }

@@ -19,10 +19,9 @@ declare global {
     'scrcpy:start': [
       {
         adbAddr: string;
-        envId: number;
+        id: number;
         type: 'start' | 'restart' | 'switch';
-        backupName: string;
-        envName: string;
+        name: string;
         token: string;
       },
     ];

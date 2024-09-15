@@ -5,9 +5,10 @@ export const postsProxyQueryOptions = queryOptions({
   queryKey: ['posts-proxy-list'],
   queryFn: getProxyListService,
 });
-export const postsListDeviceOptions = queryOptions({
-  queryKey: ['posts-list-device'],
+export const getListDeviceOptions = queryOptions({
+  queryKey: ['get-list-device'],
   queryFn: getListDeviceService,
+  refetchInterval: 5000
 });
 export const postsFileQueryOptions = queryOptions({
   queryKey: ['posts-file-list'],
