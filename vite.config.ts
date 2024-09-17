@@ -12,7 +12,7 @@ export default defineConfig({
     electron({
       main: {
         // Shortcut of `build.lib.entry`.
-        entry: 'electron/main.ts',
+        entry: ['electron/main.ts'],
       },
       preload: {
         // Shortcut of `build.rollupOptions.input`.
@@ -50,10 +50,9 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        sourcemap: false,
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            return id.toString().split('node_module')[1].split('/')[0].toString();
+            // return id.toString().split('node_modules/')[1].split('/')[0].toString();
           }
         },
       },

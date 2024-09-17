@@ -7,12 +7,27 @@ import { I18nConfigContextProvider } from '@common';
 import { queryClient, router } from '@/routes';
 import './index.css';
 import '@darwish/scrollbar-react/dist/style.css';
+import ScrcpyPage from './pages/scrcpy';
 
 window.env = import.meta.env;
 const rootElement = document.getElementById('app')!;
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
 
+  const WindowView = (props: React.PropsWithChildren<object>) => {
+    const routeUrl = new URL(window.location.href);
+    const paramsGetRes = routeUrl.searchParams.get('window_name');
+
+    const MainView = () => {
+      switch (paramsGetRes) {
+        case 'scrcpy_window':
+          return <ScrcpyPage />;
+        default:
+          return props.children;
+      }
+    };
+    return <MainView />;
+  };
   root.render(
     <QueryClientProvider client={queryClient}>
       <I18nConfigContextProvider>
@@ -32,7 +47,9 @@ if (!rootElement.innerHTML) {
               },
             }}
           >
-            <RouterProvider router={router} />
+            <WindowView>
+              <RouterProvider router={router} />
+            </WindowView>
           </ConfigProvider>
         </GlobalScrollbarProvider>
       </I18nConfigContextProvider>

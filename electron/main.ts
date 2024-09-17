@@ -81,7 +81,7 @@ function createMainWindow() {
   if (mainWin) {
     // 给主窗口设置scrcpy实例
     // 后续scrcpy窗口进行操作时有可能需要的对渲染层发消息
-    scrcpy.setMainWindow(mainWin);
+    // scrcpy.setMainWindow(mainWin);
   }
 }
 

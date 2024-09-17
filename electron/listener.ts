@@ -82,7 +82,7 @@ export default function createListener(options: CreateListenerOptions) {
   im.on('scrcpy:start', async (event, params) => {
     scrcpy.startWindow(params, (channel, channelData) => event.reply(channel, channelData));
   });
-  im.on('scrcpy:stop', async (_, { adbAddr }) => scrcpy.closeWindow(adbAddr));
+  // im.on('scrcpy:stop', async (_, { adbAddr }) => scrcpy.closeWindow(adbAddr));
   // im.on('scrcpy:restart', async (event, { deviceId }) => scrcpy.restartWindow(deviceId, (channel, channelData) => event.reply(channel, channelData)));
   /** 关闭和重启 */
   im.on('app:operate', (_, operation) => {

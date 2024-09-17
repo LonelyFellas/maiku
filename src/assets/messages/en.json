@@ -1,6 +1,6 @@
 {
   "basic": {
-    "project_name": "shandianyun-net",
+    "project_name": "shandianyun",
     "pagination_items": "Total: ",
     "cmp_popconfirm_button_title": "Confirm Delete",
     "cmp_popconfirm_button_text": "Delete"

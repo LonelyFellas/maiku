@@ -4,4 +4,5 @@ import { app } from 'electron';
 
 export const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export const isProd = app.isPackaged;
+export const isDev = !isProd;
 export const isMac = process.platform === 'darwin';

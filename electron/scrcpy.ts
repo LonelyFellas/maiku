@@ -1,14 +1,18 @@
-import { spawn } from 'node:child_process';
-import { getScrcpyCwd, killProcessWithWindows } from '/electron/utils';
+import { createBrowserWindow, getScrcpyCwd } from '/electron/utils';
 import path from 'node:path';
+import { spawn } from 'node:child_process';
 import { BrowserWindow } from 'electron';
-import { checkWindowExists } from '/electron/utils/scrcpy-koffi.ts';
+import { checkWindowExists, embedWindow, findWindow, getElectronWindow } from './utils/scrcpy-koffi';
+import { mainWin, RENDERER_DIST, VITE_DEV_SERVER_URL } from './main';
+import { __dirname, isDev } from './utils/helper';
 
 export default class Scrcpy<T extends EleApp.ProcessObj> {
   processObj: EleApp.ProcessObj = {};
   pyProcessObj: EleApp.ProcessObj = {};
   processInfo: Record<string, SendChannelMap['scrcpy:start'][0]> = {};
-  mainWindow: BrowserWindow | null = null;
+  scrcpyWindows: Record<number, BrowserWindow> = {};
+  // processInfo: Record<string, SendChannelMap['scrcpy:start'][0]> = {};
+  // mainWindow: BrowserWindow | null = null;
 
   constructor(processObj: T, pyProcessObj: T) {
     this.processObj = processObj;
@@ -19,21 +23,15 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    * 启动scrcpy窗口
    * @param params 启动所需要的一些参数
    * @param params.deviceId 设备id
-   * @param params.envId 环境Id
+   * @param params.id id
    * @param params.name 环境名字
    * @param replyCallback 对渲染层通信的回调函数
    */
   public async startWindow(params: SendChannelMap['scrcpy:start'][0], replyCallback: GenericsFn<[string, any]>) {
-    const { adbAddr, id, name, type: paramsType } = params;
+    const { adbAddr, id, name = '测试窗口' } = params;
     const scrcpyCwd = getScrcpyCwd();
 
-    // 重启
-    if (paramsType === 'restart') {
-      await this.killProcess(adbAddr);
-    }
-
-    this.taskFindWindow({ ...params, title: name, replyCallback });
-
+    this.taskFindWindow({ name, id });
     /**
      * --window-title: 窗口标题
      * --window-width: 窗口宽度
@@ -41,7 +39,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
      * --window-x: 窗口x坐标
      * --window-y: 窗口y坐标
      */
-    this.processObj[adbAddr] = spawn('scrcpy', ['-s', adbAddr, '--window-title', name, '--window-width', '1', '--window-height', '1', '--window-x', '-10000', '--window-y', '-10000', "--video-encoder 'c2.android.avc.encoder'"], {
+    this.processObj[adbAddr] = spawn('scrcpy', ['-s', adbAddr, '--window-title', name, '--window-width', '430', '--window-height', '720', "--video-encoder 'c2.android.avc.encoder'"], {
       cwd: scrcpyCwd,
       shell: true,
     });
@@ -56,7 +54,10 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
           isSuccess: false,
           id,
         });
+        return;
       }
+
+      if (this.scrcpyWindows[id]) return;
     });
     this.processObj[adbAddr].stderr.on('data', (data: AnyObj) => {
       const strData = data.toString();
@@ -70,33 +71,46 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       // 通知渲染层当前的scrcpy关闭了
       replyCallback('close-device-envId', id);
     });
+    console.log('name', name);
+    console.log('adbAddr', adbAddr);
+    // setTimeout(() => {
+    // }, 3000);
   }
 
   /**
-   * 停止scrcpy窗口
-   */
-  public async closeWindow(deviceId: string) {
-    if (this.processObj[deviceId]) {
-      await this.killProcess(deviceId);
-      delete this.processInfo[deviceId];
-    }
-  }
-
-  /** 设置主窗口 */
-  public setMainWindow(mainWin: BrowserWindow) {
-    this.mainWindow = mainWin;
-  }
-
-  /**
-   * 杀死进程
-   * @param deviceId
+   *
+   * @param winName 窗口名字
+   * @param title scrcpy窗口的标题
+   * @param id 考虑多id
    * @private
    */
-  private async killProcess(deviceId: string) {
-    killProcessWithWindows(this.processObj[deviceId].pid!);
-    killProcessWithWindows(this.pyProcessObj[deviceId].pid!);
-    delete this.processObj[deviceId];
-    delete this.pyProcessObj[deviceId];
+  private createEleScrcpyWindow(winName: string, id: number) {
+    const scrcpyWindow = createBrowserWindow({
+      width: 430,
+      height: 702,
+      frame: true,
+      resizable: false,
+      autoHideMenuBar: true,
+      show: true,
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: true,
+        preload: path.join(__dirname, 'preload.mjs'),
+      },
+      title: 'scrcpy-window',
+    });
+    this.setScrcpyWindow(scrcpyWindow, id);
+    scrcpyWindow.setParentWindow(mainWin);
+    if (isDev) {
+      scrcpyWindow.loadURL(`${VITE_DEV_SERVER_URL}?window_name=scrcpy_window`);
+    } else {
+      scrcpyWindow.loadURL(path.join(RENDERER_DIST, `index.html?window_name=scrcpy_window`));
+    }
+    const scrcpyNativeHwnd = findWindow(winName);
+    setTimeout(() => {
+      const parentScrcpyHwnd = getElectronWindow(scrcpyWindow.getNativeWindowHandle().readInt32LE());
+      embedWindow(parentScrcpyHwnd, scrcpyNativeHwnd);
+    }, 1000);
   }
 
   /**
@@ -106,70 +120,24 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    * @private
    * @param params
    */
-  private taskFindWindow(
-    params: SendChannelMap['scrcpy:start'][0] & {
-      title: string;
-      replyCallback: GenericsFn<[string, any]>;
-    },
-  ) {
-    const { title: winName, id, name } = params;
+  private taskFindWindow(params: { name: string; id: number }) {
+    const { id, name } = params;
     const maxAttempt = 10;
     let attempt = 0;
 
     const findWinTimeId = setInterval(() => {
       if (attempt >= maxAttempt) {
         clearInterval(findWinTimeId);
-        this.mainWindow?.webContents.send('scrcpy:start-window-open', {
-          id,
-          name,
-          isSuccess: false,
-        });
       }
-      const checkRes = checkWindowExists(winName);
+      const checkRes = checkWindowExists(name);
       if (checkRes && findWinTimeId) {
         clearInterval(findWinTimeId);
-        this.mainWindow?.webContents.send('scrcpy:start-window-open', {
-          id,
-          name,
-          isSuccess: true,
-        });
-        this.openPythonScrcpyWindow(params);
+        this.createEleScrcpyWindow(name, id);
       }
       attempt++;
     }, 1000);
   }
-
-  private openPythonScrcpyWindow(
-    params: SendChannelMap['scrcpy:start'][0] & {
-      title: string;
-      replyCallback: GenericsFn<[string, any]>;
-    },
-  ) {
-    const { adbAddr: deviceAddr, title: winName, token, id, replyCallback } = params;
-    const pyPath = path.join(getScrcpyCwd(), 'main.exe');
-    console.log('pyPath', pyPath);
-    this.pyProcessObj[deviceAddr] = spawn(pyPath, [winName, deviceAddr, token, id.toString()]);
-    this.pyProcessObj[deviceAddr].stdout.on('data', (data: AnyObj) => {
-      const strData = data.toString();
-      if (strData.includes('ERROR')) {
-        replyCallback('error', strData);
-        replyCallback('scrcpy:stop', {
-          isSuccess: false,
-          id,
-        });
-      }
-    });
-    this.pyProcessObj[deviceAddr].stderr.on('data', (data: AnyObj) => {
-      const strData = data.toString();
-      console.log(`stdrr: ${strData}`);
-
-      if (strData.includes('ERROR')) {
-        replyCallback('error', strData);
-      }
-    });
-    this.pyProcessObj[deviceAddr].on('close', () => {
-      // 通知渲染层当前的scrcpy关闭了
-      replyCallback('close-device-envId', id);
-    });
+  private setScrcpyWindow(scrcpyWindows: BrowserWindow, id: number) {
+    this.scrcpyWindows[id] = scrcpyWindows;
   }
 }

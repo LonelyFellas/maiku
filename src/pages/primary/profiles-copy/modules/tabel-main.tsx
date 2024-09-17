@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useMemo, useRef } from 'react';
 import { App, Button, Form, Input, Popconfirm, Space, Tag } from 'antd';
 import { useSetState, useUpdateEffect } from '@darwish/hooks-core';

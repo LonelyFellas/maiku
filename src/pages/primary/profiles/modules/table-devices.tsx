@@ -24,7 +24,7 @@ const columns = [
     title: '操作',
     dataIndex: 'operation',
     key: 'operation',
-    render: (text, record) => (
+    render: () => (
       <Space>
         <Button size="small" type="primary" ghost>
           实时画面

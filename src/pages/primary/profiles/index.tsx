@@ -1,7 +1,7 @@
 import { Button, Radio, Slider, Space } from 'antd';
 import { useState } from 'react';
-import { PauseCircleOutlined, MergeCellsOutlined, PoweroffOutlined, WindowsOutlined, Loading3QuartersOutlined, RocketOutlined, TableOutlined, LogoutOutlined, CloudUploadOutlined, SettingFilled } from '@ant-design/icons';
-import { useQueries, useQuery, useSuspenseQuery } from '@tanstack/react-query';
+import { PauseCircleOutlined, MergeCellsOutlined, PoweroffOutlined, WindowsOutlined, Loading3QuartersOutlined, RocketOutlined, TableOutlined, LogoutOutlined, CloudUploadOutlined } from '@ant-design/icons';
+import { useQueries, useSuspenseQuery } from '@tanstack/react-query';
 import { getListDeviceOptions } from '/src/routes/data';
 import { ListDevices } from './modules/list-devices';
 import { TableDevices } from './modules/table-devices';
@@ -24,7 +24,7 @@ export default function Profiles() {
   const [layout, setLayout] = useState<'list' | 'table'>('list');
   const [sizeVal, setSizeVal] = useState(1);
   const { data: deviceData } = useSuspenseQuery(getListDeviceOptions);
-  const collapsedItems = ['59.63.189.48:29745', '59.63.189.48:29746'];
+  const collapsedItems = ['59.63.189.48:34742'];
   useQueries({
     queries: collapsedItems.map((deviceId) => ({
       queryKey: ['adbConnect', deviceId],

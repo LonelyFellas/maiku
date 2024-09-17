@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useDeferredValue } from 'react';
 import { Button, Collapse, Dropdown, Flex, message } from 'antd';
 import { useSetState } from '@darwish/hooks-core';

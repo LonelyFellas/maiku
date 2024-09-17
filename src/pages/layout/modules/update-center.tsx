@@ -49,7 +49,7 @@ const UpdateCenter = (props: UpdateCenterProps) => {
                 <div className="all_flex bg-gradient-to-r from-white/70 to-amber-500 text-white rounded-sm px-[0.3rem] text-[10px] h-[1.1rem]">NEW</div>
               </div>
               <div className="text-12sm mt-2">
-                <div>闪电云网络{newVersionData[0]?.version} 更新说明:</div>
+                <div>闪电云手机{newVersionData[0]?.version} 更新说明:</div>
                 <div dangerouslySetInnerHTML={{ __html: newVersionData[0]?.description }} />
               </div>
               <div className="flex justify-end mt-4">
@@ -94,7 +94,6 @@ export default UpdateCenter;
 
 const NoReleaseView = ({ emptyTitle = '' }: { emptyTitle: string }) => <Empty className="w-[400px] h-[120px] m-2 2xl:m-4" description={emptyTitle} />;
 
-
 // interface ContentViewProps {
 //   data: GetReleaseResult;
 //   handleSkipVersion: (version: string) => void;
@@ -118,7 +117,7 @@ const NoReleaseView = ({ emptyTitle = '' }: { emptyTitle: string }) => <Empty cl
 //           <div className="all_flex bg-gradient-to-r from-white/70 to-amber-500 text-white rounded-sm px-[0.3rem] text-[10px] h-[1.1rem]">NEW</div>
 //         </div>
 //         <div className="text-12sm mt-2">
-//           <div>闪电云网络{data?.version} 更新说明:</div>
+//           <div>闪电云手机{data?.version} 更新说明:</div>
 //           <div dangerouslySetInnerHTML={{ __html: data?.description }} />
 //         </div>
 //         <div className="flex justify-end mt-4">

@@ -13,7 +13,7 @@ export function createBrowserWindow(options: BrowserWindowConstructorOptions) {
     webPreferences: {
       nodeIntegration: true,
       // devTools: !app.isPackaged, // 在生产环境中禁用
-      contextIsolation: false,
+      contextIsolation: true,
     },
   };
   return new BrowserWindow(Object.assign(defaultOptions, options));

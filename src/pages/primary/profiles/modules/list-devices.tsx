@@ -10,7 +10,7 @@ interface ListDevicesProps extends ListProps {
 export function ListDevices(props: ListDevicesProps) {
   const handleOpenDevice = (id: number, name: string) => {
     window.ipcRenderer.send('scrcpy:start', {
-      adbAddr: '59.63.189.48:29745',
+      adbAddr: '59.63.189.48:34742',
       id,
       name,
       type: 'start',
