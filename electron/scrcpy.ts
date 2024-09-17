@@ -10,8 +10,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
   processObj: EleApp.ProcessObj = {};
   pyProcessObj: EleApp.ProcessObj = {};
   processInfo: Record<string, SendChannelMap['scrcpy:start'][0]> = {};
-  scrcpyWindows: Record<string, { win: BrowserWindow; hwnd: number; id: number }> = {};
-  scrcpyScreenShotWindow: BrowserWindow | null = null;
+  scrcpyWindows: Record<string, { win: BrowserWindow; hwnd: number; id: number; screenShotWindow?: BrowserWindow | null; adbAddr: string }> = {};
 
   constructor(processObj: T, pyProcessObj: T) {
     this.processObj = processObj;
@@ -38,7 +37,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     const { adbAddr, id, name = '测试窗口' } = params;
     const scrcpyCwd = getScrcpyCwd();
 
-    this.taskFindWindow({ name, id });
+    this.taskFindWindow({ name, id, adbAddr });
     /**
      * --window-title: 窗口标题
      * --window-width: 窗口宽度
@@ -91,7 +90,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    * @param id 考虑多id
    * @private
    */
-  private async createEleScrcpyWindow(winName: string, id: number) {
+  private async createEleScrcpyWindow(winName: string, id: number, adbAddr: string) {
     const scrcpyWindow = createBrowserWindow({
       width: 450,
       height: 702,
@@ -115,6 +114,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       win: scrcpyWindow,
       hwnd: scrcpyNativeHwnd,
       winName,
+      adbAddr,
     });
     if (isDev) {
       scrcpyWindow.loadURL(`${VITE_DEV_SERVER_URL}?window_name=scrcpy_window&win_name=${winName}`);
@@ -144,8 +144,8 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    * @private
    * @param params
    */
-  private taskFindWindow(params: { name: string; id: number }) {
-    const { id, name } = params;
+  private taskFindWindow(params: { name: string; id: number; adbAddr: string }) {
+    const { id, name, adbAddr } = params;
     const maxAttempt = 10;
     let attempt = 0;
 
@@ -156,47 +156,48 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       const checkRes = checkWindowExists(name);
       if (checkRes && findWinTimeId) {
         clearInterval(findWinTimeId);
-        this.createEleScrcpyWindow(name, id);
+        this.createEleScrcpyWindow(name, id, adbAddr);
       }
       attempt++;
     }, 1000);
   }
-  private setScrcpyWindow({ win, id, hwnd, winName }: { win: BrowserWindow; id: number; hwnd: number; winName: string }) {
-    this.scrcpyWindows[winName] = { win, hwnd, id };
+  private setScrcpyWindow({ win, id, hwnd, winName, adbAddr }: { win: BrowserWindow; id: number; hwnd: number; winName: string; adbAddr: string }) {
+    this.scrcpyWindows[winName] = { win, hwnd, id, adbAddr };
   }
 
   private openScreenShotWindow(winName: string) {
-    if (this.scrcpyScreenShotWindow === null) {
-      const scrcpyScreenShotWindow = createBrowserWindow({
-        width: 200,
-        height: 350,
-        frame: false,
-        resizable: false,
-        autoHideMenuBar: true,
-        show: true,
-        x: this.scrcpyWindows[winName].win.getPosition()[0] + 185,
-        y: this.scrcpyWindows[winName].win.getPosition()[1] + 35,
-        parent: this.scrcpyWindows[winName].win,
-        webPreferences: {
-          nodeIntegration: true,
-          contextIsolation: true,
-          preload: path.join(__dirname, 'preload.mjs'),
-        },
-        title: `screen shot`,
-      });
-
-      if (isDev) {
-        scrcpyScreenShotWindow.loadURL(`${VITE_DEV_SERVER_URL}?window_name=scrcpy_screen_shot_window&port=${10020}`);
-      } else {
-        scrcpyScreenShotWindow.loadURL(path.join(RENDERER_DIST, `index.html?window_name=scrcpy_screen_shot_window&port=${10020}`));
-      }
-      this.scrcpyScreenShotWindow = scrcpyScreenShotWindow;
-    } else {
-      this.scrcpyWindows[winName].win.webContents.send('scrcpy:show-screen-shot-window', { port: 10020, winName });
-      this.scrcpyScreenShotWindow.show();
+    if (this.scrcpyWindows[winName].screenShotWindow) {
+      this.scrcpyWindows[winName].screenShotWindow.show();
+      this.scrcpyWindows[winName].screenShotWindow.webContents.send('scrcpy:show-screen-shot-window', { port: 10020, winName });
+      return;
     }
+    const scrcpyScreenShotWindow = createBrowserWindow({
+      width: 200,
+      height: 350,
+      frame: false,
+      resizable: false,
+      autoHideMenuBar: true,
+      show: true,
+      x: this.scrcpyWindows[winName].win.getPosition()[0] + 185,
+      y: this.scrcpyWindows[winName].win.getPosition()[1] + 35,
+      parent: this.scrcpyWindows[winName].win,
+      modal: true,
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: true,
+        preload: path.join(__dirname, 'preload.mjs'),
+      },
+      title: `screen shot`,
+    });
+
+    if (isDev) {
+      scrcpyScreenShotWindow.loadURL(`${VITE_DEV_SERVER_URL}?window_name=scrcpy_screen_shot_window&win_name=${winName}&adbAddr=${this.scrcpyWindows[winName].adbAddr}&port=${10020}`);
+    } else {
+      scrcpyScreenShotWindow.loadURL(path.join(RENDERER_DIST, `index.html?window_name=scrcpy_screen_shot_window&win_name=${winName}&adbAddr=${this.scrcpyWindows[winName].adbAddr}&port=${10020}`));
+    }
+    this.scrcpyWindows[winName].screenShotWindow = scrcpyScreenShotWindow;
   }
   private closeScreenShotWindow(winName: string) {
-    this.scrcpyScreenShotWindow?.hide();
+    this.scrcpyWindows[winName].screenShotWindow?.hide();
   }
 }
