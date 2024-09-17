@@ -25,7 +25,7 @@ export function ListDevices(props: ListDevicesProps) {
       }}
     >
       <div className="flex gap-[10px] flex-wrap">
-        {props.deviceData.concat(props.deviceData).map((deviceData) => {
+        {props.deviceData.map((deviceData) => {
           const openTime = formaDuration(deviceData.expTime * 1000);
           return (
             <div
