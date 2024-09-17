@@ -10,6 +10,7 @@ import MainMenu from '@img/main-menu.svg?react';
 import AllPid from '@img/all-pid.svg?react';
 import AppStore from '@img/app-store.svg?react';
 import React, { useEffect, useRef } from 'react';
+import { Scrollbar } from '@darwish/scrollbar-react';
 
 const sysBtns = ['返回', '主菜单', '所有app'];
 const btns1 = [
@@ -19,7 +20,7 @@ const btns1 = [
   { icon: <VolumeDown />, text: '音量+' },
   { icon: <VolumeUp />, text: '音量-' },
   { icon: <SpeedUp />, text: '速度' },
-  { icon: <More />, text: '更多' },
+  { icon: <More />, text: '嵌入' },
 ];
 const btns2 = [
   { icon: <Back />, text: sysBtns[0] },
@@ -31,6 +32,9 @@ export default function ScrcpyPage() {
   const inputValue = useRef('');
   const isComposingRef = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const url = new URL(window.location.href);
+  const params = new URLSearchParams(url.search);
+  const winName = params.get('win_name') ?? '闪电云手机';
 
   const handleComposition = (event: React.CompositionEvent<HTMLInputElement>) => {
     if (event.type === 'compositionstart') {
@@ -42,6 +46,7 @@ export default function ScrcpyPage() {
     }
   };
   useEffect(() => {
+    document.title = winName;
     window.adbApi.shell('59.63.189.48:34742', 'adb shell ime enable com.android.adbkeyboard/.AdbIME');
     window.adbApi.shell('59.63.189.48:34742', 'adb shell ime set com.android.adbkeyboard/.AdbIME');
   }, []);
@@ -60,7 +65,7 @@ export default function ScrcpyPage() {
         handleShell('270');
         break;
       case '截屏':
-        handleShell('270');
+        window.ipcRenderer.send('scrcpy:screen-shot', { type: 'open', winName });
         break;
       case '上传':
         handleShell('270');
@@ -74,8 +79,8 @@ export default function ScrcpyPage() {
       case '速度':
         handleShell('270');
         break;
-      case '更多':
-        handleShell('270');
+      case '嵌入':
+        window.ipcRenderer.send('scrcpy:reembed-window', winName);
         break;
     }
   };
@@ -94,9 +99,7 @@ export default function ScrcpyPage() {
     }
   };
   const handleKeydown = (e: React.KeyboardEvent<HTMLInputElement> & { target: HTMLInputElement }) => {
-    console.log(e.keyCode);
     if (e.keyCode === 8) {
-      console.log('Enter Pressed');
       // 回车键
       inputValue.current = e.target.value;
       window.adbApi.shell('59.63.189.48:34742', 'input keyevent 67'); // 退格键
@@ -105,7 +108,6 @@ export default function ScrcpyPage() {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e);
     if (isComposingRef.current) {
       // 输入法正在组合字符，不触发逻辑
       return;
@@ -113,17 +115,13 @@ export default function ScrcpyPage() {
     const currentValue = e.target.value; // 当前的输入值
     const addedCharacters = currentValue.slice(inputValue.current.length); // 计算新增字符
 
-    // console.log('Previous Value:');
-    // console.log('Current Value:', currentValue);
-    // console.log('Added Characters:', addedCharacters);
-
     inputValue.current = currentValue; // 更新当前值
 
     window.adbApi.shell('59.63.189.48:34742', `am broadcast -a ADB_INPUT_TEXT --es msg "${addedCharacters}"`);
   };
   return (
-    <div className="w-screen h-screen bg-gray-200 flex justify-end">
-      <div className="h-full flex flex-col justify-between gap-[0px] p-[5px] w-[60px] bg-bg_primary shadow-lg transition-all duration-300 ease-in-out cursor-pointer ">
+    <div className="w-screen h-screen bg-gray-200 flex justify-end overflow-hidden">
+      <Scrollbar className="h-full flex flex-col justify-between gap-[0px] p-[5px] w-[60px] bg-bg_primary shadow-lg transition-all duration-300 ease-in-out cursor-pointer overflow-x-hidden overflow-y-auto">
         <div className="flex flex-col gap-0">
           {btns1.map((btn, index) => (
             <div onClick={() => handleGeneralBtnClick(btn.text)} key={index} className="group hover:bg-bg_secondary/70 hover:text-white size-[50px] flex flex-col all_flex rounded-md">
@@ -147,7 +145,7 @@ export default function ScrcpyPage() {
             </div>
           ))}
         </div>
-      </div>
+      </Scrollbar>
       <div className="absolute bottom-[5px] left-0 opacity-0">
         <input
           ref={inputRef}

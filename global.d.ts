@@ -16,6 +16,8 @@ declare global {
   };
   type SendChannelMap = {
     'scrcpy:window-state': [WindowState, string];
+    'scrcpy:reembed-window': [string];
+    'scrcpy:screen-shot': [{ type: 'close' | 'open'; winName: string }];
     'scrcpy:start': [
       {
         adbAddr: string;
@@ -52,10 +54,10 @@ declare global {
     'update-downloaded': GenericsFn<[unknown], void>;
     'close-device-envId': GenericsFn<[unknown, number], any>;
     'scrcpy:env-win-exist': GenericsFn<[unknown, string], void>;
+    'scrcpy:show-screen-shot-window': GenericsFn<[unknown, { port: string; winName: string }], void>;
+    'scrcpy:start-window-open': GenericsFn<[unknown, { envId: number; backupName: string; isSuccess?: boolean }]>;
     'open-scrcpy-window': Darwish.AnyFunc;
     // prettier-ignore
-    'scrcpy:start-window-open': GenericsFn<[unknown, { envId: number, backupName: string, isSuccess?: boolean }]
-    >;
   };
 
   interface IpcRenderer extends Omit<IpcRenderer, 'invoke' | 'send'> {

@@ -6,6 +6,7 @@ const koffi = require('koffi');
 const user32 = koffi.load('user32.dll');
 export const BOOL = koffi.alias('BOOL', 'int');
 
+// 定义类型和函数
 export const DWORD = koffi.alias('DWORD', 'uint32_t');
 export const HANDLE = koffi.pointer('HANDLE', koffi.opaque());
 export const HWND = koffi.alias('HWND', 'uint64_t');
@@ -33,7 +34,7 @@ export const GW_STYLE = {
   WS_CLIPCHILDREN: 0x002000000,
 };
 
-export const findWindow = (title: string) => {
+export const findWindow = async (title: string) => {
   const hwnd = FindWindowW(null, title);
   if (hwnd) {
     const rect = {};
@@ -62,15 +63,21 @@ export function checkWindowExists(winName: string) {
   return win !== null;
 }
 
-export function embedWindow(parentWindowHwnd: number, childWindowHwnd: number) {
+export function embedWindow(parentWindowHwnd: number, childWindowHwnd: number, scaleFactor: number) {
   console.log(`"parentWindow HWND：${parentWindowHwnd}, childWindow HWND：${childWindowHwnd}`);
   const winW = GetWindowLongW(parentWindowHwnd, -16);
   if (!(winW & GW_STYLE.WS_CLIPCHILDREN)) {
     SetWindowLongW(parentWindowHwnd, -16, winW ^ GW_STYLE.WS_CLIPCHILDREN ^ GW_STYLE.WS_CLIPSIBLINGS);
   }
 
+  // 计算调整后的窗口大小
+  const adjustedWidth = Math.round(380 * scaleFactor);
+  const adjustedHeight = Math.round(702 * scaleFactor);
+
+  // console.log(`DPI：${dpiX}x${dpiY}, 缩放因子：${scaleFactorX}x${scaleFactorY}, 调整后大小：${adjustedWidth}x${adjustedHeight}`);
+  console.log(adjustedHeight, adjustedWidth);
   SetWindowLongW(childWindowHwnd, -16, 0x50000000);
 
   SetParent(childWindowHwnd, GetAncestor(parentWindowHwnd, 1));
-  SetWindowPos(childWindowHwnd, 0, 0, 30, 400, 725, 0x10);
+  SetWindowPos(childWindowHwnd, 0, 0, -20, adjustedWidth, adjustedHeight, 0x10);
 }

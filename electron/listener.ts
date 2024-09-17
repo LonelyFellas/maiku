@@ -113,6 +113,10 @@ export default function createListener(options: CreateListenerOptions) {
     }
     return res.filePaths;
   });
+  /** 重新嵌入scrcpy窗口 */
+  ipcMain.on('scrcpy:reembed-window', (_, winName: string) => {
+    scrcpy.embedScrcpyWindow(winName);
+  });
 
   // /** 保存文件 **/
   // ipcMain.on('file:operation', (event, outputPath, type) => {

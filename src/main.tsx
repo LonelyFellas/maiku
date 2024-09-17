@@ -7,7 +7,8 @@ import { I18nConfigContextProvider } from '@common';
 import { queryClient, router } from '@/routes';
 import './index.css';
 import '@darwish/scrollbar-react/dist/style.css';
-import ScrcpyPage from './pages/scrcpy';
+import ScrcpyPage from './pages/child-windows/scrcpy';
+import ScreenShotPage from './pages/child-windows/screen-shot';
 
 window.env = import.meta.env;
 const rootElement = document.getElementById('app')!;
@@ -22,6 +23,8 @@ if (!rootElement.innerHTML) {
       switch (paramsGetRes) {
         case 'scrcpy_window':
           return <ScrcpyPage />;
+        case 'scrcpy_screen_shot_window':
+          return <ScreenShotPage />;
         default:
           return props.children;
       }
