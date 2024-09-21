@@ -1,3 +1,4 @@
+import { BrowserWindow } from 'electron';
 import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
@@ -28,6 +29,8 @@ export const SetWindowPos = user32.func('BOOL __stdcall SetWindowPos(HWND hWnd, 
 
 export const GetAncestor = user32.func('HWND  __stdcall GetAncestor(HWND hWnd, uint32_t uFlags)');
 export const FindWindowExW = user32.func('HWND __stdcall FindWindowExW(HWND hWndParent, HWND hWndChildAfter, const char16_t * lpszClass, const char16_t * lpszWindow)');
+
+export const SetForegroundWindow = user32.func('BOOL __stdcall SetForegroundWindow(HWND hWnd)');
 
 export const GW_STYLE = {
   WS_CLIPSIBLINGS: 0x004000000,
@@ -63,21 +66,18 @@ export function checkWindowExists(winName: string) {
   return win !== null;
 }
 
-export function embedWindow(parentWindowHwnd: number, childWindowHwnd: number, scaleFactor: number) {
-  console.log(`"parentWindow HWND：${parentWindowHwnd}, childWindow HWND：${childWindowHwnd}`);
-  const winW = GetWindowLongW(parentWindowHwnd, -16);
+export function embedWindow({ parentHwnd, nativeHwnd, scrcpyWindow, height, width, direction = 'vertical' }: { parentHwnd: number; nativeHwnd: number; scrcpyWindow: BrowserWindow; height: number; width: number; direction: EleApp.Direction }) {
+  scrcpyWindow.on('focus', () => {
+    SetForegroundWindow(parentHwnd);
+  });
+  console.log(`"parentWindow HWND：${parentHwnd}, childWindow HWND：${nativeHwnd}`);
+  const winW = GetWindowLongW(parentHwnd, -16);
   if (!(winW & GW_STYLE.WS_CLIPCHILDREN)) {
-    SetWindowLongW(parentWindowHwnd, -16, winW ^ GW_STYLE.WS_CLIPCHILDREN ^ GW_STYLE.WS_CLIPSIBLINGS);
+    SetWindowLongW(parentHwnd, -16, winW ^ GW_STYLE.WS_CLIPCHILDREN ^ GW_STYLE.WS_CLIPSIBLINGS);
   }
 
-  // 计算调整后的窗口大小
-  const adjustedWidth = Math.round(380 * scaleFactor);
-  const adjustedHeight = Math.round(702 * scaleFactor);
+  SetWindowLongW(nativeHwnd, -16, 0x50000000);
 
-  // console.log(`DPI：${dpiX}x${dpiY}, 缩放因子：${scaleFactorX}x${scaleFactorY}, 调整后大小：${adjustedWidth}x${adjustedHeight}`);
-  console.log(adjustedHeight, adjustedWidth);
-  SetWindowLongW(childWindowHwnd, -16, 0x50000000);
-
-  SetParent(childWindowHwnd, GetAncestor(parentWindowHwnd, 1));
-  SetWindowPos(childWindowHwnd, 0, 0, -20, adjustedWidth, adjustedHeight, 0x10);
+  SetParent(nativeHwnd, GetAncestor(parentHwnd, 1));
+  SetWindowPos(nativeHwnd, 0, 0, direction === 'horizontal' ? 0 : -20, width, height, 0x10);
 }

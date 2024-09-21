@@ -18,6 +18,7 @@ declare global {
     'scrcpy:window-state': [WindowState, string];
     'scrcpy:reembed-window': [string];
     'scrcpy:screen-shot': [{ type: 'close' | 'open'; winName: string }];
+    'scrcpy:init-size-window': [{ winName: string; direction: 'vertical' | 'horizontal' }];
     'scrcpy:start': [
       {
         adbAddr: string;
@@ -27,6 +28,7 @@ declare global {
         token: string;
       },
     ];
+    'scrcpy:rotate-screen': [{ winName: string; direction: 'vertical' | 'horizontal' }];
     'scrcpy:stop': [{ adbAddr: string }];
     'app:operate': ['close' | 'restart'];
     'loading:done': ['main' | 'loading'];

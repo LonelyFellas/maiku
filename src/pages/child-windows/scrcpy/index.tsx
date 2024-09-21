@@ -1,9 +1,10 @@
+import { ArrowUpOutlined, ArrowDownOutlined, ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import IconRotary from '@img/rotary-phone.svg?react';
 import ScreenShot from '@img/screen-shot.svg?react';
 import Upload from '@img/upload.svg?react';
 import VolumeDown from '@img/volume-down.svg?react';
 import VolumeUp from '@img/volume-up.svg?react';
-import SpeedUp from '@img/speed-up.svg?react';
+// import SpeedUp from '@img/speed-up.svg?react';
 import More from '@img/more.svg?react';
 import Back from '@img/back.svg?react';
 import MainMenu from '@img/main-menu.svg?react';
@@ -11,27 +12,39 @@ import AllPid from '@img/all-pid.svg?react';
 import AppStore from '@img/app-store.svg?react';
 import React, { useEffect, useRef } from 'react';
 import { Scrollbar } from '@darwish/scrollbar-react';
+// import { Svg } from '/src/common';
 
 const sysBtns = ['返回', '主菜单', '所有app'];
 const btns1 = [
-  { icon: <IconRotary />, text: '旋转' },
-  { icon: <ScreenShot />, text: '截屏' },
-  { icon: <Upload />, text: '上传' },
-  { icon: <VolumeDown />, text: '音量+' },
-  { icon: <VolumeUp />, text: '音量-' },
-  { icon: <SpeedUp />, text: '速度' },
-  { icon: <More />, text: '嵌入' },
+  { icon: <IconRotary />, text: 'rotate', label: '旋转' },
+  { icon: <ScreenShot />, text: 'screen_shot', label: '截屏' },
+  // { icon: <Upload />, text: 'upload', label: '上传' },
+  { icon: <VolumeDown />, text: 'volume_down', label: '音量' },
+  { icon: <VolumeUp />, text: 'volume_up', label: '音量' },
+  // { icon: <SpeedUp />, text: 'speed_up', label: '速度' },
+  { icon: <More />, text: 'embed', label: '嵌入' },
+  { icon: <ArrowUpOutlined />, text: 'arrow_up', label: '上滑' },
+  { icon: <ArrowDownOutlined />, text: 'arrow_down', label: '下滑' },
+  { icon: <ArrowLeftOutlined />, text: 'arrow_left', label: '左滑' },
+  { icon: <ArrowRightOutlined />, text: 'arrow_right', label: '右滑' },
+  // { icon: <Svg.shurufa className="size-[14px]" />, text: <span className="text-[12px]">输入法</span> },
+  // { icon: <More />, text: '重启' },
+  // { icon: <More />, text: '关机' },
+  // { icon: <More />, text: '重置' },
+  // { icon: <More />, text: '息屏' },
+  // { icon: <More />, text: 'ADB' },
 ];
 const btns2 = [
   { icon: <Back />, text: sysBtns[0] },
   { icon: <MainMenu />, text: sysBtns[1] },
   { icon: <AllPid />, text: sysBtns[2] },
 ];
-const btns3 = [{ icon: <AppStore />, text: '应用' }];
+// const btns3 = [{ icon: <AppStore />, text: '应用' }];
 export default function ScrcpyPage() {
   const inputValue = useRef('');
   const isComposingRef = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const rotation = useRef(0);
   const url = new URL(window.location.href);
   const params = new URLSearchParams(url.search);
   const winName = params.get('win_name') ?? '闪电云手机';
@@ -46,9 +59,23 @@ export default function ScrcpyPage() {
     }
   };
   useEffect(() => {
+    /**
+     * SurfaceOrientation:
+     * 0：设备处于 竖屏模式，无旋转。
+     * 1：屏幕 顺时针旋转 90 度，处于 横屏模式。
+     * 2：屏幕 顺时针旋转 180 度，处于 倒置竖屏模式。
+     * 3：屏幕 顺时针旋转 270 度，处于 倒置横屏模式。
+     * */
+    window.adbApi.shellResult('59.63.189.48:34742', 'dumpsys input | grep "SurfaceOrientation"').then((res) => {
+      if (['SurfaceOrientation: 0', 'SurfaceOrientation: 1', 'SurfaceOrientation: 2', 'SurfaceOrientation: 3'].includes(res.trim())) {
+        rotation.current = parseInt(res.trim().split(': ')[1]);
+        console.log('rotation', rotation.current);
+        // if (rotation.current === 0 || rotation.current === 1) {
+        //   window.ipcRenderer.send('scrcpy:init-size-window', { winName, direction: 'horizontal' });
+        // }
+      }
+    });
     document.title = winName;
-    window.adbApi.shell('59.63.189.48:34742', 'adb shell ime enable com.android.adbkeyboard/.AdbIME');
-    window.adbApi.shell('59.63.189.48:34742', 'adb shell ime set com.android.adbkeyboard/.AdbIME');
   }, []);
 
   useEffect(() => {
@@ -61,27 +88,47 @@ export default function ScrcpyPage() {
   };
   const handleGeneralBtnClick = (text: string) => {
     switch (text) {
-      case '旋转':
-        handleShell('270');
+      case 'rotate':
+        window.adbApi.shell('59.63.189.48:34742', 'settings put system accelerometer_rotations 0');
+        rotation.current = rotation.current === 3 ? 0 : rotation.current + 1;
+        window.adbApi.shell('59.63.189.48:34742', `settings put system user_rotation ${rotation.current}`); // 向右旋转
+        window.ipcRenderer.send('scrcpy:rotate-screen', { winName, direction: rotation.current === 1 || rotation.current === 3 ? 'horizontal' : 'vertical' });
         break;
-      case '截屏':
+      case 'screen_shot':
         window.ipcRenderer.send('scrcpy:screen-shot', { type: 'open', winName });
         break;
-      case '上传':
+      case 'upload':
         handleShell('270');
         break;
-      case '音量+':
+      case 'volume_up':
         handleShell('KEYCODE_VOLUME_UP');
         break;
-      case '音量-':
+      case 'volume_down':
         handleShell('KEYCODE_VOLUME_DOWN');
         break;
-      case '速度':
-        handleShell('270');
-        break;
-      case '嵌入':
+      // case 'embed':
+      //   handleShell('270');
+      //   break;
+      case 'embed':
         window.ipcRenderer.send('scrcpy:reembed-window', winName);
         break;
+      case 'arrow_up':
+        window.adbApi.shell('59.63.189.48:34742', 'input keyevent KEYCODE_WAKEUP');
+        window.adbApi.shell('59.63.189.48:34742', 'input swipe 540 1600 540 400 300');
+        break;
+      case 'arrow_down':
+        window.adbApi.shell('59.63.189.48:34742', 'input swipe 540 400 540 1600 500');
+        break;
+      case 'arrow_left':
+        window.adbApi.shell('59.63.189.48:34742', 'input swipe 600 960 100 960 100');
+        break;
+      case 'arrow_right':
+        window.adbApi.shell('59.63.189.48:34742', 'input swipe 200 960 900 960 100');
+        break;
+      // case '输入法':
+      //   window.adbApi.shell('59.63.189.48:34742', 'ime enable com.android.adbkeyboard/.AdbIME');
+      //   window.adbApi.shell('59.63.189.48:34742', 'ime set com.android.adbkeyboard/.AdbIME');
+      //   break;
     }
   };
 
@@ -124,27 +171,27 @@ export default function ScrcpyPage() {
       <Scrollbar className="h-full flex flex-col justify-between gap-[0px] p-[5px] w-[60px] bg-bg_primary shadow-lg transition-all duration-300 ease-in-out cursor-pointer overflow-x-hidden overflow-y-auto">
         <div className="flex flex-col gap-0">
           {btns1.map((btn, index) => (
-            <div onClick={() => handleGeneralBtnClick(btn.text)} key={index} className="group hover:bg-bg_secondary/70 hover:text-white size-[50px] flex flex-col all_flex rounded-md">
+            <div onClick={() => handleGeneralBtnClick(btn.text)} key={index} className="group text-[14px] hover:bg-bg_secondary/70 hover:text-white w-[50px] h-[30px] all_flex rounded-md">
               {btn.icon}
-              {btn.text}
+              {btn.label}
             </div>
           ))}
         </div>
         <div className="flex flex-col gap-0">
           {btns2.map((btn, index) => (
-            <div onClick={() => handleSystemBtnClick(btn.text)} key={index} className="group hover:bg-bg_secondary/70 hover:text-white size-[50px] flex flex-col all_flex rounded-md">
+            <div onClick={() => handleSystemBtnClick(btn.text)} key={index} className="group hover:bg-bg_secondary/70 hover:text-white w-[50px] h-[30px] all_flex rounded-md">
               {btn.icon}
             </div>
           ))}
         </div>
-        <div className="flex flex-col gap-0">
+        {/* <div className="flex flex-col gap-0">
           {btns3.map((btn, index) => (
-            <div key={index} className="group hover:bg-bg_secondary/70 hover:text-white size-[50px] flex flex-col all_flex rounded-md">
+            <div key={index} className="group text-[14px] hover:bg-bg_secondary/70 hover:text-white w-[50px] h-[30px] all_flex rounded-md">
               {btn.icon}
-              {btn.text}
+              {btn.label ?? btn.text}
             </div>
           ))}
-        </div>
+        </div> */}
       </Scrollbar>
       <div className="absolute bottom-[5px] left-0 opacity-0">
         <input

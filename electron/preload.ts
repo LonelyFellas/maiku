@@ -6,17 +6,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   on(...args: Parameters<typeof ipcRenderer.on>) {
     const [channel, listener] = args;
     // 设置白名单，限制可以访问的channel
-    const whitelist: UnionToTuple<keyof OnChannelMap> = [
-      'error',
-      'update-available',
-      'update-progress',
-      'update-downloaded',
-      'close-device-envId',
-      'scrcpy:env-win-exist',
-      'scrcpy:show-screen-shot-window',
-      'scrcpy:start-window-open',
-      'open-scrcpy-window',
-    ];
+    const whitelist: (keyof OnChannelMap)[] = ['error', 'update-available', 'update-progress', 'update-downloaded', 'close-device-envId', 'scrcpy:env-win-exist', 'scrcpy:show-screen-shot-window', 'scrcpy:start-window-open', 'open-scrcpy-window'];
     if (whitelist.includes(channel as any)) {
       return ipcRenderer.on(channel, (event, ...args) => listener(event, ...args));
     }
@@ -37,6 +27,8 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
     const whitelist = [
       'scrcpy:window-state',
       'scrcpy:reembed-window',
+      'scrcpy:rotate-screen',
+      'scrcpy:init-size-window',
       'scrcpy:screen-shot',
       'scrcpy:start',
       'scrcpy:stop',

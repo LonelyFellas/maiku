@@ -48,4 +48,5 @@ declare namespace Electron {
 
 declare namespace EleApp {
   type ProcessObj = Record<string, ChildProcessWithoutNullStreams>;
+  type Direction = 'horizontal' | 'vertical';
 }
