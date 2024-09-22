@@ -8,15 +8,17 @@ interface ListDevicesProps extends ListProps {
   sizeVal: number;
 }
 export function ListDevices(props: ListDevicesProps) {
-  const handleOpenDevice = ({ id, name, p1, number }: Pick<ListDevicesProps['deviceData'][number], 'id' | 'name' | 'p1' | 'number'>) => {
+  const handleOpenDevice = ({ id, name, p1, number, screenshot2 }: Pick<ListDevicesProps['deviceData'][number], 'id' | 'name' | 'p1' | 'number' | 'screenshot2'>) => {
+    const imgurl = new URL(screenshot2);
+    const imgPort = imgurl.searchParams.get('port') ?? '8080';
     const adbPort = p1.toString().slice(0, -2) + (40 + number);
-    console.log(adbPort);
     window.ipcRenderer.send('scrcpy:start', {
       adbAddr: `59.63.189.48:${adbPort}`,
       id,
       name,
       type: 'start',
       token: getToken ?? '',
+      imgPort: imgPort,
     });
   };
   return (
@@ -37,6 +39,7 @@ export function ListDevices(props: ListDevicesProps) {
                   name: deviceData.name,
                   p1: deviceData.p1,
                   number: deviceData.number,
+                  screenshot2: deviceData.screenshot2,
                 })
               }
               key={deviceData.id}

@@ -1,7 +1,6 @@
 import { ArrowUpOutlined, ArrowDownOutlined, ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import IconRotary from '@img/rotary-phone.svg?react';
 import ScreenShot from '@img/screen-shot.svg?react';
-import Upload from '@img/upload.svg?react';
 import VolumeDown from '@img/volume-down.svg?react';
 import VolumeUp from '@img/volume-up.svg?react';
 // import SpeedUp from '@img/speed-up.svg?react';
@@ -9,7 +8,6 @@ import More from '@img/more.svg?react';
 import Back from '@img/back.svg?react';
 import MainMenu from '@img/main-menu.svg?react';
 import AllPid from '@img/all-pid.svg?react';
-import AppStore from '@img/app-store.svg?react';
 import React, { useEffect, useRef } from 'react';
 import { Scrollbar } from '@darwish/scrollbar-react';
 // import { Svg } from '/src/common';
@@ -48,6 +46,7 @@ export default function ScrcpyPage() {
   const url = new URL(window.location.href);
   const params = new URLSearchParams(url.search);
   const winName = params.get('win_name') ?? '闪电云手机';
+  const adbAddr = params.get('adbAddr') ?? '59.63.189.48:34742';
 
   const handleComposition = (event: React.CompositionEvent<HTMLInputElement>) => {
     if (event.type === 'compositionstart') {
@@ -66,7 +65,7 @@ export default function ScrcpyPage() {
      * 2：屏幕 顺时针旋转 180 度，处于 倒置竖屏模式。
      * 3：屏幕 顺时针旋转 270 度，处于 倒置横屏模式。
      * */
-    window.adbApi.shellResult('59.63.189.48:34742', 'dumpsys input | grep "SurfaceOrientation"').then((res) => {
+    window.adbApi.shellResult(adbAddr, 'dumpsys input | grep "SurfaceOrientation"').then((res) => {
       if (['SurfaceOrientation: 0', 'SurfaceOrientation: 1', 'SurfaceOrientation: 2', 'SurfaceOrientation: 3'].includes(res.trim())) {
         rotation.current = parseInt(res.trim().split(': ')[1]);
         console.log('rotation', rotation.current);
@@ -84,14 +83,14 @@ export default function ScrcpyPage() {
     }
   }, [inputRef.current]);
   const handleShell = (code: string) => {
-    window.adbApi.shell('59.63.189.48:34742', `input keyevent ${code}`);
+    window.adbApi.shell(adbAddr, `input keyevent ${code}`);
   };
   const handleGeneralBtnClick = (text: string) => {
     switch (text) {
       case 'rotate':
-        window.adbApi.shell('59.63.189.48:34742', 'settings put system accelerometer_rotations 0');
+        window.adbApi.shell(adbAddr, 'settings put system accelerometer_rotations 0');
         rotation.current = rotation.current === 3 ? 0 : rotation.current + 1;
-        window.adbApi.shell('59.63.189.48:34742', `settings put system user_rotation ${rotation.current}`); // 向右旋转
+        window.adbApi.shell(adbAddr, `settings put system user_rotation ${rotation.current}`); // 向右旋转
         window.ipcRenderer.send('scrcpy:rotate-screen', { winName, direction: rotation.current === 1 || rotation.current === 3 ? 'horizontal' : 'vertical' });
         break;
       case 'screen_shot':
@@ -113,21 +112,21 @@ export default function ScrcpyPage() {
         window.ipcRenderer.send('scrcpy:reembed-window', winName);
         break;
       case 'arrow_up':
-        window.adbApi.shell('59.63.189.48:34742', 'input keyevent KEYCODE_WAKEUP');
-        window.adbApi.shell('59.63.189.48:34742', 'input swipe 540 1600 540 400 300');
+        window.adbApi.shell(adbAddr, 'input keyevent KEYCODE_WAKEUP');
+        window.adbApi.shell(adbAddr, 'input swipe 540 1600 540 400 300');
         break;
       case 'arrow_down':
-        window.adbApi.shell('59.63.189.48:34742', 'input swipe 540 400 540 1600 500');
+        window.adbApi.shell(adbAddr, 'input swipe 540 400 540 1600 500');
         break;
       case 'arrow_left':
-        window.adbApi.shell('59.63.189.48:34742', 'input swipe 600 960 100 960 100');
+        window.adbApi.shell(adbAddr, 'input swipe 600 960 100 960 100');
         break;
       case 'arrow_right':
-        window.adbApi.shell('59.63.189.48:34742', 'input swipe 200 960 900 960 100');
+        window.adbApi.shell(adbAddr, 'input swipe 200 960 900 960 100');
         break;
       // case '输入法':
-      //   window.adbApi.shell('59.63.189.48:34742', 'ime enable com.android.adbkeyboard/.AdbIME');
-      //   window.adbApi.shell('59.63.189.48:34742', 'ime set com.android.adbkeyboard/.AdbIME');
+      //   window.adbApi.shell(adbAddr, 'ime enable com.android.adbkeyboard/.AdbIME');
+      //   window.adbApi.shell(adbAddr, 'ime set com.android.adbkeyboard/.AdbIME');
       //   break;
     }
   };
@@ -149,7 +148,7 @@ export default function ScrcpyPage() {
     if (e.keyCode === 8) {
       // 回车键
       inputValue.current = e.target.value;
-      window.adbApi.shell('59.63.189.48:34742', 'input keyevent 67'); // 退格键
+      window.adbApi.shell(adbAddr, 'input keyevent 67'); // 退格键
       return;
     }
   };
@@ -164,7 +163,7 @@ export default function ScrcpyPage() {
 
     inputValue.current = currentValue; // 更新当前值
 
-    window.adbApi.shell('59.63.189.48:34742', `am broadcast -a ADB_INPUT_TEXT --es msg "${addedCharacters}"`);
+    window.adbApi.shell(adbAddr, `am broadcast -a ADB_INPUT_TEXT --es msg "${addedCharacters}"`);
   };
   return (
     <div className="w-screen h-screen bg-gray-200 flex justify-end overflow-hidden">

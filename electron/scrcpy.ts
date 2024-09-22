@@ -19,7 +19,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
   processObj: EleApp.ProcessObj = {};
   pyProcessObj: EleApp.ProcessObj = {};
   processInfo: Record<string, SendChannelMap['scrcpy:start'][0]> = {};
-  scrcpyWindows: Record<string, { win?: BrowserWindow; hwnd?: number; id?: number; screenShotWindow?: BrowserWindow | null; adbAddr?: string; scrcpyWidth?: number; scrcpyHeight?: number; direction: EleApp.Direction }> = {};
+  scrcpyWindows: Record<string, { win?: BrowserWindow; imgPort: string; hwnd?: number; id?: number; screenShotWindow?: BrowserWindow | null; adbAddr?: string; scrcpyWidth?: number; scrcpyHeight?: number; direction: EleApp.Direction }> = {};
 
   constructor(processObj: T, pyProcessObj: T) {
     this.processObj = processObj;
@@ -56,7 +56,8 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    * @param replyCallback 对渲染层通信的回调函数
    */
   public async startWindow(params: SendChannelMap['scrcpy:start'][0], replyCallback: GenericsFn<[string, any]>) {
-    const { adbAddr, id, name = '测试窗口' } = params;
+    const { adbAddr, id, name = '测试窗口', imgPort } = params;
+    this.scrcpyWindows[name] = { direction: 'vertical', imgPort };
     const scrcpy = this.scrcpyWindows[name];
     if (scrcpy && scrcpy.win) {
       scrcpy.win.show();
@@ -65,7 +66,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     }
     const scrcpyCwd = getScrcpyCwd();
 
-    this.taskFindWindow({ name, id, adbAddr });
+    this.taskFindWindow({ name, id, adbAddr, imgPort });
     /**
      * --window-title: 窗口标题
      * --window-width: 窗口宽度
@@ -81,24 +82,14 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     this.processObj[adbAddr].stdout.on('data', (data: AnyObj) => {
       const strData = data.toString();
       if (strData.includes('Texture: 720x1280')) {
+        this.scrcpyWindows[name].direction = 'vertical';
         if (this.scrcpyWindows[name] && this.scrcpyWindows[name].win) {
-          this.scrcpyWindows[name].direction = 'vertical';
           this.initSizeWindow(name, 'vertical');
-        } else {
-          this.scrcpyWindows[name] = {
-            direction: 'vertical',
-          };
-          this.scrcpyWindows[name].direction = 'vertical';
         }
       } else if (strData.includes('Texture: 1280x720')) {
+        this.scrcpyWindows[name].direction = 'horizontal';
         if (this.scrcpyWindows[name] && this.scrcpyWindows[name].win) {
-          this.scrcpyWindows[name].direction = 'horizontal';
           this.initSizeWindow(name, 'horizontal');
-        } else {
-          this.scrcpyWindows[name] = {
-            direction: 'horizontal',
-          };
-          this.scrcpyWindows[name].direction = 'horizontal';
         }
       }
 
@@ -127,10 +118,6 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       // 通知渲染层当前的scrcpy关闭了
       replyCallback('close-device-envId', id);
     });
-    console.log('name', name);
-    console.log('adbAddr', adbAddr);
-    // setTimeout(() => {
-    // }, 3000);
   }
 
   /**
@@ -140,7 +127,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    * @param id 考虑多id
    * @private
    */
-  private async createEleScrcpyWindow(winName: string, id: number, adbAddr: string) {
+  private async createEleScrcpyWindow(winName: string, id: number, adbAddr: string, imgPort: string) {
     const direction = this.scrcpyWindows[winName].direction;
     if (!direction) {
       return;
@@ -163,8 +150,8 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     });
 
     scrcpyWindow.on('closed', () => {
-      console.log('scrcpyWindow closed');
       delete this.scrcpyWindows[winName];
+      this.processObj[adbAddr].kill('SIGTERM');
     });
 
     const scrcpyNativeHwnd = await findWindow(winName);
@@ -176,9 +163,9 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       adbAddr,
     });
     if (isDev) {
-      scrcpyWindow.loadURL(`${VITE_DEV_SERVER_URL}?window_name=scrcpy_window&win_name=${winName}`);
+      scrcpyWindow.loadURL(`${VITE_DEV_SERVER_URL}?window_name=scrcpy_window&win_name=${winName}&adbAddr=${adbAddr}&imgPort=${imgPort}`);
     } else {
-      scrcpyWindow.loadURL(path.join(RENDERER_DIST, `index.html?window_name=scrcpy_window&win_name=${winName}`));
+      scrcpyWindow.loadURL(path.join(RENDERER_DIST, `index.html?window_name=scrcpy_window&win_name=${winName}&adbAddr=${adbAddr}&imgPort=${imgPort}`));
     }
     const width = direction === 'vertical' ? SCRCPY_WIDTH_V : SCRCPY_WIDTH_H;
     const height = direction === 'vertical' ? SCRCPY_HEIGHT_V : SCRCPY_HEIGHT_H;
@@ -221,8 +208,8 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    * @private
    * @param params
    */
-  private taskFindWindow(params: { name: string; id: number; adbAddr: string }) {
-    const { id, name, adbAddr } = params;
+  private taskFindWindow(params: { name: string; id: number; adbAddr: string; imgPort: string }) {
+    const { id, name, adbAddr, imgPort } = params;
     const maxAttempt = 10;
     let attempt = 0;
 
@@ -233,7 +220,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       const checkRes = checkWindowExists(name);
       if (checkRes && findWinTimeId) {
         clearInterval(findWinTimeId);
-        this.createEleScrcpyWindow(name, id, adbAddr);
+        this.createEleScrcpyWindow(name, id, adbAddr, imgPort);
       }
       attempt++;
     }, 1000);
@@ -243,9 +230,10 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
   }
 
   private openScreenShotWindow(winName: string) {
-    if (this.scrcpyWindows[winName].screenShotWindow) {
-      this.scrcpyWindows[winName].screenShotWindow.show();
-      this.scrcpyWindows[winName].screenShotWindow.webContents.send('scrcpy:show-screen-shot-window', { port: 10020, winName });
+    const scrcpy = this.scrcpyWindows[winName];
+    if (scrcpy.screenShotWindow) {
+      scrcpy.screenShotWindow!.show();
+      scrcpy.screenShotWindow!.webContents.send('scrcpy:show-screen-shot-window', { port: 10020, winName });
       return;
     }
     const scrcpyScreenShotWindow = createBrowserWindow({
@@ -255,9 +243,9 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       resizable: false,
       autoHideMenuBar: true,
       show: true,
-      x: this.scrcpyWindows[winName].win!.getPosition()[0] + 185,
-      y: this.scrcpyWindows[winName].win!.getPosition()[1] + 35,
-      parent: this.scrcpyWindows[winName].win,
+      x: scrcpy.win!.getPosition()[0] + 185,
+      y: scrcpy.win!.getPosition()[1] + 35,
+      parent: scrcpy.win,
       modal: true,
       webPreferences: {
         nodeIntegration: true,
@@ -268,11 +256,11 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     });
 
     if (isDev) {
-      scrcpyScreenShotWindow.loadURL(`${VITE_DEV_SERVER_URL}?window_name=scrcpy_screen_shot_window&win_name=${winName}&adbAddr=${this.scrcpyWindows[winName].adbAddr}&port=${10020}`);
+      scrcpyScreenShotWindow.loadURL(`${VITE_DEV_SERVER_URL}?window_name=scrcpy_screen_shot_window&win_name=${winName}&adbAddr=${scrcpy.adbAddr}&port=${scrcpy.imgPort}`);
     } else {
-      scrcpyScreenShotWindow.loadURL(path.join(RENDERER_DIST, `index.html?window_name=scrcpy_screen_shot_window&win_name=${winName}&adbAddr=${this.scrcpyWindows[winName].adbAddr}&port=${10020}`));
+      scrcpyScreenShotWindow.loadURL(path.join(RENDERER_DIST, `index.html?window_name=scrcpy_screen_shot_window&win_name=${winName}&adbAddr=${scrcpy.adbAddr}&port=${scrcpy.imgPort}`));
     }
-    this.scrcpyWindows[winName].screenShotWindow = scrcpyScreenShotWindow;
+    scrcpy.screenShotWindow = scrcpyScreenShotWindow;
   }
   private closeScreenShotWindow(winName: string) {
     this.scrcpyWindows[winName].screenShotWindow?.hide();
@@ -282,7 +270,6 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
   //   // this.initSizeWindow(winName, direction);
   // }
   private initSizeWindow(winName: string, direction: EleApp.Direction = 'vertical') {
-    console.log('direction', direction);
     const scrcpy = this.scrcpyWindows[winName];
     const widthWin = direction === 'horizontal' ? SCRCPY_WIN_WIDTH_H : SCRCPY_WIN_WIDTH_V;
     const heightWin = direction === 'horizontal' ? SCRCPY_WIN_HEIGHT_H : SCRCPY_WIN_HEIGHT_V;
