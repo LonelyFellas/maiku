@@ -2,7 +2,7 @@ import { createBrowserWindow, getScrcpyCwd } from '/electron/utils';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { BrowserWindow, ipcMain, screen } from 'electron';
-import { checkWindowExists, embedWindow, findWindow, getElectronWindow } from './utils/scrcpy-koffi';
+import { embedWindow, findWindow, getElectronWindow } from './utils/scrcpy-koffi';
 import { RENDERER_DIST, VITE_DEV_SERVER_URL } from './main';
 import { __dirname, isDev } from './utils/helper';
 
@@ -20,6 +20,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
   pyProcessObj: EleApp.ProcessObj = {};
   processInfo: Record<string, SendChannelMap['scrcpy:start'][0]> = {};
   scrcpyWindows: Record<string, { win?: BrowserWindow; imgPort: string; hwnd?: number; id?: number; screenShotWindow?: BrowserWindow | null; adbAddr?: string; scrcpyWidth?: number; scrcpyHeight?: number; direction: EleApp.Direction }> = {};
+  scrcpyCwd = getScrcpyCwd();
 
   constructor(processObj: T, pyProcessObj: T) {
     this.processObj = processObj;
@@ -32,9 +33,6 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
         this.closeScreenShotWindow(winName);
       }
     });
-    // ipcMain.on('scrcpy:rotate-screen', (_, { winName, direction }) => {
-    //   // this.rotateScreen(winName, direction);
-    // });
     ipcMain.on('scrcpy:init-size-window', (_, { winName, direction = 'horizontal' }) => {
       this.initSizeWindow(winName, direction);
     });
@@ -64,7 +62,6 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       scrcpy.win.focus();
       return;
     }
-    const scrcpyCwd = getScrcpyCwd();
 
     this.taskFindWindow({ name, id, adbAddr, imgPort });
     /**
@@ -75,7 +72,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
      * --window-y: 窗口y坐标
      */
     this.processObj[adbAddr] = spawn('scrcpy', ['-s', adbAddr, '--window-title', name, '--window-width', '1', '--window-height', '720', '--window-x', '-10000', '--window-y', '-10000', "--video-encoder 'c2.android.avc.encoder'"], {
-      cwd: scrcpyCwd,
+      cwd: this.scrcpyCwd,
       shell: true,
     });
     this.processInfo[adbAddr] = params;
@@ -128,7 +125,8 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    * @private
    */
   private async createEleScrcpyWindow(winName: string, id: number, adbAddr: string, imgPort: string) {
-    const direction = this.scrcpyWindows[winName].direction;
+    const scrcpy = this.scrcpyWindows[winName];
+    const direction = scrcpy.direction;
     if (!direction) {
       return;
     }
@@ -150,8 +148,21 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     });
 
     scrcpyWindow.on('closed', () => {
-      delete this.scrcpyWindows[winName];
       this.processObj[adbAddr].kill('SIGTERM');
+      delete this.scrcpyWindows[winName];
+      const closeData = spawn(`adb -s ${adbAddr} shell ime reset`, {
+        cwd: this.scrcpyCwd,
+        shell: true,
+      });
+      closeData.stdout.on('data', (data) => {
+        console.log(`stdout: ${data}`);
+      });
+      closeData.stderr.on('data', (data) => {
+        console.error(`stderr: ${data}`);
+      });
+      closeData.on('close', () => {
+        console.log('close data');
+      });
     });
 
     const scrcpyNativeHwnd = await findWindow(winName);
@@ -169,9 +180,9 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     }
     const width = direction === 'vertical' ? SCRCPY_WIDTH_V : SCRCPY_WIDTH_H;
     const height = direction === 'vertical' ? SCRCPY_HEIGHT_V : SCRCPY_HEIGHT_H;
-    setTimeout(() => {
+    scrcpyWindow.on('ready-to-show', () => {
       this.embedScrcpyWindow({ winName, scrcpyWindow, width, height, direction: this.scrcpyWindows[winName].direction });
-    }, 1000);
+    });
   }
 
   public embedScrcpyWindow({ winName, scrcpyWindow, width, height, direction = 'vertical' }: { winName: string; scrcpyWindow: BrowserWindow; width: number; height: number; direction?: EleApp.Direction }) {
@@ -195,6 +206,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
         height: adjustedHeight,
         direction,
       });
+
       // 记录窗口的大小
       this.scrcpyWindows[winName].scrcpyHeight = height;
       this.scrcpyWindows[winName].scrcpyWidth = width;
@@ -213,12 +225,13 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     const maxAttempt = 10;
     let attempt = 0;
 
-    const findWinTimeId = setInterval(() => {
+    const findWinTimeId = setInterval(async () => {
       if (attempt >= maxAttempt) {
         clearInterval(findWinTimeId);
       }
-      const checkRes = checkWindowExists(name);
-      if (checkRes && findWinTimeId) {
+      const scrcpyNativeHwnd = await findWindow(name);
+      console.log('hwd', scrcpyNativeHwnd);
+      if (scrcpyNativeHwnd !== 'null' && findWinTimeId) {
         clearInterval(findWinTimeId);
         this.createEleScrcpyWindow(name, id, adbAddr, imgPort);
       }

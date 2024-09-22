@@ -13,6 +13,7 @@ declare global {
   type InvokeChannelMap = {
     'window:state': [[WindowState, RememberState] | [WindowState], boolean | MessageBoxReturnValue | undefined];
     'dialog:open': [OpenDialogOptions, string[] | { url: string; name: string; size: number }[]];
+    'scrcpy:adb-keyboard': [[string], boolean];
   };
   type SendChannelMap = {
     'scrcpy:window-state': [WindowState, string];

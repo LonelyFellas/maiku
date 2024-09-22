@@ -8,23 +8,17 @@
     output: 'release/${version}',
   },
   forceCodeSigning: false,
-  files: [
-    'dist',
-    'dist-electron'
-  ],
+  files: ['dist', 'dist-electron'],
   mac: {
-    target: [
-      'dmg'
-    ],
+    target: ['dmg'],
     artifactName: '${productName}-Mac-${version}.${ext}',
   },
   win: {
+    icon: 'public/logo256x256.ico',
     target: [
       {
         target: 'nsis',
-        arch: [
-          'x64'
-        ],
+        arch: ['x64'],
       },
     ],
     artifactName: '${productName}-Windows-${version}.${ext}',
@@ -42,12 +36,10 @@
     deleteAppDataOnUninstall: false,
     installerIcon: 'public/logo64x64.ico',
     uninstallerIcon: 'public/logo64x64.ico',
-    installerHeaderIcon: 'public/logo64x64.icon'
+    installerHeaderIcon: 'public/logo64x64.icon',
   },
   linux: {
-    target: [
-      'AppImage'
-    ],
+    target: ['AppImage'],
     artifactName: '${productName}-Linux-${version}.${ext}',
   },
 }

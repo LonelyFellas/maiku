@@ -1,10 +1,8 @@
-import { ArrowUpOutlined, ArrowDownOutlined, ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
+import { ArrowUpOutlined, ArrowDownOutlined, ArrowLeftOutlined, ArrowRightOutlined, QuestionCircleOutlined, TranslationOutlined } from '@ant-design/icons';
 import IconRotary from '@img/rotary-phone.svg?react';
 import ScreenShot from '@img/screen-shot.svg?react';
 import VolumeDown from '@img/volume-down.svg?react';
 import VolumeUp from '@img/volume-up.svg?react';
-// import SpeedUp from '@img/speed-up.svg?react';
-import More from '@img/more.svg?react';
 import Back from '@img/back.svg?react';
 import MainMenu from '@img/main-menu.svg?react';
 import AllPid from '@img/all-pid.svg?react';
@@ -20,11 +18,12 @@ const btns1 = [
   { icon: <VolumeDown />, text: 'volume_down', label: '音量' },
   { icon: <VolumeUp />, text: 'volume_up', label: '音量' },
   // { icon: <SpeedUp />, text: 'speed_up', label: '速度' },
-  { icon: <More />, text: 'embed', label: '嵌入' },
+  { icon: <QuestionCircleOutlined />, text: 'embed', label: '嵌入' },
   { icon: <ArrowUpOutlined />, text: 'arrow_up', label: '上滑' },
   { icon: <ArrowDownOutlined />, text: 'arrow_down', label: '下滑' },
   { icon: <ArrowLeftOutlined />, text: 'arrow_left', label: '左滑' },
   { icon: <ArrowRightOutlined />, text: 'arrow_right', label: '右滑' },
+  { icon: <TranslationOutlined />, text: 'input', label: '输入' },
   // { icon: <Svg.shurufa className="size-[14px]" />, text: <span className="text-[12px]">输入法</span> },
   // { icon: <More />, text: '重启' },
   // { icon: <More />, text: '关机' },
@@ -85,13 +84,13 @@ export default function ScrcpyPage() {
   const handleShell = (code: string) => {
     window.adbApi.shell(adbAddr, `input keyevent ${code}`);
   };
-  const handleGeneralBtnClick = (text: string) => {
+  const handleGeneralBtnClick = async (text: string) => {
     switch (text) {
       case 'rotate':
         window.adbApi.shell(adbAddr, 'settings put system accelerometer_rotations 0');
         rotation.current = rotation.current === 3 ? 0 : rotation.current + 1;
         window.adbApi.shell(adbAddr, `settings put system user_rotation ${rotation.current}`); // 向右旋转
-        window.ipcRenderer.send('scrcpy:rotate-screen', { winName, direction: rotation.current === 1 || rotation.current === 3 ? 'horizontal' : 'vertical' });
+        // window.ipcRenderer.send('scrcpy:rotate-screen', { winName, direction: rotation.current === 1 || rotation.current === 3 ? 'horizontal' : 'vertical' });
         break;
       case 'screen_shot':
         window.ipcRenderer.send('scrcpy:screen-shot', { type: 'open', winName });
@@ -124,10 +123,14 @@ export default function ScrcpyPage() {
       case 'arrow_right':
         window.adbApi.shell(adbAddr, 'input swipe 200 960 900 960 100');
         break;
-      // case '输入法':
-      //   window.adbApi.shell(adbAddr, 'ime enable com.android.adbkeyboard/.AdbIME');
-      //   window.adbApi.shell(adbAddr, 'ime set com.android.adbkeyboard/.AdbIME');
-      //   break;
+      case 'input':
+        const isInstall = await window.ipcRenderer.invoke('scrcpy:adb-keyboard', adbAddr);
+        console.log('isInstall', isInstall);
+        if (isInstall) {
+          window.adbApi.shell(adbAddr, 'ime enable com.android.adbkeyboard/.AdbIME');
+          window.adbApi.shell(adbAddr, 'ime set com.android.adbkeyboard/.AdbIME');
+        }
+        break;
     }
   };
 

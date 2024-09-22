@@ -7,6 +7,7 @@ import IconMin from '@img/minimize.svg?react';
 import IconRestore from '@img/restore.svg?react';
 import pkg from '/package.json';
 import Space from '../space';
+import LOGO from '/logo64x64.ico';
 
 export default function Wrapper(props: React.PropsWithChildren<object>) {
   const [windowClose, setWindowClose] = useLocalStorage<RememberState>(Constants.LOCAL_WINDOW_CLOSE, '');
@@ -61,7 +62,7 @@ export default function Wrapper(props: React.PropsWithChildren<object>) {
     <div className="w-screen h-screen flex flex-col">
       <div className="z-[10000] drag flex justify-between items-center bg-bg_primary h-[30px]">
         <div className="h-full py-1 px-3 flex items-center">
-          <img className="h-full border-white rounded-full" src="https://avatars.githubusercontent.com/u/38754760?v=4" alt="avatar" />
+          <img className="h-full border-white rounded-full" src={LOGO} alt="avatar" />
           <span className="ml-2 text-sm">{urlTitle}</span>
         </div>
         <Space className="no_drag h-full" size={1}>

@@ -2,10 +2,11 @@ import fs from 'node:fs';
 import * as http from 'node:http';
 import path from 'node:path';
 import * as process from 'node:process';
+import { spawn } from 'node:child_process';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import type Store from 'electron-store';
 import { scrcpy, mainWin } from './main';
-import { __dirname } from '/electron/utils';
+import { __dirname, getScrcpyCwd } from '/electron/utils';
 
 interface CreateListenerOptions {
   store: Store<typeof import('./config/electron-store-schema.json')>;
@@ -114,42 +115,6 @@ export default function createListener(options: CreateListenerOptions) {
     return res.filePaths;
   });
 
-  // /** 保存文件 **/
-  // ipcMain.on('file:operation', (event, outputPath, type) => {
-  //   if (type === 'save') {
-  //     console.log(outputPath);
-  //     console.log(path.join(__dirname, outputPath));
-  //     // fs.writeFile(
-  //     //   path.join(__dirname, outputPath),
-  //     //   Buffer.from(data),
-  //     //   (err) => {
-  //     //     if (err) {
-  //     //       console.error('Error saving file:', err);
-  //     //       event.reply(err.message);
-  //     //       return;
-  //     //     }
-  //     //   },
-  //     // );
-  //   } else {
-  //     fs.unlink(outputPath, (err) => {
-  //       if (err) {
-  //         console.error('Failed to delete file:', err);
-  //         event.reply(err.message);
-  //         return;
-  //       }
-  //     });
-  //   }
-  // });
-  // /** 下载文件 **/
-  // ipcMain.on('download-file-progress', (event) => {
-  //   event.reply('download-file-progress', {
-  //     // progress:
-  //   });
-  // });
-  // ipcMain.on('window:scrcpy-listen', (_, winName: string) => {
-  //   const rect = getWindowRect(winName);
-  //   console.log('rect', rect);
-  // });
   /** 下载文件资源 */
   im.on('download-file', async (_, url, options) => {
     const { isDialog = false, ...dialogOptions } = options;
@@ -160,15 +125,42 @@ export default function createListener(options: CreateListenerOptions) {
       }
     }
   });
-  // /** 打开scrcpy窗口额外透明栏 */
-  // im.on('scrcpy:show-toast', (_, type, params) => {
-  //   const { isExpended, deviceAddr } = params;
-  //   if (type === 'transparent') {
-  //     scrcpy.setScrcpyWindowSize(deviceAddr, isExpended ? 730 : 430);
-  //   } else if (type === 'fileUpload') {
-  //     scrcpy.setScrcpyWindowSize(deviceAddr, isExpended ? 930 : 430);
-  //   }
-  // });
+  im.handle('scrcpy:adb-keyboard', async (_, adbAddr) => {
+    const scrcpyPath = getScrcpyCwd();
+    const adbApkName = 'package:com.android.adbkeyboard';
+    return new Promise((resolve, reject) => {
+      // 检测是否安装了 ADB Keyboard
+      const checkData = spawn(`adb -s ${adbAddr} shell pm list packages -3`, {
+        cwd: getScrcpyCwd(),
+        shell: true,
+      });
+      checkData.stdout.on('data', (data) => {
+        console.log('checkData', data.toString());
+        const installed = data.toString().includes(adbApkName);
+        if (!installed) {
+          // 如果没有安装，则安装 ADB Keyboard
+          const installData = spawn(`adb -s ${adbAddr} install ${path.join(scrcpyPath, 'ADBKeyboard.apk')}`, {
+            cwd: scrcpyPath,
+            shell: true,
+          });
+          installData.stdout.on('data', (data) => {
+            console.log('installData', data.toString());
+            resolve(true);
+          });
+          installData.stderr.on('data', (data) => {
+            console.error(data.toString());
+            reject(data.toString());
+          });
+        } else {
+          resolve(true);
+        }
+      });
+      checkData.stderr.on('data', (data) => {
+        console.error(data.toString());
+        reject(data.toString());
+      });
+    });
+  });
 }
 
 function downloadImage(url: string, filePath: string) {
