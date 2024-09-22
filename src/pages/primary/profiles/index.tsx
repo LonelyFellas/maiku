@@ -24,11 +24,10 @@ export default function Profiles() {
   const [layout, setLayout] = useState<'list' | 'table'>('list');
   const [sizeVal, setSizeVal] = useState(1);
   const { data: deviceData } = useSuspenseQuery(getListDeviceOptions);
-  const collapsedItems = ['59.63.189.48:34742'];
   useQueries({
-    queries: collapsedItems.map((deviceId) => ({
+    queries: deviceData.map((deviceId) => ({
       queryKey: ['adbConnect', deviceId],
-      queryFn: () => adbConnect(deviceId),
+      queryFn: () => adbConnect(`59.63.189.48:${deviceId.p1.toString().slice(0, -2) + (40 + deviceId.number)}`),
     })),
   });
 

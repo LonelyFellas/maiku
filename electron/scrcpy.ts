@@ -57,6 +57,12 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    */
   public async startWindow(params: SendChannelMap['scrcpy:start'][0], replyCallback: GenericsFn<[string, any]>) {
     const { adbAddr, id, name = '测试窗口' } = params;
+    const scrcpy = this.scrcpyWindows[name];
+    if (scrcpy && scrcpy.win) {
+      scrcpy.win.show();
+      scrcpy.win.focus();
+      return;
+    }
     const scrcpyCwd = getScrcpyCwd();
 
     this.taskFindWindow({ name, id, adbAddr });
@@ -154,6 +160,11 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
         preload: path.join(__dirname, 'preload.mjs'),
       },
       title: `[${winName}]`,
+    });
+
+    scrcpyWindow.on('closed', () => {
+      console.log('scrcpyWindow closed');
+      delete this.scrcpyWindows[winName];
     });
 
     const scrcpyNativeHwnd = await findWindow(winName);
@@ -278,8 +289,6 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     const width = direction === 'horizontal' ? SCRCPY_WIDTH_H : SCRCPY_WIDTH_V;
     const height = direction === 'horizontal' ? SCRCPY_HEIGHT_H : SCRCPY_HEIGHT_V;
     if (scrcpy.win) {
-      console.log(direction);
-      console.log('winthWin, heightWin', widthWin, heightWin);
       scrcpy.win.setSize(widthWin, heightWin);
       this.embedScrcpyWindow({
         winName,

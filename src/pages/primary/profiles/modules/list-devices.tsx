@@ -8,9 +8,11 @@ interface ListDevicesProps extends ListProps {
   sizeVal: number;
 }
 export function ListDevices(props: ListDevicesProps) {
-  const handleOpenDevice = (id: number, name: string) => {
+  const handleOpenDevice = ({ id, name, p1, number }: Pick<ListDevicesProps['deviceData'][number], 'id' | 'name' | 'p1' | 'number'>) => {
+    const adbPort = p1.toString().slice(0, -2) + (40 + number);
+    console.log(adbPort);
     window.ipcRenderer.send('scrcpy:start', {
-      adbAddr: '59.63.189.48:34742',
+      adbAddr: `59.63.189.48:${adbPort}`,
       id,
       name,
       type: 'start',
@@ -29,7 +31,14 @@ export function ListDevices(props: ListDevicesProps) {
           const openTime = formaDuration(deviceData.expTime * 1000);
           return (
             <div
-              onClick={() => handleOpenDevice(deviceData.id, deviceData.name)}
+              onClick={() =>
+                handleOpenDevice({
+                  id: deviceData.id,
+                  name: deviceData.name,
+                  p1: deviceData.p1,
+                  number: deviceData.number,
+                })
+              }
               key={deviceData.id}
               className="w-[154px] h-[320px] bg-bg_primary overflow-hidden rounded-md flex flex-col shadow-inner hover:scale-[1.03] transition-all"
               style={{
