@@ -71,7 +71,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
      * --window-x: 窗口x坐标
      * --window-y: 窗口y坐标
      */
-    this.processObj[adbAddr] = spawn('scrcpy', ['-s', adbAddr, '--window-title', name, '--window-width', '1', '--window-height', '720', '--window-x', '-10000', '--window-y', '-10000', "--video-encoder 'c2.android.avc.encoder'"], {
+    this.processObj[adbAddr] = spawn('scrcpy', ['-s', adbAddr, '--window-title', name, '--window-width', '1', '--window-height', '1', '--window-x', '-10000', '--window-y', '-10000', "--video-encoder 'c2.android.avc.encoder'"], {
       cwd: this.scrcpyCwd,
       shell: true,
     });
@@ -91,6 +91,9 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       }
 
       console.error(`stdout: ${strData}`);
+      if (strData.includes('Renderer: direct3d')) {
+        this.createEleScrcpyWindow(name, id, adbAddr, imgPort);
+      }
 
       if (strData.includes('ERROR')) {
         replyCallback('error', strData);
@@ -221,7 +224,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
    * @param params
    */
   private taskFindWindow(params: { name: string; id: number; adbAddr: string; imgPort: string }) {
-    const { id, name, adbAddr, imgPort } = params;
+    const { name } = params;
     const maxAttempt = 10;
     let attempt = 0;
 
@@ -233,7 +236,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       console.log('hwd', scrcpyNativeHwnd);
       if (scrcpyNativeHwnd !== 'null' && findWinTimeId) {
         clearInterval(findWinTimeId);
-        this.createEleScrcpyWindow(name, id, adbAddr, imgPort);
+        // this.createEleScrcpyWindow(name, id, adbAddr, imgPort);
       }
       attempt++;
     }, 1000);
