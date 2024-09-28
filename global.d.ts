@@ -62,6 +62,7 @@ declare global {
     'scrcpy:show-screen-shot-window': GenericsFn<[unknown, { port: string; winName: string }], void>;
     'scrcpy:start-window-open': GenericsFn<[unknown, { envId: number; backupName: string; isSuccess?: boolean }]>;
     'open-scrcpy-window': Darwish.AnyFunc;
+    'show-scrcpy-window': GenericsFn<[unknown, string]>;
     // prettier-ignore
   };
 

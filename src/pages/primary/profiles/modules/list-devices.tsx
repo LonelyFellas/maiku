@@ -3,12 +3,13 @@ import { SettingFilled } from '@ant-design/icons';
 import { ListProps } from '../type';
 import { formaDuration } from '../utils';
 import { getToken } from '/src/common';
+import { debounce } from 'lodash';
 
 interface ListDevicesProps extends ListProps {
   sizeVal: number;
 }
 export function ListDevices(props: ListDevicesProps) {
-  const handleOpenDevice = ({ id, name, p1, number, screenshot2 }: Pick<ListDevicesProps['deviceData'][number], 'id' | 'name' | 'p1' | 'number' | 'screenshot2'>) => {
+  const handleOpenDevice = debounce(({ id, name, p1, number, screenshot2 }: Pick<ListDevicesProps['deviceData'][number], 'id' | 'name' | 'p1' | 'number' | 'screenshot2'>) => {
     const imgurl = new URL(screenshot2);
     const imgPort = imgurl.searchParams.get('port') ?? '8080';
     const adbPort = p1.toString().slice(0, -2) + (40 + number);
@@ -20,7 +21,7 @@ export function ListDevices(props: ListDevicesProps) {
       token: getToken ?? '',
       imgPort: imgPort,
     });
-  };
+  }, 1000);
   return (
     <div
       className="mt-[20px]"

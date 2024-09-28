@@ -19,6 +19,7 @@ class ScrcpyUI {
     const rotateBtn = document.getElementById('rotate-btn');
     rotateBtn.addEventListener('click', () => {
       if (this.rotationValue === -1) return;
+      window.ipcRenderer.send('set-resizebale-true-scrcpy-window', this.urlParams.winName);
       this.shell('settings put system accelerometer_rotations 0');
 
       this.rotationValue = this.rotationValue === 3 ? 0 : this.rotationValue + 1;
@@ -41,25 +42,25 @@ class ScrcpyUI {
     const swipeUpBtn = document.getElementById('swipe-up-btn');
     swipeUpBtn.addEventListener('click', () => {
       this.shell('input keyevent KEYCODE_WAKEUP');
-      this.shell('input swipe 540 1600 540 400 100');
+      this.shell('input swipe 350 700 350 100 500');
     });
 
     // 下滑
     const swipeDownBtn = document.getElementById('swipe-down-btn');
     swipeDownBtn.addEventListener('click', () => {
-      this.shell('input swipe 540 400 540 1600 500');
+      this.shell('input swipe 350 100 350 700 500');
     });
 
     // 左滑
     const swipeLeftBtn = document.getElementById('swipe-left-btn');
     swipeLeftBtn.addEventListener('click', () => {
-      this.shell('input swipe 700 660 50 660 100');
+      this.shell('input swipe 600 350 100 350 100');
     });
 
     // 右滑
     const swipeRightBtn = document.getElementById('swipe-right-btn');
     swipeRightBtn.addEventListener('click', () => {
-      this.shell('input swipe 200 960 900 960 100');
+      this.shell('input swipe 100 350 600 350 100');
     });
 
     // 返回
@@ -85,15 +86,14 @@ class ScrcpyUI {
 // 获取url参数
 const paramUrl = new URL(window.location.href);
 const params = Object.fromEntries(paramUrl.searchParams.entries());
-window.addEventListener('DOMContentLoaded', () => {
-  setTimeout(async () => {
-    const getRotateRes = await window.adbApi?.shellResult(params.adbAddr, 'dumpsys input | grep "SurfaceOrientation"');
-    if (['SurfaceOrientation: 0', 'SurfaceOrientation: 1', 'SurfaceOrientation: 2', 'SurfaceOrientation: 3'].includes(getRotateRes.trim())) {
-      const ui = new ScrcpyUI(parseInt(getRotateRes.trim().split(': ')[1]), params);
-      ui.start();
-    }
-    window.ipcRenderer.invoke('get-static-path', 'keyboard-apk-path').then((res) => {
-      window.adbApi.shell(params.adbAddr, `install ${res}`);
-    });
-  }, 2000);
+window.addEventListener('preload-ready', async () => {
+  window.ipcRenderer.send('show-scrcpy-window', params.winName);
+  const getRotateRes = await window.adbApi?.shellResult(params.adbAddr, 'dumpsys input | grep "SurfaceOrientation"');
+  if (['SurfaceOrientation: 0', 'SurfaceOrientation: 1', 'SurfaceOrientation: 2', 'SurfaceOrientation: 3'].includes(getRotateRes.trim())) {
+    const ui = new ScrcpyUI(parseInt(getRotateRes.trim().split(': ')[1]), params);
+    ui.start();
+  }
+  window.ipcRenderer.invoke('get-static-path', 'keyboard-apk-path').then((res) => {
+    window.adbApi.shell(params.adbAddr, `install ${res}`);
+  });
 });

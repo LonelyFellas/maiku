@@ -38,6 +38,8 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
       'updated-restart',
       'download-file',
       'scrcpy:show-toast',
+      'show-scrcpy-window',
+      'set-resizebale-true-scrcpy-window',
     ] as unknown[] as UnionToTuple<keyof SendChannelMap>;
     if (whitelist.includes(channel as any)) {
       return ipcRenderer.send(channel, ...omit);
@@ -59,3 +61,4 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
 });
 
 contextBridge.exposeInMainWorld('adbApi', exposes.init());
+window.dispatchEvent(new Event('preload-ready'));

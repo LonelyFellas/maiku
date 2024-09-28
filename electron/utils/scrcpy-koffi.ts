@@ -77,7 +77,7 @@ export function embedWindow({ parentHwnd, nativeHwnd, scrcpyWindow, height, widt
 
   SetParent(nativeHwnd, GetAncestor(parentHwnd, 1));
   SetWindowPos(nativeHwnd, 0, 0, direction === 'horizontal' ? 0 : -20, width, height, 0x10);
-  scrcpyWindow.on('focus', () => {
+  scrcpyWindow?.on('focus', () => {
     SetWindowPos(nativeHwnd, 0, 0, direction === 'horizontal' ? 0 : -20, width, height, 0x10);
   });
 }

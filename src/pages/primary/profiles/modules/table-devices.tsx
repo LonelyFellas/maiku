@@ -2,9 +2,10 @@ import { Button, Space, Table } from 'antd';
 import type { ListProps } from '../type';
 import { formaDuration } from '../utils';
 import { getToken } from '/src/common';
+import { debounce } from 'lodash';
 
 export function TableDevices(props: ListProps) {
-  const handleOpenDevice = ({ id, name, p1, number, screenshot2 }: Pick<ListProps['deviceData'][number], 'id' | 'name' | 'p1' | 'number' | 'screenshot2'>) => {
+  const handleOpenDevice = debounce(({ id, name, p1, number, screenshot2 }: Pick<ListProps['deviceData'][number], 'id' | 'name' | 'p1' | 'number' | 'screenshot2'>) => {
     const imgurl = new URL(screenshot2);
     const imgPort = imgurl.searchParams.get('port') ?? '8080';
     const adbPort = p1.toString().slice(0, -2) + (40 + number);
@@ -16,7 +17,7 @@ export function TableDevices(props: ListProps) {
       token: getToken ?? '',
       imgPort: imgPort,
     });
-  };
+  }, 1000);
 
   const columns = [
     {

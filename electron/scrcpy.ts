@@ -1,6 +1,6 @@
 import { createBrowserWindow, __dirname, isDev, getScrcpyCwd } from './utils';
 import { spawn, exec } from 'child_process';
-import { BrowserWindow, screen } from 'electron';
+import { BrowserWindow, ipcMain, screen } from 'electron';
 import path from 'path';
 import { embedWindow, findWindow, getElectronWindow } from './utils/scrcpy-koffi';
 import { mainWin, RENDERER_DIST } from './main';
@@ -9,10 +9,10 @@ const SCRCPY_WIDTH_V = 380;
 const SCRCPY_HEIGHT_V = 702;
 const SCRCPY_WIDTH_H = 676;
 const SCRCPY_HEIGHT_H = 380;
-const SCRCPY_WIN_WIDTH_V = 455;
+const SCRCPY_WIN_WIDTH_V = 435;
 const SCRCPY_WIN_HEIGHT_V = 712;
-const SCRCPY_WIN_WIDTH_H = 752;
-const SCRCPY_WIN_HEIGHT_H = 420;
+const SCRCPY_WIN_WIDTH_H = 732;
+const SCRCPY_WIN_HEIGHT_H = 416;
 export default class Scrcpy<T extends EleApp.ProcessObj> {
   processObj: EleApp.ProcessObj = {};
   scrcpyCwd = getScrcpyCwd();
@@ -20,9 +20,18 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     {};
   constructor(processObj: T) {
     this.processObj = processObj;
+    ipcMain.on('show-scrcpy-window', (_, winName) => {
+      console.log(`show-scrcpy-window ${winName}`);
+      this.scrcpyWindows[winName]?.win?.show();
+    });
+    ipcMain.on('set-resizebale-true-scrcpy-window', (_, winName) => {
+      this.scrcpyWindows[winName]?.win?.setResizable(true);
+    });
   }
 
   public async startWindow(params: SendChannelMap['scrcpy:start'][0], replyCallback: GenericsFn<[string, any]>) {
+    if (this.scrcpyWindows[params.name] && this.scrcpyWindows[params.name].win) return;
+    this.scrcpyWindows[params.name] = {} as any;
     const { name: winName = '测试窗口', adbAddr, imgPort } = params;
     const direction: EleApp.Direction = 'vertical';
 
@@ -30,9 +39,9 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       width: direction === 'vertical' ? SCRCPY_WIN_WIDTH_V : SCRCPY_WIN_WIDTH_H,
       height: direction === 'vertical' ? SCRCPY_WIN_HEIGHT_V : SCRCPY_WIN_HEIGHT_H,
       frame: true,
-      resizable: true,
+      resizable: false,
       autoHideMenuBar: true,
-      show: true,
+      show: false,
       modal: false,
       skipTaskbar: false,
       webPreferences: {
@@ -50,16 +59,13 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       scrcpyWindow.loadURL(path.join(RENDERER_DIST, `scrcpy/index.html?winName=${winName}&adbAddr=${adbAddr}&imgPort=${imgPort}`));
     }
 
-    scrcpyWindow.on('ready-to-show', () => {
-      this.startScrcpyNativeWindow(params, replyCallback, scrcpyWindow);
-    });
-
     this.scrcpyWindows[winName] = {
       win: scrcpyWindow,
       imgPort: params.imgPort,
       direction,
       pid: -1,
     };
+    this.startScrcpyNativeWindow(params, replyCallback, scrcpyWindow);
   }
 
   private startScrcpyNativeWindow(params: SendChannelMap['scrcpy:start'][0], replyCallback: GenericsFn<[string, any]>, scrcpyWindow: BrowserWindow) {
@@ -77,32 +83,39 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     scrcpySpawn.stdout.on('data', async (data: AnyObj) => {
       pids.spawnPid = scrcpySpawn.pid ?? -1;
       const strData = data.toString();
+
       if (strData.includes('Renderer: direct3d')) {
         const scrcpyNativeHwnd = await findWindow(winName);
         this.scrcpyWindows[winName].hwnd = scrcpyNativeHwnd;
       }
-      if (strData.includes('Texture: 720x1280')) {
+
+      const isVertical = strData.includes('Texture: 720x1280');
+      const isHorizontal = strData.includes('Texture: 1280x720');
+      if (isVertical || isHorizontal) {
+        const direction = isVertical ? 'vertical' : 'horizontal';
         if (this.scrcpyWindows[winName] && this.scrcpyWindows[winName].win) {
-          this.scrcpyWindows[winName].direction = 'vertical';
+          this.scrcpyWindows[winName].direction = direction;
         }
-        this.initSizeWindow(winName, 'vertical', isInitWindow);
-        if (isInitWindow) isInitWindow = false;
-      } else if (strData.includes('Texture: 1280x720')) {
-        if (this.scrcpyWindows[winName] && this.scrcpyWindows[winName].win) {
-          this.scrcpyWindows[winName].direction = 'horizontal';
-        }
-        this.initSizeWindow(winName, 'horizontal', isInitWindow);
+        this.initSizeWindow(winName, direction, isInitWindow);
+
         if (isInitWindow) isInitWindow = false;
       }
-
       console.error(`stdout: ${strData}`);
 
       if (strData.includes('ERROR')) {
         replyCallback('error', strData);
-        replyCallback('scrcpy:stop', {
-          isSuccess: false,
-          id,
-        });
+        console.log('error 1111');
+        this.scrcpyWindows[winName].win?.close();
+        this.scrcpyWindows[winName].win = undefined;
+        if (scrcpySpawn.pid !== -1) {
+          if (pids.scrcpyPid !== -1) {
+            process.kill(pids.scrcpyPid);
+            this.scrcpyWindows[winName].pid = -1;
+          }
+          if (pids.scrcpyPid !== -1) {
+            process.kill(pids.spawnPid);
+          }
+        }
         return;
       }
 
@@ -125,6 +138,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     // 监听 scrcpy 启动事件
     scrcpySpawn.on('spawn', () => {
       exec(`wmic process where "name='scrcpy.exe' and commandline like '%${winName}%'" get processid`, (error, stdout) => {
+        console.log('error 2222');
         if (error) {
           console.error(`Error fetching PID: ${error}`);
           return;
@@ -139,6 +153,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       });
     });
     scrcpyWindow.on('closed', () => {
+      this.scrcpyWindows[winName].win = undefined;
       if (scrcpySpawn.pid !== -1) {
         if (pids.scrcpyPid !== -1) {
           process.kill(pids.scrcpyPid);
@@ -160,6 +175,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
 
     if (scrcpy.win) {
       scrcpy.win.setSize(widthWin, heightWin);
+      scrcpy.win.setResizable(false);
       this.embedScrcpyWindow({
         winName,
         width,
@@ -205,10 +221,6 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
           direction,
         });
       }, 3000);
-
-      // 记录窗口的大小
-      this.scrcpyWindows[winName].scrcpyHeight = height;
-      this.scrcpyWindows[winName].scrcpyWidth = width;
     }
   }
 }
