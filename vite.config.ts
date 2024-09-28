@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { resolve } from 'path';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import electron from 'vite-plugin-electron/simple';
@@ -50,8 +51,8 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        dist: 'index.html',
-        dist2: 'scrpcy/index.html',
+        main: resolve(__dirname, 'index.html'),
+        scrcpy: resolve(__dirname, 'scrcpy/index.html'),
       },
       output: {
         dir: 'dist',

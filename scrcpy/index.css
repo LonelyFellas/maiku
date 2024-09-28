@@ -35,7 +35,7 @@
     width: 60px;
     height: 100%;
     background-color: #d3e3fd;
-    padding: 0px 5px;
+    padding: 10px 5px;
     .op-btn {
       display: flex;
       justify-content: center;

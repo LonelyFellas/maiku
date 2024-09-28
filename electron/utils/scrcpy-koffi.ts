@@ -67,9 +67,6 @@ export function checkWindowExists(winName: string) {
 }
 
 export function embedWindow({ parentHwnd, nativeHwnd, scrcpyWindow, height, width, direction = 'vertical' }: { parentHwnd: number; nativeHwnd: number; scrcpyWindow: BrowserWindow; height: number; width: number; direction: EleApp.Direction }) {
-  scrcpyWindow.on('focus', () => {
-    SetForegroundWindow(parentHwnd);
-  });
   console.log(`"parentWindow HWND：${parentHwnd}, childWindow HWND：${nativeHwnd}`);
   const winW = GetWindowLongW(parentHwnd, -16);
   if (!(winW & GW_STYLE.WS_CLIPCHILDREN)) {
@@ -80,4 +77,7 @@ export function embedWindow({ parentHwnd, nativeHwnd, scrcpyWindow, height, widt
 
   SetParent(nativeHwnd, GetAncestor(parentHwnd, 1));
   SetWindowPos(nativeHwnd, 0, 0, direction === 'horizontal' ? 0 : -20, width, height, 0x10);
+  scrcpyWindow.on('focus', () => {
+    SetWindowPos(nativeHwnd, 0, 0, direction === 'horizontal' ? 0 : -20, width, height, 0x10);
+  });
 }

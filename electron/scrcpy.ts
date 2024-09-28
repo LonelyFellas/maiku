@@ -3,7 +3,7 @@ import { spawn, exec } from 'child_process';
 import { BrowserWindow, screen } from 'electron';
 import path from 'path';
 import { embedWindow, findWindow, getElectronWindow } from './utils/scrcpy-koffi';
-import { mainWin } from './main';
+import { mainWin, RENDERER_DIST } from './main';
 
 const SCRCPY_WIDTH_V = 380;
 const SCRCPY_HEIGHT_V = 702;
@@ -46,7 +46,8 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     if (isDev) {
       scrcpyWindow.loadURL(`http://127.0.0.1:5500/scrcpy/index.html?winName=${winName}&adbAddr=${adbAddr}&imgPort=${imgPort}`);
     } else {
-      scrcpyWindow.loadFile(path.join(__dirname, `../scrcpy/index.html?winName=${winName}&adbAddr=${adbAddr}&imgPort=${imgPort}`));
+      mainWin?.webContents.send('error', path.join(RENDERER_DIST, `scrcpy/index.html?winName=${winName}&adbAddr=${adbAddr}&imgPort=${imgPort}`));
+      scrcpyWindow.loadURL(path.join(RENDERER_DIST, `scrcpy/index.html?winName=${winName}&adbAddr=${adbAddr}&imgPort=${imgPort}`));
     }
 
     scrcpyWindow.on('ready-to-show', () => {
