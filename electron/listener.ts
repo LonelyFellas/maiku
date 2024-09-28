@@ -2,7 +2,6 @@ import fs from 'node:fs';
 import * as http from 'node:http';
 import path from 'node:path';
 import * as process from 'node:process';
-import { spawn } from 'node:child_process';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import type Store from 'electron-store';
 import { scrcpy, mainWin } from './main';
@@ -70,15 +69,6 @@ export default function createListener(options: CreateListenerOptions) {
     return mainWin?.isMaximized();
   });
 
-  // /** 处理scrcpyWindows的窗口的状态按钮*/
-  // im.on('scrcpy:window-state', (...args) => {
-  //   const [, chnannel, envId] = args;
-  //   if (chnannel === 'minimize') {
-  //     scrcpy.scrcpyWindowStatesMini(envId);
-  //   } else {
-  //     scrcpy.scrcpyWindowStatesClose(envId);
-  //   }
-  // });
   /** 启动scrcpy **/
   im.on('scrcpy:start', async (event, params) => {
     scrcpy.startWindow(params, (channel, channelData) => event.reply(channel, channelData));
@@ -96,90 +86,15 @@ export default function createListener(options: CreateListenerOptions) {
       }
     }
   });
-  /** 打开文件框，选择文件，处理文件，拿到文件名和文件大小，返回给renderer **/
-  im.handle('dialog:open', async (...args) => {
-    const [, option] = args;
-    const res = await dialog.showOpenDialog(option);
-    if (!res.canceled && res.filePaths.length > 0) {
-      const files = await Promise.all(
-        res.filePaths.map(async (filePath) => {
-          const temp = { url: filePath, name: '', size: -1 };
-          const stats = await fs.promises.stat(filePath);
-          temp.name = path.basename(filePath);
-          temp.size = stats.size;
-          return temp;
-        }),
-      );
-      return files;
-    }
-    return res.filePaths;
-  });
 
-  /** 下载文件资源 */
-  im.on('download-file', async (_, url, options) => {
-    const { isDialog = false, ...dialogOptions } = options;
-    if (isDialog) {
-      const { filePath, canceled } = await dialog.showSaveDialog(dialogOptions);
-      if (!canceled) {
-        downloadImage(url, filePath ?? path.join(__dirname, 'downloads', path.basename(url)));
-      }
+  im.handle('get-static-path', async (_, type) => {
+    if (type === 'keyboard-apk-path') {
+      const scrcpyPath = getScrcpyCwd();
+      const keyboardApkPath = path.join(scrcpyPath, '/ADBKeyboard.apk');
+      return keyboardApkPath;
+    } else if (type === 'img') {
+      return '';
     }
-  });
-  im.handle('scrcpy:adb-keyboard', async (_, adbAddr) => {
-    const scrcpyPath = getScrcpyCwd();
-    const adbApkName = 'package:com.android.adbkeyboard';
-    return new Promise((resolve, reject) => {
-      // 检测是否安装了 ADB Keyboard
-      const checkData = spawn(`adb -s ${adbAddr} shell pm list packages -3`, {
-        cwd: getScrcpyCwd(),
-        shell: true,
-      });
-      checkData.stdout.on('data', (data) => {
-        console.log('checkData', data.toString());
-        const installed = data.toString().includes(adbApkName);
-        if (!installed) {
-          // 如果没有安装，则安装 ADB Keyboard
-          const installData = spawn(`adb -s ${adbAddr} install ${path.join(scrcpyPath, 'ADBKeyboard.apk')}`, {
-            cwd: scrcpyPath,
-            shell: true,
-          });
-          installData.stdout.on('data', (data) => {
-            console.log('installData', data.toString());
-            resolve(true);
-          });
-          installData.stderr.on('data', (data) => {
-            console.error(data.toString());
-            reject(data.toString());
-          });
-        } else {
-          resolve(true);
-        }
-      });
-      checkData.stderr.on('data', (data) => {
-        console.error(data.toString());
-        reject(data.toString());
-      });
-    });
-  });
-}
-
-function downloadImage(url: string, filePath: string) {
-  // 发送 HTTPS GET 请求获取图片数据
-  http.get(url, (response) => {
-    // 创建可写流
-    const file = fs.createWriteStream(filePath);
-    // 将相应数据管道到文件流
-    response.pipe(file);
-    // 监听文件流关闭事件
-    file
-      .on('finish', () => {
-        file.close(() => {
-          console.log('Image downloaded successfully');
-        });
-      })
-      .on('error', (err) => {
-        console.error('Error downloading image:', err);
-        mainWin?.webContents.send('error', err.message);
-      });
+    return '';
   });
 }

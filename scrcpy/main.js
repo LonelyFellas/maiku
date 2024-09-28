@@ -11,7 +11,7 @@ class ScrcpyUI {
   }
 
   shell(cmd) {
-    window.adbApi.shell(this.urlParams.adbAddr, cmd)
+    window.adbApi.shell(this.urlParams.adbAddr, cmd);
   }
 
   start() {
@@ -19,16 +19,16 @@ class ScrcpyUI {
     const rotateBtn = document.getElementById('rotate-btn');
     rotateBtn.addEventListener('click', () => {
       if (this.rotationValue === -1) return;
-      this.shell('settings put system accelerometer_rotations 0')
+      this.shell('settings put system accelerometer_rotations 0');
 
       this.rotationValue = this.rotationValue === 3 ? 0 : this.rotationValue + 1;
-      this.shell(`settings put system user_rotation ${this.rotationValue}`)
+      this.shell(`settings put system user_rotation ${this.rotationValue}`);
     });
 
     // 音量+
     const volumeUpBtn = document.getElementById('volume-up-btn');
     volumeUpBtn.addEventListener('click', () => {
-      this.shell('input keyevent KEYCODE_VOLUME_UP')
+      this.shell('input keyevent KEYCODE_VOLUME_UP');
     });
 
     // 音量-
@@ -47,8 +47,7 @@ class ScrcpyUI {
     // 下滑
     const swipeDownBtn = document.getElementById('swipe-down-btn');
     swipeDownBtn.addEventListener('click', () => {
-     this.shell('input swipe 540 400 540 1600 500'); 
-
+      this.shell('input swipe 540 400 540 1600 500');
     });
 
     // 左滑
@@ -60,7 +59,7 @@ class ScrcpyUI {
     // 右滑
     const swipeRightBtn = document.getElementById('swipe-right-btn');
     swipeRightBtn.addEventListener('click', () => {
-     this.shell('input swipe 200 960 900 960 100'); 
+      this.shell('input swipe 200 960 900 960 100');
     });
 
     // 返回
@@ -80,8 +79,6 @@ class ScrcpyUI {
     recentBtn.addEventListener('click', () => {
       this.shell('input keyevent 187');
     });
-
-
   }
 }
 
@@ -89,14 +86,14 @@ class ScrcpyUI {
 const paramUrl = new URL(window.location.href);
 const params = Object.fromEntries(paramUrl.searchParams.entries());
 window.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    window.adbApi?.shellResult(params.adbAddr, 'dumpsys input | grep "SurfaceOrientation"').then((res) => {
-      if (['SurfaceOrientation: 0', 'SurfaceOrientation: 1', 'SurfaceOrientation: 2', 'SurfaceOrientation: 3'].includes(res.trim())) {
-        const ui = new ScrcpyUI(parseInt(res.trim().split(': ')[1]), params);
-        ui.start();
-      }
+  setTimeout(async () => {
+    const getRotateRes = await window.adbApi?.shellResult(params.adbAddr, 'dumpsys input | grep "SurfaceOrientation"');
+    if (['SurfaceOrientation: 0', 'SurfaceOrientation: 1', 'SurfaceOrientation: 2', 'SurfaceOrientation: 3'].includes(getRotateRes.trim())) {
+      const ui = new ScrcpyUI(parseInt(getRotateRes.trim().split(': ')[1]), params);
+      ui.start();
+    }
+    window.ipcRenderer.invoke('get-static-path', 'keyboard-apk-path').then((res) => {
+      window.adbApi.shell(params.adbAddr, `install ${res}`);
     });
-  }, 2000)
-})
-
-
+  }, 2000);
+});

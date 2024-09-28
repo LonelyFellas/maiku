@@ -47,7 +47,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   invoke(...args: Parameters<typeof ipcRenderer.invoke>) {
     const [channel, ...omit] = args;
     // 同上
-    const whitelist: (keyof InvokeChannelMap)[] = ['window:state', 'dialog:open', 'scrcpy:adb-keyboard'];
+    const whitelist: (keyof InvokeChannelMap)[] = ['window:state', 'dialog:open', 'scrcpy:adb-keyboard', 'get-static-path'];
     if (whitelist.includes(channel as any)) {
       return ipcRenderer.invoke(channel, ...omit);
     }

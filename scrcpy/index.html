@@ -1,11 +1,14 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Document</title>
-  <link rel="stylesheet" href="./index.css">
+  <script src="../public/iconfont.js"></script>
+  <link rel="stylesheet" href="./index.css" />
 </head>
+
 <body>
   <div id="scrcpy-container">
     <div class="scrcpy-video">
@@ -15,19 +18,64 @@
       </div>
     </div>
     <div class="operation-btns">
-      <div class="op-btn" id="rotate-btn">旋转</div>
-      <div class="op-btn" id="stop-btn">截屏</div>
-      <div class="op-btn" id="volume-up-btn">音量</div>
-      <div class="op-btn" id="volume-down-btn">音量</div>
-      <div class="op-btn" id="swipe-up-btn">上滑</div>
-      <div class="op-btn" id="swipe-down-btn">下滑</div>
-      <div class="op-btn" id="swipe-left-btn">左滑</div>
-      <div class="op-btn" id="swipe-right-btn">右滑</div>
-      <div class="op-btn" id="back-btn">🔙</div>
-      <div class="op-btn" id="home-btn">主页</div>
-      <div class="op-btn" id="recent-btn">任务</div>
+      <div class="op-btn" id="rotate-btn">
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-xuanzhuanshouji"></use>
+        </svg>旋转
+      </div>
+      <div class="op-btn" id="stop-btn">
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-line-screenshotpingmujietu-01"></use>
+        </svg>截屏
+      </div>
+      <div class="op-btn" id="volume-up-btn">
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-yinliangzengjia"></use>
+        </svg>音量
+      </div>
+      <div class="op-btn" id="volume-down-btn">
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-yinliangjianshao"></use>
+        </svg>音量
+      </div>
+      <div class="op-btn" id="swipe-up-btn">
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-youshanghuadong"></use>
+        </svg>上滑
+      </div>
+      <div class="op-btn" id="swipe-down-btn">
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-zuoxiahuadong"></use>
+        </svg>下滑
+      </div>
+      <div class="op-btn" id="swipe-left-btn">
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-wangzuohua"></use>
+        </svg>左滑
+      </div>
+      <div class="op-btn" id="swipe-right-btn">
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-bhjrigthslide"></use>
+        </svg>右滑
+      </div>
+      <div class="op-btn &#xe629;" id="back-btn">
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-xiangzuosanjiaoxing"></use>
+        </svg>
+      </div>
+      <div class="op-btn" id="home-btn">
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-yuanquan"></use>
+        </svg>
+      </div>
+      <div class="op-btn" id="recent-btn">
+        <svg class="icon" aria-hidden="true">
+          <use xlink:href="#icon-fangkuang"></use>
+        </svg>
+      </div>
     </div>
   </div>
   <script type="module" src="./main.js"></script>
 </body>
+
 </html>

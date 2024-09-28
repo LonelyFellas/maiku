@@ -14,6 +14,7 @@ declare global {
     'window:state': [[WindowState, RememberState] | [WindowState], boolean | MessageBoxReturnValue | undefined];
     'dialog:open': [OpenDialogOptions, string[] | { url: string; name: string; size: number }[]];
     'scrcpy:adb-keyboard': [[string], boolean];
+    'get-static-path': [[string], string];
   };
   type SendChannelMap = {
     'scrcpy:window-state': [WindowState, string];
