@@ -1,11 +1,9 @@
-import fs from 'node:fs';
-import * as http from 'node:http';
 import path from 'node:path';
 import * as process from 'node:process';
 import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import type Store from 'electron-store';
 import { scrcpy, mainWin } from './main';
-import { __dirname, getScrcpyCwd } from '/electron/utils';
+import { getScrcpyCwd } from '/electron/utils';
 
 interface CreateListenerOptions {
   store: Store<typeof import('./config/electron-store-schema.json')>;

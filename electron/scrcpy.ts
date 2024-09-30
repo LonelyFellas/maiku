@@ -1,9 +1,9 @@
-import { createBrowserWindow, __dirname, isDev, getScrcpyCwd } from './utils';
 import { spawn, exec } from 'child_process';
-import { BrowserWindow, ipcMain, screen } from 'electron';
 import path from 'path';
-import { embedWindow, findWindow, getElectronWindow } from './utils/scrcpy-koffi';
+import { BrowserWindow, ipcMain, screen } from 'electron';
 import { mainWin, RENDERER_DIST } from './main';
+import { createBrowserWindow, __dirname, isDev, getScrcpyCwd } from './utils';
+import { embedWindow, findWindow, getElectronWindow } from './utils/scrcpy-koffi';
 
 const SCRCPY_WIDTH_V = 380;
 const SCRCPY_HEIGHT_V = 702;
@@ -41,7 +41,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       frame: true,
       resizable: false,
       autoHideMenuBar: true,
-      show: false,
+      show: true,
       modal: false,
       skipTaskbar: false,
       webPreferences: {
@@ -53,7 +53,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     });
 
     if (isDev) {
-      scrcpyWindow.loadURL(`http://127.0.0.1:5500/scrcpy/index.html?winName=${winName}&adbAddr=${adbAddr}&imgPort=${imgPort}`);
+      scrcpyWindow.loadURL(`http://localhost:8080?winName=${winName}&adbAddr=${adbAddr}&imgPort=${imgPort}`);
     } else {
       mainWin?.webContents.send('error', path.join(RENDERER_DIST, `scrcpy/index.html?winName=${winName}&adbAddr=${adbAddr}&imgPort=${imgPort}`));
       scrcpyWindow.loadURL(path.join(RENDERER_DIST, `scrcpy/index.html?winName=${winName}&adbAddr=${adbAddr}&imgPort=${imgPort}`));

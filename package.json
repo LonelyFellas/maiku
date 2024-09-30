@@ -7,6 +7,7 @@
   "description": "闪电云手机",
   "scripts": {
     "dev": "vite",
+    "scrcpy": "vite scrcpy --host 127.0.0.1 --port 8080 ",
     "dev:win": "chcp 65001 && vite",
     "redev": "npm run dev",
     "build:render": "tsc && vite build",
