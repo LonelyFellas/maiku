@@ -18,10 +18,17 @@
   display: flex;
 
   .scrcpy-video {
+    position: relative;
     flex: 1;
     display: grid;
     place-content: center;
     background-color: black;
+    .hide-input {
+      right: 0;
+      opacity: 1;
+      bottom: 0;
+      position: absolute;
+    }
     .loader-container {
       width: 100px;
       height: 100px;
@@ -61,6 +68,10 @@
         background-color: rgb(30, 77, 255, 0.7);
         color: white;
       }
+    }
+    .op-btn.active {
+      background-color: rgb(30, 77, 255, 0.7);
+      color: white;
     }
   }
 }

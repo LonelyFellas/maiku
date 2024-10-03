@@ -16,8 +16,24 @@ const SCRCPY_WIN_HEIGHT_H = 416;
 export default class Scrcpy<T extends EleApp.ProcessObj> {
   processObj: EleApp.ProcessObj = {};
   scrcpyCwd = getScrcpyCwd();
-  scrcpyWindows: Record<string, { win?: BrowserWindow; pid?: number; imgPort: string; hwnd?: number; id?: number; screenShotWindow?: BrowserWindow | null; adbAddr?: string; scrcpyWidth?: number; scrcpyHeight?: number; direction: EleApp.Direction }> =
-    {};
+  scrcpyWindows: Record<
+    string,
+    {
+      win?: BrowserWindow;
+      pid?: number;
+      pidSpawn?: number;
+      imgPort: string;
+      hwnd?: number;
+      id?: number;
+      screenShotWindow?: BrowserWindow | null;
+      adbAddr?: string;
+      scrcpyWidth?: number;
+      scrcpyHeight?: number;
+      direction: EleApp.Direction;
+      startADBKeybord?: boolean;
+      isInstallADBKeyboard?: boolean;
+    }
+  > = {};
   constructor(processObj: T) {
     this.processObj = processObj;
     ipcMain.on('show-scrcpy-window', (_, winName) => {
@@ -25,25 +41,37 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       this.scrcpyWindows[winName]?.win?.show();
     });
     ipcMain.on('set-resizebale-true-scrcpy-window', (_, winName) => {
-      this.scrcpyWindows[winName]?.win?.setResizable(true);
+      // this.scrcpyWindows[winName]?.win?.setResizable(true);
+    });
+    ipcMain.on('set-adb-keyboard', (_, winName, action) => this.inputADBKeybord(winName, action));
+    ipcMain.on('install-adb-keyboard', (_, winName) => {
+      const { adbAddr, isInstallADBKeyboard } = this.scrcpyWindows[winName];
+      if (isInstallADBKeyboard) return;
+      this.scrcpyWindows[winName].isInstallADBKeyboard = true;
+      const apkPath = path.join(this.scrcpyCwd, '/ADBKeyboard.apk');
+      spawn(`adb -s ${adbAddr} install ${apkPath}`, {
+        cwd: this.scrcpyCwd,
+        shell: true,
+      });
     });
   }
 
   public async startWindow(params: SendChannelMap['scrcpy:start'][0], replyCallback: GenericsFn<[string, any]>) {
     if (this.scrcpyWindows[params.name] && this.scrcpyWindows[params.name].win) return;
-    this.scrcpyWindows[params.name] = {} as any;
     const { name: winName = '测试窗口', adbAddr, imgPort } = params;
+    this.scrcpyWindows[params.name] = { adbAddr } as any;
     const direction: EleApp.Direction = 'vertical';
 
     const scrcpyWindow = createBrowserWindow({
       width: direction === 'vertical' ? SCRCPY_WIN_WIDTH_V : SCRCPY_WIN_WIDTH_H,
       height: direction === 'vertical' ? SCRCPY_WIN_HEIGHT_V : SCRCPY_WIN_HEIGHT_H,
       frame: true,
-      resizable: false,
+      // resizable: true,
       autoHideMenuBar: true,
       show: true,
       modal: false,
       skipTaskbar: false,
+      movable: false,
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: true,
@@ -54,12 +82,14 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
 
     if (isDev) {
       scrcpyWindow.loadURL(`http://localhost:8080?winName=${winName}&adbAddr=${adbAddr}&imgPort=${imgPort}`);
+      scrcpyWindow.webContents.openDevTools({ mode: 'detach' });
     } else {
       mainWin?.webContents.send('error', path.join(RENDERER_DIST, `scrcpy/index.html?winName=${winName}&adbAddr=${adbAddr}&imgPort=${imgPort}`));
       scrcpyWindow.loadURL(path.join(RENDERER_DIST, `scrcpy/index.html?winName=${winName}&adbAddr=${adbAddr}&imgPort=${imgPort}`));
     }
 
     this.scrcpyWindows[winName] = {
+      ...this.scrcpyWindows[winName],
       win: scrcpyWindow,
       imgPort: params.imgPort,
       direction,
@@ -70,23 +100,28 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
 
   private startScrcpyNativeWindow(params: SendChannelMap['scrcpy:start'][0], replyCallback: GenericsFn<[string, any]>, scrcpyWindow: BrowserWindow) {
     let isInitWindow = true;
-    const pids = {
-      spawnPid: -1,
-      scrcpyPid: -1,
-    };
     const { adbAddr, name: winName = '测试窗口', id } = params;
-    if (this.scrcpyWindows[winName].pid !== -1) return;
+    const scrcpy = this.scrcpyWindows[winName];
+    // 初始化scrcpy的pid和pidSpawn
+    scrcpy.pid = -1;
+    scrcpy.pidSpawn = -1;
+    if (scrcpy.pid !== -1) return;
     const scrcpySpawn = spawn('scrcpy', ['-s', adbAddr, '--window-title', winName, '--window-width', '1', '--window-height', '1', '--window-x', '-10000', '--window-y', '-10000', "--video-encoder 'c2.android.avc.encoder'"], {
       cwd: this.scrcpyCwd,
       shell: true,
     });
     scrcpySpawn.stdout.on('data', async (data: AnyObj) => {
-      pids.spawnPid = scrcpySpawn.pid ?? -1;
+      scrcpy.pidSpawn = scrcpySpawn.pid ?? -1;
       const strData = data.toString();
 
       if (strData.includes('Renderer: direct3d')) {
-        const scrcpyNativeHwnd = await findWindow(winName);
-        this.scrcpyWindows[winName].hwnd = scrcpyNativeHwnd;
+        const findHwnd = await this.findScrcpyWindow(winName);
+        console.log(`findHwnd: ${findHwnd}`);
+        if (!findHwnd) {
+          this.stopScrcpyNativeWindow(winName);
+          return;
+        }
+        scrcpy.hwnd = findHwnd;
       }
 
       const isVertical = strData.includes('Texture: 720x1280');
@@ -104,25 +139,15 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
 
       if (strData.includes('ERROR')) {
         replyCallback('error', strData);
-        console.log('error 1111');
         this.scrcpyWindows[winName].win?.close();
-        this.scrcpyWindows[winName].win = undefined;
-        if (scrcpySpawn.pid !== -1) {
-          if (pids.scrcpyPid !== -1) {
-            process.kill(pids.scrcpyPid);
-            this.scrcpyWindows[winName].pid = -1;
-          }
-          if (pids.scrcpyPid !== -1) {
-            process.kill(pids.spawnPid);
-          }
-        }
+        this.stopScrcpyNativeWindow(winName);
         return;
       }
 
       if (this.scrcpyWindows[id]) return;
     });
     scrcpySpawn.stderr.on('data', (data: AnyObj) => {
-      pids.scrcpyPid = scrcpySpawn.pid ?? -1;
+      scrcpy.pidSpawn = scrcpySpawn.pid ?? -1;
       const strData = data.toString();
       console.log(`stdrr: ${strData}`);
 
@@ -138,7 +163,6 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     // 监听 scrcpy 启动事件
     scrcpySpawn.on('spawn', () => {
       exec(`wmic process where "name='scrcpy.exe' and commandline like '%${winName}%'" get processid`, (error, stdout) => {
-        console.log('error 2222');
         if (error) {
           console.error(`Error fetching PID: ${error}`);
           return;
@@ -147,23 +171,55 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
         const lines = stdout.split('\n').filter((line) => line.trim());
         if (lines.length > 1) {
           const pid = lines[1].trim(); // 第二行是 PID
-          pids.scrcpyPid = parseInt(pid);
-          this.scrcpyWindows[winName].pid = pids.scrcpyPid;
+          scrcpy.pid = parseInt(pid);
         }
       });
     });
     scrcpyWindow.on('closed', () => {
-      this.scrcpyWindows[winName].win = undefined;
-      if (scrcpySpawn.pid !== -1) {
-        if (pids.scrcpyPid !== -1) {
-          process.kill(pids.scrcpyPid);
-          this.scrcpyWindows[winName].pid = -1;
-        }
-        if (pids.scrcpyPid !== -1) {
-          process.kill(pids.spawnPid);
-        }
-      }
+      this.stopScrcpyNativeWindow(winName);
     });
+  }
+
+  // 找到scrcpy窗口的hwnd 递归查找10次，每次间隔1秒
+  private async findScrcpyWindow(winName: string, count = 10) {
+    const scrcpyNativeHwnd = await findWindow(winName);
+    if (count === 0) {
+      console.error(`Can't find scrcpy window ${winName}`);
+      return undefined;
+    }
+    if (scrcpyNativeHwnd === 'undefined') {
+      setTimeout(() => {
+        this.findScrcpyWindow(winName, count - 1);
+      }, 1000);
+      return;
+    }
+    return scrcpyNativeHwnd;
+  }
+
+  private async stopScrcpyNativeWindow(winName: string) {
+    const scrcpy = this.scrcpyWindows[winName];
+    scrcpy.win = undefined;
+    if (scrcpy.pid && scrcpy.pid !== -1) {
+      process.kill(scrcpy.pid);
+      scrcpy.pid = -1;
+    }
+    if (scrcpy.pidSpawn && scrcpy.pidSpawn !== -1) {
+      process.kill(scrcpy.pidSpawn);
+      scrcpy.pidSpawn = -1;
+    }
+
+    // 重置ADB键盘
+    if (scrcpy.startADBKeybord && scrcpy.adbAddr) {
+      spawn(`adb -s ${scrcpy.adbAddr} shell ime reset`, {
+        shell: true,
+        cwd: this.scrcpyCwd,
+      });
+    }
+  }
+
+  private inputADBKeybord(winName: string, action: 'start' | 'close') {
+    const scrcpy = this.scrcpyWindows[winName];
+    scrcpy.startADBKeybord = action === 'start';
   }
 
   private initSizeWindow(winName: string, direction: EleApp.Direction = 'vertical', isInitWindow: boolean) {
@@ -175,7 +231,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
 
     if (scrcpy.win) {
       scrcpy.win.setSize(widthWin, heightWin);
-      scrcpy.win.setResizable(false);
+      // scrcpy.win.setResizable(false);
       this.embedScrcpyWindow({
         winName,
         width,
@@ -220,7 +276,8 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
           height: adjustedHeight,
           direction,
         });
-      }, 3000);
+        scrcpy.win!.setMovable(true);
+      }, 1000);
     }
   }
 }

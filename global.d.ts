@@ -51,6 +51,7 @@ declare global {
         isExpended: boolean;
       },
     ];
+    'set-adb-keyboard': [[string, 'start' | 'close'], boolean];
   };
   type OnChannelMap = {
     error: Darwish.AnyFunc;
