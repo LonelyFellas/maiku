@@ -29,6 +29,11 @@ class ScrcpyUI {
       this.rotationValue = this.rotationValue === 3 ? 0 : this.rotationValue + 1;
       this.shell(`settings put system user_rotation ${this.rotationValue}`);
     });
+    // 截图
+    const screenshotBtn = document.getElementById('screenshot-btn');
+    screenshotBtn.addEventListener('click', () => {
+      window.ipcRenderer.send('screenshot-scrcpy-window', this.urlParams.winName);
+    });
 
     // 音量+
     const volumeUpBtn = document.getElementById('volume-up-btn');

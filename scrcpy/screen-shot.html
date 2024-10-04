@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <img id="screenshot" src="" alt="screenshot" style="width: 100%; height: 100%">
+  <script>
+    const screenshot = document.getElementById('screenshot');
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams(url.search);
+    const winName = params.get('winName') ?? '闪电云手机';
+    const imgHostName = params.get('imgHostName') ?? '12345';
+    const imgPort = params.get('imgPort') ?? '8080';
+    const t = new Date().getTime();
+    screenshot.src = `http://${imgHostName}/proxy-api/task=snap&level=2?port=${imgPort}&t=${t}` 
+  </script>
+</body>
+</html>

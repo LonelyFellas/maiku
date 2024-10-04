@@ -10,8 +10,9 @@ interface ListDevicesProps extends ListProps {
 }
 export function ListDevices(props: ListDevicesProps) {
   const handleOpenDevice = debounce(({ id, name, p1, number, screenshot2 }: Pick<ListDevicesProps['deviceData'][number], 'id' | 'name' | 'p1' | 'number' | 'screenshot2'>) => {
-    const imgurl = new URL(screenshot2);
-    const imgPort = imgurl.searchParams.get('port') ?? '8080';
+    const imgUrl = new URL(screenshot2);
+    const imgHostName = imgUrl.hostname;
+    const imgPort = imgUrl.searchParams.get('port');
     const adbPort = p1.toString().slice(0, -2) + (40 + number);
     window.ipcRenderer.send('scrcpy:start', {
       adbAddr: `59.63.189.48:${adbPort}`,
@@ -19,7 +20,8 @@ export function ListDevices(props: ListDevicesProps) {
       name,
       type: 'start',
       token: getToken ?? '',
-      imgPort: imgPort,
+      imgHostName,
+      imgPort,
     });
   }, 1000);
   return (

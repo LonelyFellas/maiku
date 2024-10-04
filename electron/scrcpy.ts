@@ -22,7 +22,8 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       win?: BrowserWindow;
       pid?: number;
       pidSpawn?: number;
-      imgPort: string;
+      imgHostName: string;
+      imgPort: number;
       hwnd?: number;
       id?: number;
       screenShotWindow?: BrowserWindow | null;
@@ -41,7 +42,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       this.scrcpyWindows[winName]?.win?.show();
     });
     ipcMain.on('set-resizebale-true-scrcpy-window', (_, winName) => {
-      // this.scrcpyWindows[winName]?.win?.setResizable(true);
+      this.scrcpyWindows[winName]?.win?.setResizable(true);
     });
     ipcMain.on('set-adb-keyboard', (_, winName, action) => this.inputADBKeybord(winName, action));
     ipcMain.on('install-adb-keyboard', (_, winName) => {
@@ -54,19 +55,20 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
         shell: true,
       });
     });
+    ipcMain.on('screenshot-scrcpy-window', (_, winName) => this.screenshot(winName));
   }
 
   public async startWindow(params: SendChannelMap['scrcpy:start'][0], replyCallback: GenericsFn<[string, any]>) {
     if (this.scrcpyWindows[params.name] && this.scrcpyWindows[params.name].win) return;
-    const { name: winName = '测试窗口', adbAddr, imgPort } = params;
-    this.scrcpyWindows[params.name] = { adbAddr } as any;
+    const { name: winName = '测试窗口', adbAddr, imgHostName, imgPort } = params;
+    this.scrcpyWindows[params.name] = { adbAddr, imgHostName, imgPort } as any;
     const direction: EleApp.Direction = 'vertical';
 
     const scrcpyWindow = createBrowserWindow({
       width: direction === 'vertical' ? SCRCPY_WIN_WIDTH_V : SCRCPY_WIN_WIDTH_H,
       height: direction === 'vertical' ? SCRCPY_WIN_HEIGHT_V : SCRCPY_WIN_HEIGHT_H,
       frame: true,
-      // resizable: true,
+      resizable: false,
       autoHideMenuBar: true,
       show: true,
       modal: false,
@@ -81,17 +83,16 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     });
 
     if (isDev) {
-      scrcpyWindow.loadURL(`http://localhost:8080?winName=${winName}&adbAddr=${adbAddr}&imgPort=${imgPort}`);
+      scrcpyWindow.loadURL(`http://localhost:8080?winName=${winName}&adbAddr=${adbAddr}`);
       scrcpyWindow.webContents.openDevTools({ mode: 'detach' });
     } else {
-      mainWin?.webContents.send('error', path.join(RENDERER_DIST, `scrcpy/index.html?winName=${winName}&adbAddr=${adbAddr}&imgPort=${imgPort}`));
-      scrcpyWindow.loadURL(path.join(RENDERER_DIST, `scrcpy/index.html?winName=${winName}&adbAddr=${adbAddr}&imgPort=${imgPort}`));
+      scrcpyWindow.loadURL(path.join(RENDERER_DIST, `scrcpy/index.html?winName=${winName}&adbAddr=${adbAddr}`));
     }
 
     this.scrcpyWindows[winName] = {
       ...this.scrcpyWindows[winName],
       win: scrcpyWindow,
-      imgPort: params.imgPort,
+      imgHostName: params.imgHostName,
       direction,
       pid: -1,
     };
@@ -231,7 +232,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
 
     if (scrcpy.win) {
       scrcpy.win.setSize(widthWin, heightWin);
-      // scrcpy.win.setResizable(false);
+      scrcpy.win.setResizable(false);
       this.embedScrcpyWindow({
         winName,
         width,
@@ -279,5 +280,34 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
         scrcpy.win!.setMovable(true);
       }, 1000);
     }
+  }
+
+  private async screenshot(winName: string) {
+    const scrcpy = this.scrcpyWindows[winName];
+    console.log('screenshot', scrcpy.imgPort, scrcpy.imgHostName);
+    const screenshotWindow = createBrowserWindow({
+      width: 200,
+      height: 350,
+      frame: false,
+      resizable: false,
+      show: true,
+      x: scrcpy.win!.getPosition()[0] + 185,
+      y: scrcpy.win!.getPosition()[1] + 35,
+      parent: scrcpy.win,
+      modal: true,
+      title: `[${winName}]截图`,
+    });
+
+    if (isDev) {
+      screenshotWindow.loadURL(path.join(__dirname, `../scrcpy/screen-shot.html?winName=${winName}&imgHostName=${scrcpy.imgHostName}&imgPort=${scrcpy.imgPort}`));
+    } else {
+      screenshotWindow.loadURL(path.join(RENDERER_DIST, `scrcpy/screen-shot.html?winName=${winName}&imgHostName=${scrcpy.imgHostName}&imgPort=${scrcpy.imgPort}`));
+    }
+    screenshotWindow.webContents.on('dom-ready', () => {
+      screenshotWindow.show();
+      setTimeout(() => {
+        screenshotWindow.close();
+      }, 3000);
+    });
   }
 }

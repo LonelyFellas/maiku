@@ -28,7 +28,8 @@ declare global {
         type: 'start' | 'restart' | 'switch';
         name: string;
         token: string;
-        imgPort: string;
+        imgHostName: string;
+        imgPort: string | null;
       },
     ];
     'scrcpy:rotate-screen': [{ winName: string; direction: 'vertical' | 'horizontal' }];
