@@ -51,13 +51,21 @@ class ScrcpyUI {
     const swipeUpBtn = document.getElementById('swipe-up-btn');
     swipeUpBtn.addEventListener('click', () => {
       this.shell('input keyevent KEYCODE_WAKEUP');
-      this.shell('input swipe 350 700 350 100 500');
+      if (this.rotationValue === 0 || this.rotationValue === 2) {
+        this.shell('input swipe 360 1000 360 300');
+      } else {
+        this.shell('input swipe 1000 360 300 360');
+      }
     });
 
     // 下滑
     const swipeDownBtn = document.getElementById('swipe-down-btn');
     swipeDownBtn.addEventListener('click', () => {
-      this.shell('input swipe 350 100 350 700 500');
+      if (this.rotationValue === 0 || this.rotationValue === 2) {
+        this.shell('input swipe 360 300 360 1000');
+      } else {
+        this.shell('input swipe 300 360 1000 360');
+      }
     });
 
     // 左滑

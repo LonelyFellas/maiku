@@ -53,6 +53,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'index.html'),
         scrcpy: resolve(__dirname, 'scrcpy/index.html'),
+        screenshot: resolve(__dirname, 'scrcpy/screen-shot.html'),
       },
       output: {
         dir: 'dist',

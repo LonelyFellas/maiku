@@ -1,7 +1,9 @@
 import { spawn, exec } from 'child_process';
-import path from 'path';
+import path from 'node:path';
+import http from 'node:http';
+import fs from 'node:fs';
 import { BrowserWindow, ipcMain, screen } from 'electron';
-import { mainWin, RENDERER_DIST } from './main';
+import { RENDERER_DIST } from './main';
 import { createBrowserWindow, __dirname, isDev, getScrcpyCwd } from './utils';
 import { embedWindow, findWindow, getElectronWindow } from './utils/scrcpy-koffi';
 
@@ -38,7 +40,6 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
   constructor(processObj: T) {
     this.processObj = processObj;
     ipcMain.on('show-scrcpy-window', (_, winName) => {
-      console.log(`show-scrcpy-window ${winName}`);
       this.scrcpyWindows[winName]?.win?.show();
     });
     ipcMain.on('set-resizebale-true-scrcpy-window', (_, winName) => {
@@ -59,7 +60,10 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
   }
 
   public async startWindow(params: SendChannelMap['scrcpy:start'][0], replyCallback: GenericsFn<[string, any]>) {
-    if (this.scrcpyWindows[params.name] && this.scrcpyWindows[params.name].win) return;
+    if (this.scrcpyWindows[params.name] && this.scrcpyWindows[params.name].win) {
+      this.scrcpyWindows[params.name].win?.show(); // 如果已经打开了窗口，则直接激活当前窗口
+      return;
+    }
     const { name: winName = '测试窗口', adbAddr, imgHostName, imgPort } = params;
     this.scrcpyWindows[params.name] = { adbAddr, imgHostName, imgPort } as any;
     const direction: EleApp.Direction = 'vertical';
@@ -117,7 +121,6 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
 
       if (strData.includes('Renderer: direct3d')) {
         const findHwnd = await this.findScrcpyWindow(winName);
-        console.log(`findHwnd: ${findHwnd}`);
         if (!findHwnd) {
           this.stopScrcpyNativeWindow(winName);
           return;
@@ -284,7 +287,6 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
 
   private async screenshot(winName: string) {
     const scrcpy = this.scrcpyWindows[winName];
-    console.log('screenshot', scrcpy.imgPort, scrcpy.imgHostName);
     const screenshotWindow = createBrowserWindow({
       width: 200,
       height: 350,
@@ -303,11 +305,52 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     } else {
       screenshotWindow.loadURL(path.join(RENDERER_DIST, `scrcpy/screen-shot.html?winName=${winName}&imgHostName=${scrcpy.imgHostName}&imgPort=${scrcpy.imgPort}`));
     }
-    screenshotWindow.webContents.on('dom-ready', () => {
+    screenshotWindow.webContents.on('dom-ready', async () => {
       screenshotWindow.show();
       setTimeout(() => {
         screenshotWindow.close();
       }, 3000);
+      const t = new Date().getTime();
+      const saveName = `../../${t}.jpeg`;
+      const downloadRes = await this.downloadImage(`http://${scrcpy.imgHostName}/proxy-api/task=snap&level=2?port=${scrcpy.imgPort}&t=${t}`, path.join(RENDERER_DIST, saveName));
+      if (downloadRes) {
+        spawn(`adb -s ${scrcpy.adbAddr} push ${path.join(RENDERER_DIST, saveName)} /sdcard/Pictures`, {
+          cwd: this.scrcpyCwd,
+          shell: true,
+        });
+      }
+    });
+  }
+  private downloadImage(url: string, outputPath: string) {
+    // 下载图片函数
+    const file = fs.createWriteStream(outputPath);
+
+    return new Promise((resolve, reject) => {
+      http
+        .get(url, (response) => {
+          // 检查响应状态码是否成功
+          if (response.statusCode !== 200) {
+            console.error(`Failed to get image. Status Code: ${response.statusCode}`);
+            reject(false);
+            return;
+          }
+
+          // 将响应的数据写入文件
+          response.pipe(file);
+
+          // 文件写入完成后的处理
+          file.on('finish', () => {
+            resolve(true);
+            file.close(() => {
+              console.log('Image downloaded successfully');
+            });
+          });
+        })
+        .on('error', (err) => {
+          reject(false);
+          fs.unlink(outputPath, () => {}); // 出现错误时删除未完整的文件
+          console.error('Error downloading image:', err.message);
+        });
     });
   }
 }
