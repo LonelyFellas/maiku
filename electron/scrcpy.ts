@@ -46,14 +46,18 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       this.scrcpyWindows[winName]?.win?.setResizable(true);
     });
     ipcMain.on('set-adb-keyboard', (_, winName, action) => this.inputADBKeybord(winName, action));
-    ipcMain.on('install-adb-keyboard', (_, winName) => {
-      const { adbAddr, isInstallADBKeyboard } = this.scrcpyWindows[winName];
-      if (isInstallADBKeyboard) return;
+    ipcMain.handle('install-adb-keyboard', (_, winName) => {
+      const { adbAddr } = this.scrcpyWindows[winName];
       this.scrcpyWindows[winName].isInstallADBKeyboard = true;
       const apkPath = path.join(this.scrcpyCwd, '/ADBKeyboard.apk');
-      spawn(`adb -s ${adbAddr} install ${apkPath}`, {
-        cwd: this.scrcpyCwd,
-        shell: true,
+      return new Promise((resolve) => {
+        const installData = spawn(`adb connect ${adbAddr} && adb -s ${adbAddr} install ${apkPath}`, {
+          cwd: this.scrcpyCwd,
+          shell: true,
+        });
+        installData.stdout.on('data', (data: AnyObj) => {
+          resolve(data);
+        });
       });
     });
     ipcMain.on('screenshot-scrcpy-window', (_, winName) => this.screenshot(winName));
@@ -74,10 +78,11 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       frame: true,
       resizable: false,
       autoHideMenuBar: true,
-      show: true,
+      show: false,
       modal: false,
       skipTaskbar: false,
       movable: false,
+      backgroundColor: '#000000',
       webPreferences: {
         nodeIntegration: true,
         contextIsolation: true,
@@ -191,7 +196,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       console.error(`Can't find scrcpy window ${winName}`);
       return undefined;
     }
-    if (scrcpyNativeHwnd === 'undefined') {
+    if (['undefined', 'null', null, undefined, '', 0].includes(scrcpyNativeHwnd)) {
       setTimeout(() => {
         this.findScrcpyWindow(winName, count - 1);
       }, 1000);
@@ -212,13 +217,13 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       scrcpy.pidSpawn = -1;
     }
 
-    // 重置ADB键盘
-    if (scrcpy.startADBKeybord && scrcpy.adbAddr) {
-      spawn(`adb -s ${scrcpy.adbAddr} shell ime reset`, {
-        shell: true,
-        cwd: this.scrcpyCwd,
-      });
-    }
+    // // 重置ADB键盘
+    // if (scrcpy.startADBKeybord && scrcpy.adbAddr) {
+    //   spawn(`adb -s ${scrcpy.adbAddr} shell ime reset`, {
+    //     shell: true,
+    //     cwd: this.scrcpyCwd,
+    //   });
+    // }
   }
 
   private inputADBKeybord(winName: string, action: 'start' | 'close') {
@@ -280,7 +285,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
           height: adjustedHeight,
           direction,
         });
-        scrcpy.win!.setMovable(true);
+        scrcpy.win?.setMovable(true);
       }, 1000);
     }
   }
@@ -293,6 +298,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
       frame: false,
       resizable: false,
       show: true,
+      backgroundColor: '#000000',
       x: scrcpy.win!.getPosition()[0] + 185,
       y: scrcpy.win!.getPosition()[1] + 35,
       parent: scrcpy.win,

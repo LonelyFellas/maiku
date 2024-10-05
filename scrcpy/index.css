@@ -24,9 +24,9 @@
     place-content: center;
     background-color: black;
     .hide-input {
-      right: 0;
-      opacity: 1;
-      bottom: 0;
+      left: 30px;
+      opacity: 0;
+      bottom: 30px;
       position: absolute;
     }
     .loader-container {
