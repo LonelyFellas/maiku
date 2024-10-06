@@ -25,7 +25,7 @@ export default function Profiles() {
   const [sizeVal, setSizeVal] = useState(1);
   const { data: deviceData } = useSuspenseQuery(getListDeviceOptions);
   useQueries({
-    queries: deviceData.map((deviceId) => ({
+    queries: deviceData?.map((deviceId) => ({
       queryKey: ['adbConnect', deviceId],
       queryFn: () => adbConnect(`59.63.189.48:${deviceId.p1.toString().slice(0, -2) + (40 + deviceId.number)}`),
     })),

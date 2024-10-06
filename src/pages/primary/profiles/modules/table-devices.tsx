@@ -103,7 +103,7 @@ export function TableDevices(props: ListProps) {
         display: props.layout === 'table' ? 'block' : 'none',
       }}
     >
-      <Table rowKey={'id'} size="small" columns={columns} dataSource={props.deviceData} />
+      <Table rowKey={'id'} size="small" columns={columns} dataSource={props.deviceData ?? []} />
     </div>
   );
 }

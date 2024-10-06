@@ -3,7 +3,7 @@ import path from 'node:path';
 import http from 'node:http';
 import fs from 'node:fs';
 import { BrowserWindow, ipcMain, screen } from 'electron';
-import { RENDERER_DIST } from './main';
+import { mainWin, RENDERER_DIST } from './main';
 import { createBrowserWindow, __dirname, isDev, getScrcpyCwd } from './utils';
 import { embedWindow, findWindow, getElectronWindow } from './utils/scrcpy-koffi';
 
@@ -18,6 +18,7 @@ const SCRCPY_WIN_HEIGHT_H = 416;
 export default class Scrcpy<T extends EleApp.ProcessObj> {
   processObj: EleApp.ProcessObj = {};
   scrcpyCwd = getScrcpyCwd();
+  isSupportAudioDevice = true;
   scrcpyWindows: Record<
     string,
     {
@@ -38,6 +39,7 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     }
   > = {};
   constructor(processObj: T) {
+    this.checkAudioDevices();
     this.processObj = processObj;
     ipcMain.on('show-scrcpy-window', (_, winName) => {
       this.scrcpyWindows[winName]?.win?.show();
@@ -56,6 +58,9 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
           shell: true,
         });
         installData.stdout.on('data', (data: AnyObj) => {
+          resolve(data);
+        });
+        installData.stderr.on('data', (data: AnyObj) => {
           resolve(data);
         });
       });
@@ -116,10 +121,14 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
     scrcpy.pid = -1;
     scrcpy.pidSpawn = -1;
     if (scrcpy.pid !== -1) return;
-    const scrcpySpawn = spawn('scrcpy', ['-s', adbAddr, '--window-title', winName, '--window-width', '1', '--window-height', '1', '--window-x', '-10000', '--window-y', '-10000', "--video-encoder 'c2.android.avc.encoder'"], {
-      cwd: this.scrcpyCwd,
-      shell: true,
-    });
+    const scrcpySpawn = spawn(
+      'scrcpy',
+      ['-s', adbAddr, '--window-title', winName, '--window-width', '1', '--window-height', '1', '--window-x', '-10000', '--window-y', '-10000', "--video-encoder 'c2.android.avc.encoder'", this.isSupportAudioDevice ? '' : '--no-audio'],
+      {
+        cwd: this.scrcpyCwd,
+        shell: true,
+      },
+    );
     scrcpySpawn.stdout.on('data', async (data: AnyObj) => {
       scrcpy.pidSpawn = scrcpySpawn.pid ?? -1;
       const strData = data.toString();
@@ -324,6 +333,21 @@ export default class Scrcpy<T extends EleApp.ProcessObj> {
           cwd: this.scrcpyCwd,
           shell: true,
         });
+      }
+    });
+  }
+  private checkAudioDevices() {
+    // 检查电脑系统音频设备是否可用
+    exec('powershell -Command "Get-Service -Name Audiosrv | Select-Object -ExpandProperty Status"', (error, stdout) => {
+      if (error) {
+        console.error(`exec error: ${error}`);
+        return;
+      }
+      mainWin?.webContents.send('error', stdout);
+      if (stdout.includes('Running')) {
+        this.isSupportAudioDevice = true;
+      } else {
+        this.isSupportAudioDevice = false;
       }
     });
   }

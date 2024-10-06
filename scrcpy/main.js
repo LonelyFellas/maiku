@@ -99,6 +99,21 @@ class ScrcpyUI {
     });
 
     const inputRef = document.getElementById('hide-input');
+    const inputBtn = document.getElementById('input-btn');
+    inputBtn.addEventListener('click', () => {
+      if (this.inputActive) {
+        inputRef.blur();
+        this.inputActive = false;
+        inputBtn.classList.remove('active');
+        window.adbApi.shell(this.urlParams.adbAddr, 'ime reset');
+      } else {
+        inputRef.focus();
+        this.inputActive = true;
+        inputBtn.classList.add('active');
+        window.adbApi.shell(this.urlParams.adbAddr, 'ime enable com.android.adbkeyboard/.AdbIME');
+        window.adbApi.shell(this.urlParams.adbAddr, 'ime set com.android.adbkeyboard/.AdbIME');
+      }
+    });
     const handleComposition = (e) => {
       if (e.type === 'compositionstart') {
         this.isComposingRef = true;
@@ -149,7 +164,11 @@ window.addEventListener('preload-ready', async () => {
     ui.start();
   }
   window.ipcRenderer.invoke('install-adb-keyboard', params.winName).then(() => {
-    window.adbApi.shell(this.urlParams.adbAddr, 'ime enable com.android.adbkeyboard/.AdbIME');
-    window.adbApi.shell(this.urlParams.adbAddr, 'ime set com.android.adbkeyboard/.AdbIME');
+    window.adbApi.shellResult(params.adbAddr, 'ime enable com.android.adbkeyboard/.AdbIME').then(() => {
+      console.log('install adb keyboard success');
+      window.adbApi.shellResult(params.adbAddr, 'ime set com.android.adbkeyboard/.AdbIME').then(() => {
+        console.log('set adb keyboard success');
+      });
+    });
   });
 });
